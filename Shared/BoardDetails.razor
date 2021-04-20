@@ -35,13 +35,13 @@
         <div class="row">
 
             <div class="col">
-                <button class="btn btn-outline-primary float-right" @onclick="GetAnswer">Get Answer</button>
+                <button class="btn btn-outline-primary float-right" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
             </div>
         </div>
     </div>
 
     <div class="col-9">
-        <textarea id="TextAreaResults" class="resultsarea" readonly="readonly" @bind="_result"></textarea>
+        <textarea id="TextAreaResults" class="resultsarea" readonly="readonly" @bind="_result" hidden="@_hideResult"></textarea>
     </div>
 </div>
 
@@ -51,21 +51,29 @@
 @code {
     public List<Foe> _foes = new List<Foe>();
     public string _result;
-
+    bool _hideAnswerButton = true;
+    bool _hideResult = true;
 
     public void Clear()
     {
         _foes.Clear();
         _result = "";
+        _hideAnswerButton = true;
+        _hideResult = true;
     }
 
     private void GetAnswer()
     {
         _result = BoardReader.Read(_foes);
+
+        _hideAnswerButton = true;
+        _hideResult = false;
     }
 
     public void Refresh()
     {
+        _hideAnswerButton = false;
+        _hideResult = true;
         StateHasChanged();
     }
 }
