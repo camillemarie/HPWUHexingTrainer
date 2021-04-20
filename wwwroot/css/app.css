@@ -48,3 +48,12 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+.resultsarea {
+    background-color: #eee;
+    width:100%;
+    overflow: hidden;
+    height: 600px;
+    border: 1px solid #ccc;
+    overflow-y: auto;
+}

@@ -1,16 +1,57 @@
 ﻿@page "/computergenerated"
+@using HPWUHexingInitialBoard.Shared
 
-<h1>Counter</h1>
+<h3>Test yourself with some random boards</h3>
 
-<p>Current count: @currentCount</p>
+<div class="row pt-2">
+    <div class="col">
+        <button class="btn btn-outline-primary" @onclick="GetNewBoard">Generate New Board</button>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    </div>
+</div>
+
+<div class="row pt-2">
+    <div class="col">
+        <BoardDetails  @ref="_bd"></BoardDetails>
+    </div>
+</div>
+
+
 
 @code {
-    private int currentCount = 0;
 
-    private void IncrementCount()
+
+    BoardDetails _bd = new BoardDetails();
+    public static int PERCENT_ELITES = 10;
+    List<Foe> _foes = new List<Foe>();
+
+
+    public void GetNewBoard()
     {
-        currentCount++;
+        Random rnd = new Random();
+        _foes.Clear();
+        _bd.Clear();
+
+
+        // generate 5 random foes
+        for (int cnt = 0; cnt < 5; cnt++)
+        {
+            Foe foe = new Foe();
+            foe.Stars = rnd.Next(3, 6);
+
+            int foetype = rnd.Next(0, 6);
+            foe.Type = (FoeType)foetype;
+
+            int isElite = rnd.Next(1, PERCENT_ELITES);
+            foe.Elite = (isElite == 1) ? true : false;
+
+            _foes.Add(foe);
+
+            _bd._foes = _foes.ToList();
+            _bd.Refresh();
+        }
+
     }
 }
+
+

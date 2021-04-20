@@ -1,0 +1,71 @@
+﻿
+<div class="row">
+
+    <div class="col">
+        <div class="row">
+
+            <div class="col">
+                <table class="table" >
+                    <thead>
+                        <tr>
+                            <th>Foes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                <td>
+                                    @foreach (var foe in _foes)
+                                    {
+                                        <div style="background-color: @(@foe.Elite ? "plum" : "white")">
+                                            <span style="width:50px">
+                                                @for (int i = 0; i < @foe.Stars; i++)
+                                                {
+                                                    <text>*</text>
+                                                }
+                                            </span>
+                                            @foe.Type.ToString()
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col">
+                <button class="btn btn-outline-primary float-right" @onclick="GetAnswer">Get Answer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-9">
+        <textarea id="TextAreaResults" class="resultsarea" readonly="readonly" @bind="_result"></textarea>
+    </div>
+</div>
+
+
+
+
+@code {
+    public List<Foe> _foes = new List<Foe>();
+    public string _result;
+
+
+    public void Clear()
+    {
+        _foes.Clear();
+        _result = "";
+    }
+
+    private void GetAnswer()
+    {
+        _result = BoardReader.Read(_foes);
+    }
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+}
