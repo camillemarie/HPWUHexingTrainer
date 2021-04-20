@@ -19,7 +19,7 @@
                 <td>
                     @foreach (var foe in board.Foes)
                     {
-                        <div style="color: @(foe.Elite?"purple":"black")">
+                        <div style="background-color: @(foe.Elite?"plum":"white")">
                             <span style="width:50px">
                                 @for (int i = 0; i < foe.Stars; i++)
                                 {
