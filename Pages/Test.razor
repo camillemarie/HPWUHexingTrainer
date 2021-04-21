@@ -7,8 +7,8 @@
     <div class="col">
         <button class="btn btn-outline-primary" @onclick="GetNewBoard">New Board</button>
 
-        <label class="pl-1" for="chkOrdered">See tests in order?</label>
-        <input id="chkOrdered" type="checkbox" @bind="@orderedTests" />
+        <label class="pl-1" for="chkRandom">Random order?</label>
+        <input id="chkRandom" type="checkbox" @bind="@randomTests" />
         <label class=" h4 pt-2 pl-2">@_imgName</label>
 </div>
 </div>
@@ -22,7 +22,7 @@
 @code {
     private BoardDetails _bd = new BoardDetails();
     private List<Foe> _foes = new List<Foe>();
-    private bool orderedTests = true;
+    private bool randomTests = false;
     private int testListElement = -1;
     private string _imgName;
     private List<TestBoard> _testBoards;
@@ -35,7 +35,12 @@
 
         _testBoards = GenerateTestBoards.Create();
 
-        if (orderedTests)
+        if (randomTests)
+        {
+            Random rnd = new Random();
+            testListElement = rnd.Next(0, _testBoards.Count);
+        }
+        else
         {
             testListElement++;
 
@@ -43,11 +48,7 @@
             if (testListElement == _testBoards.Count)
                 testListElement = 0;
         }
-        else
-        {
-            Random rnd = new Random();
-            testListElement = rnd.Next(0, _testBoards.Count);
-        }
+
 
         TestBoard tb = _testBoards[testListElement];
 
