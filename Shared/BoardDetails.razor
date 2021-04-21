@@ -5,42 +5,45 @@
         <div class="row">
 
             <div class="col">
-                <table class="table" >
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Foes</th>
                         </tr>
                     </thead>
                     <tbody>
-                            <tr>
-                                <td>
-                                    @foreach (var foe in _foes)
-                                    {
-                                        <div style="background-color: @(@foe.Elite ? "plum" : "white")">
-                                            <span style="width:50px">
-                                                @for (int i = 0; i < @foe.Stars; i++)
-                                                {
-                                                    <text>*</text>
-                                                }
-                                            </span>
-                                            @foe.Type.ToString()
-                                        </div>
-                                    }
-                                </td>
-                            </tr>
+                        <tr>
+                            <td>
+                                @foreach (var foe in _foes)
+                                {
+                                    <div style="background-color: @(@foe.Elite ? "plum" : "white")">
+                                        @foe.ToString()
+                                        @*<span style="width:50px">
+                                            @for (int i = 0; i < @foe.Stars; i++)
+                                            {
+                                                <text>*</text>
+                                            }
+                                        </span>
+                                        
+                                        @foe.Type.ToString()*@
+                                    </div>
+                                }
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        <div class="row">
+        @*<div class="row">
 
             <div class="col">
                 <button class="btn btn-outline-primary float-right" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
             </div>
-        </div>
+        </div>*@
     </div>
 
     <div class="col-9">
+        <button class="btn btn-outline-primary" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
         <textarea id="TextAreaResults" class="resultsarea" readonly="readonly" @bind="_result" hidden="@_hideResult"></textarea>
     </div>
 </div>
