@@ -1,16 +1,63 @@
 ﻿@page "/test"
+@using HPWUHexingInitialBoard.Shared
 
-<h1>Counter</h1>
+<h3>Test yourself with some boards from the training sessions</h3>
 
-<p>Current count: @currentCount</p>
+<div class="row pt-2">
+    <div class="col">
+        <button class="btn btn-outline-primary" @onclick="GetNewBoard">New Board</button>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+        <label class="pl-1" for="chkOrdered">See tests in order?</label>
+        <input id="chkOrdered" type="checkbox" @bind="@orderedTests" />
+        <label class=" h4 pl-2">@_imgName</label>
+</div>
+</div>
+
+<div class="row pt-2">
+    <div class="col pt-2">
+        <BoardDetails @ref="_bd"></BoardDetails>
+    </div>
+</div>
 
 @code {
-    private int currentCount = 0;
+    private BoardDetails _bd = new BoardDetails();
+    private List<Foe> _foes = new List<Foe>();
+    private bool orderedTests = true;
+    private int testListElement = -1;
+    private string _imgName;
+    private List<TestBoard> _testBoards;
 
-    private void IncrementCount()
+
+    public void GetNewBoard()
     {
-        currentCount++;
+        _foes.Clear();
+        _bd.Clear();
+
+        _testBoards = GenerateTestBoards.Create();
+
+        if (orderedTests)
+        {
+            testListElement++;
+
+            // if we are past the end of the list, go to the start again
+            if (testListElement == _testBoards.Count)
+                testListElement = 0;
+        }
+        else
+        {
+            Random rnd = new Random();
+            testListElement = rnd.Next(0, _testBoards.Count);
+        }
+
+        TestBoard tb = _testBoards[testListElement];
+
+        _imgName = tb.Name;
+        _foes = tb.Foes;
+
+        _bd.ImgSrc = tb.ImageFileName;
+        _bd.ImgName = tb.Name;
+        _bd.HideImage = false;
+        _bd.Foes = tb.Foes.ToList();
+        _bd.Refresh();
     }
 }

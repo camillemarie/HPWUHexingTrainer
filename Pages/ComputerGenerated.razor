@@ -17,15 +17,12 @@
 </div>
 
 
-
 @code {
-
-
     BoardDetails _bd = new BoardDetails();
     public static int PERCENT_ELITES = 10;
     List<Foe> _foes = new List<Foe>();
 
-
+  
     public void GetNewBoard()
     {
         Random rnd = new Random();
@@ -47,10 +44,9 @@
 
             _foes.Add(foe);
 
-            _bd._foes = _foes.ToList();
+            _bd.Foes = _foes.ToList();
             _bd.Refresh();
         }
-
     }
 }
 

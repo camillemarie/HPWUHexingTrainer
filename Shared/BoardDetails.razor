@@ -14,60 +14,54 @@
                     <tbody>
                         <tr>
                             <td>
-                                @foreach (var foe in _foes)
-                                {
-                                    <div style="background-color: @(@foe.Elite ? "plum" : "white")">
-                                        @foe.ToString()
-                                        @*<span style="width:50px">
-                                            @for (int i = 0; i < @foe.Stars; i++)
-                                            {
-                                                <text>*</text>
-                                            }
-                                        </span>
-                                        
-                                        @foe.Type.ToString()*@
+                                @foreach (var foe in Foes)
+                                {<div>
+                                    <span style="background-color: @(@foe.Elite ? "plum" : "white")">
+                                            @foe.ToString()
+                                    </span>
                                     </div>
                                 }
                             </td>
                         </tr>
                     </tbody>
                 </table>
+
+                <img src="@ImgSrc" alt="@ImgName" hidden="@HideImage" />
             </div>
         </div>
-        @*<div class="row">
 
-            <div class="col">
-                <button class="btn btn-outline-primary float-right" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
-            </div>
-        </div>*@
     </div>
 
-    <div class="col-9">
+    <div class="col-9 pt-2">
         <button class="btn btn-outline-primary" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
         <textarea id="TextAreaResults" class="resultsarea" readonly="readonly" @bind="_result" hidden="@_hideResult"></textarea>
     </div>
 </div>
 
 
-
-
 @code {
-    public List<Foe> _foes = new List<Foe>();
-    public string _result;
-    bool _hideAnswerButton = true;
-    bool _hideResult = true;
+    public List<Foe> Foes = new List<Foe>();
+    private string _result;
+    private bool _hideAnswerButton = true;
+    private bool _hideResult = true;
+
+    // used for test boards
+    public bool HideImage = true;
+    public string ImgSrc;
+    public string ImgName;
 
     public void Clear()
     {
-        _foes.Clear();
+        Foes.Clear();
         _result = "";
         _hideAnswerButton = true;
         _hideResult = true;
+        HideImage = true;
     }
 
     private void GetAnswer()
     {
-        _result = BoardReader.Read(_foes);
+        _result = BoardReader.Read(Foes);
 
         _hideAnswerButton = true;
         _hideResult = false;
