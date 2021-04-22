@@ -1,6 +1,5 @@
 ﻿@page "/boards"
 @using HPWUHexingInitialBoard
-@inject NavigationManager NavigationManager
 
 <h3>Boards</h3>
 
@@ -12,7 +11,6 @@
         </tr>
     </thead>
     <tbody>
-        @*@foreach (var board in testboards)*@
         @for (int i = 0; i < testboards.Count; i++)
         {
             var local_i = i;
@@ -36,21 +34,11 @@
         }
     </tbody>
 </table>
-<button @onclick="HandleClick"></button>
 
 
 
 @code {
     private List<TestBoard> testboards = GenerateTestBoards.Create();
-
-
-    private void HandleClick()
-
-    {
-        NavigationManager.NavigateTo("/test/6", true);
-    }
-
-
 }
 
 
