@@ -1,4 +1,6 @@
 ﻿@page "/test"
+@page "/test/{Id:int}"
+
 @using HPWUHexingInitialBoard.Shared
 
 <h3>Test yourself with some boards from the training sessions</h3>
@@ -10,7 +12,7 @@
         <label class="pl-1" for="chkRandom">Random order?</label>
         <input id="chkRandom" type="checkbox" @bind="@randomTests" />
         <label class=" h4 pt-2 pl-2">@_imgName</label>
-</div>
+    </div>
 </div>
 
 <div class="row pt-2">
@@ -20,6 +22,10 @@
 </div>
 
 @code {
+
+    [Parameter]
+    public int? Id { get; set; }
+
     private BoardDetails _bd = new BoardDetails();
     private List<Foe> _foes = new List<Foe>();
     private bool randomTests = false;
@@ -28,11 +34,33 @@
     private List<TestBoard> _testBoards;
 
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Id = Id ?? -1;
+
+        if (Id >= 0)
+        {
+            _testBoards = GenerateTestBoards.Create();
+            LoadBoard(_testBoards[Id.Value]);
+        }
+    }
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (Id.Value >= 0)
+        {
+            RefreshBoardDetails(_testBoards[Id.Value]); // this needs to wait until rendering complete
+            testListElement = Id.Value;
+            Id = -1;
+        }
+    }
+
+
     public void GetNewBoard()
     {
-        _foes.Clear();
-        _bd.Clear();
-
         _testBoards = GenerateTestBoards.Create();
 
         if (randomTests)
@@ -49,11 +77,26 @@
                 testListElement = 0;
         }
 
+        LoadBoard(_testBoards[testListElement]);
+        RefreshBoardDetails(_testBoards[testListElement]);
+    }
 
-        TestBoard tb = _testBoards[testListElement];
+    private void LoadBoard(TestBoard tb)
+    {
+        _foes.Clear();
+        _bd.Clear();
 
-        _imgName = tb.Name;
-        _foes = tb.Foes;
+        if (tb is null)
+            return;
+
+        _imgName = tb.Name ?? "Board X";
+
+        if (tb.Foes != null)
+            _foes = tb.Foes;
+    }
+
+    private void RefreshBoardDetails(TestBoard tb)
+    {
 
         _bd.ImgSrc = tb.ImageFileName;
         _bd.ImgName = tb.Name;

@@ -1,5 +1,6 @@
 ﻿@page "/boards"
 @using HPWUHexingInitialBoard
+@inject NavigationManager NavigationManager
 
 <h3>Boards</h3>
 
@@ -11,39 +12,44 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var board in testboards)
+        @*@foreach (var board in testboards)*@
+        @for (int i = 0; i < testboards.Count; i++)
         {
+            var local_i = i;
+            var board = testboards[i];
             <tr>
-                <td>@board.Name</td>
-                @*        <td>@board.ToString()</td>*@
-            <td>
-                @foreach (var foe in board.Foes)
-                {
-                    <div>
-                        <span style="background-color: @(@foe.Elite ? "plum" : "white")">
-                            @foe.ToString()
-                        </span>
-                    </div>
-                    @*<div style="background-color: @(foe.Elite?"plum":"white")">
-                <span style="width:50px">
-                    @for (int i = 0; i < foe.Stars; i++)
+                <td>
+                    <div>@board.Name</div>
+                    <a href="/test/@local_i" class="btn btn-outline-primary" role="button">Solve</a>
+                </td>
+                <td>
+                    @foreach (var foe in board.Foes)
                     {
-                        <text>*</text>
+                        <div>
+                            <span style="background-color: @(@foe.Elite ? "plum" : "white")">
+                                @foe.ToString()
+                            </span>
+                        </div>
                     }
-                </span>
-                @foe.Type.ToString()
-            </div>*@
-                }
-            </td>
+                </td>
             </tr>
         }
     </tbody>
 </table>
+<button @onclick="HandleClick"></button>
 
 
 
 @code {
     private List<TestBoard> testboards = GenerateTestBoards.Create();
+
+
+    private void HandleClick()
+
+    {
+        NavigationManager.NavigateTo("/test/6", true);
+    }
+
 
 }
 
