@@ -171,8 +171,6 @@ namespace HPWUHexingInitialBoard
             else
                 orderedAurorFoes.Reverse();
 
-
-
             for (int cnt = 0; cnt < orderedAurorFoes.Count(); cnt++)
             {
                 Foe f = orderedAurorFoes[cnt];
@@ -200,8 +198,9 @@ namespace HPWUHexingInitialBoard
                     // Double hex the 5 star dark wizard for A1 as it always has a shield 
                     // & A2 as it will also need a shield due to 2 x 5 star Auror foes
 
-                    if (br.A2Hexes.Count <= 3) // if we've hexed the magi + double hexed A1, we can only add 1 hex for A2
-                        AddHex(br, HexType.Weakening, orderedAurorFoes[cnt].ToString(), false);
+                    // Don't double weaken in the initial lobby to get proficiency up quicker.
+                    //if (br.A2Hexes.Count <= 3) // if we've hexed the magi + double hexed A1, we can only add 1 hex for A2
+                    //    AddHex(br, HexType.Weakening, orderedAurorFoes[cnt].ToString(), false);
                 }
                 else
                     AddHex(br, HexType.Weakening, orderedAurorFoes[cnt].ToString(), false);
