@@ -1,5 +1,6 @@
 ﻿@inject Blazored.LocalStorage.ILocalStorageService localStore
 
+
 <div class="row">
 
     <div class="col">
@@ -35,6 +36,8 @@
     <div class="col-9 pt-2">
         <button class="btn btn-outline-primary" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
 
+        <label class="font-weight-bold float-right" hidden="@_hideTimer">Time: @_timeElapsed seconds</label>
+
 
         <label class="pl-1" for="chkProficiency" hidden="@_hideProfiencyFields">Do we have proficiency?</label>
         <input id="chkProficiency" type="checkbox" @bind="_userProficiencyAnswer" hidden="@_hideProfiencyFields" />
@@ -66,6 +69,10 @@
     public bool HideImage = true;
     public string ImgSrc;
     public string ImgName;
+
+
+    private string _timeElapsed = "0.0";
+    Stopwatch myWatch = new Stopwatch();
 
 
     protected override async Task OnInitializedAsync()
@@ -106,6 +113,7 @@
         _proficiencyAnswer = "";
         _userProficiencyAnswer = false;
         HideImage = true;
+        _timeElapsed = "0.0";
     }
 
 
@@ -139,6 +147,9 @@
         _hideAnswerButton = true;
         _hideResult = _hideResultSetting;
         _hideProficiencyAnswer = _hideProficiency;
+
+        myWatch.Stop();
+        _timeElapsed = myWatch.GetElapsedTimeSecs().ToString();
     }
 
     public void Refresh()
@@ -148,6 +159,8 @@
         _hideProficiencyAnswer = true;
 
         _hideProfiencyFields = _hideProficiency || _hideAnswerButton;
+
+        myWatch.Start();
         StateHasChanged();
     }
 }
