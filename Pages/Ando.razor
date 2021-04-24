@@ -5,7 +5,7 @@
 
 <div class="row pt-5">
     <div class="col">
-        <button class="btn btn-outline-primary pt-5" @onclick="ReadAllBoards">Read All Boards</button>
+        <button class="btn btn-outline-primary pt-5" @onclick="ReadAllLobbies">Read All Lobbies</button>
         <a class="form-control btn btn-primary" href="/download?name=test.txt" target="_blank">Download</a>
     </div>
 
@@ -14,8 +14,8 @@
 
 @code {
 
-    public void ReadAllBoards()
+    public void ReadAllLobbies()
     {
-        BoardRunner.ReadAllBoards();
+        LobbyRunner.ReadAllLobbies();
     }
 }

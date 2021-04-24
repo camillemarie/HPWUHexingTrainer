@@ -4,13 +4,13 @@ using System.Text;
 
 namespace HPWUHexingTrainer
 {
-    internal class TestBoard
+    internal class TestLobby
     {
         public string Name { get; set; }
         public string ImageFileName { get; set; }
         public List<Foe> Foes { get; set; }
 
-        public TestBoard(string name, string imageFileName, List<Foe> foes)
+        public TestLobby(string name, string imageFileName, List<Foe> foes)
         {
             Name = name;
             ImageFileName = imageFileName;

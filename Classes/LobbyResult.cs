@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HPWUHexingTrainer
 {
-    public class BoardResult
+    public class LobbyResult
     {
         [Name("proficiency")]
         public bool Proficiency { get; set; }
@@ -104,9 +104,9 @@ namespace HPWUHexingTrainer
         Confusion
     }
 
-    public class BoardResultMap : ClassMap<BoardResult>
+    public class LobbyResultMap : ClassMap<LobbyResult>
     {
-        public BoardResultMap()
+        public LobbyResultMap()
         {
             Map(r => r.Proficiency).Index(0).Name("proficiency");
             //Map(m => m.Name).Index(1).Name("name");

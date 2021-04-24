@@ -45,7 +45,7 @@
     private bool _hideAnswerButton = true;
     private bool _hideResult = true;
 
-    // used for test boards
+    // used for test lobbies
     public bool HideImage = true;
     public string ImgSrc;
     public string ImgName;
@@ -61,7 +61,7 @@
 
     private void GetAnswer()
     {
-        _result = BoardReader.Read(Foes).ToString();
+        _result = LobbyReader.Read(Foes).ToString();
 
         _hideAnswerButton = true;
         _hideResult = false;

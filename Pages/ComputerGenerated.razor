@@ -1,29 +1,29 @@
 ﻿@page "/computergenerated"
 @using HPWUHexingTrainer.Shared
 
-<h3>Test yourself with some random boards</h3>
+<h3>Test yourself with some random lobbies</h3>
 
 <div class="row pt-2">
     <div class="col">
-        <button class="btn btn-outline-primary" @onclick="GetNewBoard">Generate New Board</button>
+        <button class="btn btn-outline-primary" @onclick="GetNewLobby">Generate New Lobby</button>
 
     </div>
 </div>
 
 <div class="row pt-2">
     <div class="col">
-        <BoardDetails  @ref="_bd"></BoardDetails>
+        <LobbyDetails  @ref="_bd"></LobbyDetails>
     </div>
 </div>
 
 
 @code {
-    BoardDetails _bd = new BoardDetails();
+    LobbyDetails _bd = new LobbyDetails();
     public static int PERCENT_ELITES = 10;
     List<Foe> _foes = new List<Foe>();
 
-  
-    public void GetNewBoard()
+
+    public void GetNewLobby()
     {
         Random rnd = new Random();
         _foes.Clear();

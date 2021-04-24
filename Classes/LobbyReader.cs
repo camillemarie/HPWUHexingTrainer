@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace HPWUHexingTrainer
 {
-    public class BoardReader
+    public class LobbyReader
     {
-        public static BoardResult Read(List<Foe> foes)
+        public static LobbyResult Read(List<Foe> foes)
         {
-            BoardResult br = new BoardResult();
+            LobbyResult br = new LobbyResult();
 
             br.A2Hexes = new List<Hex>();
             br.A1Hexes = new List<Hex>();
@@ -19,7 +19,7 @@ namespace HPWUHexingTrainer
             SetA1Details(foes, br);
             AssessProficiencyAndShieldForA2(br, orderedAurorFoes);
 
-            br.Foes = foes; // used only by the BoardRunner currently
+            br.Foes = foes; // used only by the LobbyRunner currently
 
             return br;
             //return PrepareReturnString(br);
@@ -28,7 +28,7 @@ namespace HPWUHexingTrainer
 
 
         #region A1
-        private static void SetA1Details(List<Foe> foes, BoardResult br)
+        private static void SetA1Details(List<Foe> foes, LobbyResult br)
         {
             List<Foe> orderedProfFoes = foes
                 .Where(p => p.Elite == false && (p.Type == FoeType.Pixie || p.Type == FoeType.Werewolf))
@@ -102,9 +102,9 @@ namespace HPWUHexingTrainer
         #endregion
 
         #region A2
-        private static List<Foe> SetA2Details(List<Foe> foes, BoardResult br)
+        private static List<Foe> SetA2Details(List<Foe> foes, LobbyResult br)
         {
-            br.A2FocusPassed = 1; // A2 ALWAYS passes a focus regardless of the board
+            br.A2FocusPassed = 1; // A2 ALWAYS passes a focus regardless of the lobby
 
             AssessMagiFoes(foes, br);
             List<Foe> orderedAurorFoes = AssessAurorFoes(foes, br);
@@ -113,7 +113,7 @@ namespace HPWUHexingTrainer
             return orderedAurorFoes;
         }
 
-        private static void AssessMagiFoes(List<Foe> foes, BoardResult br)
+        private static void AssessMagiFoes(List<Foe> foes, LobbyResult br)
         {
             //Imposing Erkling -> 
             //Imposing Acromantula -> 
@@ -147,7 +147,7 @@ namespace HPWUHexingTrainer
             }
         }
 
-        private static List<Foe> AssessAurorFoes(List<Foe> foes, BoardResult br)
+        private static List<Foe> AssessAurorFoes(List<Foe> foes, LobbyResult br)
         {
             //    Imposing Dark Wizard->
             //    Imposing Death Eater -> 
@@ -219,7 +219,7 @@ namespace HPWUHexingTrainer
         #endregion
 
 
-        private static void AssessProficiencyAndShieldForA2(BoardResult br, List<Foe> orderedAurorFoes)
+        private static void AssessProficiencyAndShieldForA2(LobbyResult br, List<Foe> orderedAurorFoes)
         {
             /* determine if we need 2 shields 
              *  - P2 has 7 focus but both Aurors will fight 5 stars
@@ -248,7 +248,7 @@ namespace HPWUHexingTrainer
             }
         }
 
-        private static void AddHex(BoardResult br, HexType type, string foeName, bool isAuror1)
+        private static void AddHex(LobbyResult br, HexType type, string foeName, bool isAuror1)
         {
             Hex h = new Hex();
             h.HexType = type;
@@ -263,7 +263,7 @@ namespace HPWUHexingTrainer
 
 
 
-        //private static string PrepareReturnString(BoardResult br)
+        //private static string PrepareReturnString(LobbyResult br)
         //{
         //    StringBuilder sb = new StringBuilder();
         //    sb.AppendLine("Magi");
@@ -319,7 +319,7 @@ namespace HPWUHexingTrainer
         //}
 
 
-        public static void CompareBoardResults(BoardResult b1, BoardResult b2)
+        public static void CompareLobbyResults(LobbyResult b1, LobbyResult b2)
         {
             // Magi response. Fight if at least 1 magi foe, else wait
             //bool IsMagiCorrect = CheckMagi(foes, userResult);

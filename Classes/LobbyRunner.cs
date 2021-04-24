@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace HPWUHexingTrainer
 {
-    public class BoardRunner
+    public class LobbyRunner
     {
-        public static List<BoardResult> ReadAllBoards()
+        public static List<LobbyResult> ReadAllLobbies()
         {
-            List<BoardResult> results = new List<BoardResult>();
+            List<LobbyResult> results = new List<LobbyResult>();
             StringBuilder csv = new StringBuilder();
 
             List<Foe> uniqueFoes = GetUniqueFoes();
@@ -21,7 +21,7 @@ namespace HPWUHexingTrainer
             csv.AppendLine(AddCsvColumnHeaders());
 
             // we now have a list of the 36 different foe types
-            // we need to loop through all the combos and get results from each board posibility
+            // we need to loop through all the combos and get results from each lobby posibility
             DateTime startTime = DateTime.Now;
             for (int f1 = 0; f1 < 2; f1++)
             {
@@ -40,7 +40,7 @@ namespace HPWUHexingTrainer
                                 foes.Add(uniqueFoes[f4]);
                                 foes.Add(uniqueFoes[f5]);
 
-                                BoardResult br = BoardReader.Read(foes);
+                                LobbyResult br = LobbyReader.Read(foes);
 
                                 results.Add(br);
                                 //csv.AppendLine(BuildCsvLine(br));
@@ -91,7 +91,7 @@ namespace HPWUHexingTrainer
             return "Foe 1, Foe 2, Foe 3";
         }
 
-        private static string BuildCsv(List<BoardResult> results)
+        private static string BuildCsv(List<LobbyResult> results)
         {
             string blah;
             using (var writer = new StreamWriter(@".\results.csv"))
@@ -104,10 +104,10 @@ namespace HPWUHexingTrainer
             return blah;
         }
 
-        private static void AnalyseResults(List<BoardResult> results)
+        private static void AnalyseResults(List<LobbyResult> results)
         {
-            List<BoardResult> proficiency = results.Where(r => r.Proficiency == true).ToList();
-            List<BoardResult> noProficiency = results.Where(r => r.Proficiency == false).ToList();
+            List<LobbyResult> proficiency = results.Where(r => r.Proficiency == true).ToList();
+            List<LobbyResult> noProficiency = results.Where(r => r.Proficiency == false).ToList();
 
 
             int focusKept = results.Sum(r => r.A1FocusKept + r.A2FocusKept);
