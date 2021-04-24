@@ -14,10 +14,17 @@
         <input id="chkProficiency" type="checkbox" @bind="_showProficiency" @onclick="UpdateLocalStorageProficiency" />
     </div>
 </div>
+<div class="row pt-2">
+    <div class="col">
+        <label class="pl-1" for="chkResults">Show full results?</label>
+        <input id="chkResults" type="checkbox" @bind="_showResults" @onclick="UpdateLocalStorageResults" />
+    </div>
+</div>
 
 @code {
     bool _showTimer = true;
-    bool _showProficiency = false;
+    bool _showProficiency = true;
+    bool _showResults = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,6 +35,7 @@
 
         _showTimer = b == "Yes" ? true : false;
 
+        //////////////////////////////
 
         string prof = await localStore.GetItemAsync<string>("ShowProficiency");
 
@@ -35,6 +43,15 @@
             prof = "Yes"; // default if we can't find a saved value
 
         _showProficiency = prof == "Yes" ? true : false;
+
+        //////////////////////////////
+
+        string results = await localStore.GetItemAsync<string>("ShowResults");
+
+        if (string.IsNullOrEmpty(results))
+            results = "Yes"; // default if we can't find a saved value
+
+        _showResults = results == "Yes" ? true : false;
     }
 
     #region update local storage
@@ -48,6 +65,12 @@
     {
         _showProficiency = !_showProficiency;
         await localStore.SetItemAsync("ShowProficiency", _showProficiency == true ? "Yes" : "No");
+    }
+
+    public async void UpdateLocalStorageResults()
+    {
+        _showResults = !_showResults;
+        await localStore.SetItemAsync("ShowResults", _showResults == true ? "Yes" : "No");
     }
     #endregion
 }

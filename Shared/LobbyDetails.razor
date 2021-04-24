@@ -51,6 +51,7 @@
     private string _result;
     private bool _hideAnswerButton = true;
     private bool _hideResult = true;
+    private bool _hideResultSetting = false; // this is from the settings/local storage
     private bool _hideProficiency = true;
     private bool _hideProficiencyAnswer = true;
     bool _hideTimer = true;
@@ -84,6 +85,15 @@
 
         _hideProficiency = showProf == "Yes" ? false : true;
         _hideProfiencyFields = _hideProficiency || _hideAnswerButton;
+
+
+        string showResults = await localStore.GetItemAsync<string>("ShowResults");
+
+        if (string.IsNullOrEmpty(showResults))
+            showResults = "Yes"; // default if we can't find a saved value
+
+        _hideResultSetting = showResults == "Yes" ? false : true;
+        _hideResult = _hideResultSetting || _hideAnswerButton;
     }
 
     public void Clear()
@@ -127,7 +137,7 @@
         _result = lr.ToString();
 
         _hideAnswerButton = true;
-        _hideResult = false;
+        _hideResult = _hideResultSetting;
         _hideProficiencyAnswer = _hideProficiency;
     }
 
