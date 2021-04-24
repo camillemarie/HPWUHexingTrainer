@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "HPWUHexingInitialBoard": {
+    "HPWUHexingTrainer": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

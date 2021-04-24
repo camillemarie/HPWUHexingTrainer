@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace HPWUHexingInitialBoard
+namespace HPWUHexingTrainer
 {
     internal class TestBoard
     {

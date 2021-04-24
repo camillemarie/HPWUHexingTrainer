@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HPWUHexingInitialBoard
+namespace HPWUHexingTrainer
 {
     public class BoardRunner
     {
