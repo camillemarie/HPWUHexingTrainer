@@ -8,7 +8,7 @@ namespace HPWUHexingInitialBoard
 {
     public class BoardReader
     {
-        public static string Read(List<Foe> foes)
+        public static BoardResult Read(List<Foe> foes)
         {
             BoardResult br = new BoardResult();
 
@@ -19,9 +19,12 @@ namespace HPWUHexingInitialBoard
             SetA1Details(foes, br);
             AssessProficiencyAndShieldForA2(br, orderedAurorFoes);
 
-            //return br;
-            return PrepareReturnString(br);
+            br.Foes = foes; // used only by the BoardRunner currently
+
+            return br;
+            //return PrepareReturnString(br);
         }
+
 
 
         #region A1
@@ -260,60 +263,60 @@ namespace HPWUHexingInitialBoard
 
 
 
-        private static string PrepareReturnString(BoardResult br)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Magi");
-            sb.AppendLine($"{ (br.MagiFights ? "Fights" : "Waits") } { (br.MagiFights ? br.MagiFoe : "") }");
+        //private static string PrepareReturnString(BoardResult br)
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    sb.AppendLine("Magi");
+        //    sb.AppendLine($"{ (br.MagiFights ? "Fights" : "Waits") } { (br.MagiFights ? br.MagiFoe : "") }");
 
-            //////////////////////////
-            sb.AppendLine();
-            sb.AppendLine("A1");
+        //    //////////////////////////
+        //    sb.AppendLine();
+        //    sb.AppendLine("A1");
 
-            // if A1 has 4 focus to be passed, we can shield both Aurors AND get proficiency
-            if (br.A1FocusPassed == 4)
-                sb.AppendLine($"Passes 2 to P1 and 2 to P2 - Keeps: { br.A1FocusKept }");
-            else
-                sb.AppendLine($"Passes: { br.A1FocusPassed } to P2 - Keeps: { br.A1FocusKept }");
+        //    // if A1 has 4 focus to be passed, we can shield both Aurors AND get proficiency
+        //    if (br.A1FocusPassed == 4)
+        //        sb.AppendLine($"Passes 2 to P1 and 2 to P2 - Keeps: { br.A1FocusKept }");
+        //    else
+        //        sb.AppendLine($"Passes: { br.A1FocusPassed } to P2 - Keeps: { br.A1FocusKept }");
 
-            foreach (Hex h in br.A1Hexes)
-                sb.AppendLine($"Hexes: { h.FoeName } with { h.HexType.ToString() }");
+        //    foreach (Hex h in br.A1Hexes)
+        //        sb.AppendLine($"Hexes: { h.FoeName } with { h.HexType.ToString() }");
 
-            var a1 = br.A1Fights ? "Fights" : "Waits";
+        //    var a1 = br.A1Fights ? "Fights" : "Waits";
 
-            sb.AppendLine($"{ (br.A1Fights ? "Fights" : "Waits") } { (br.A1Fights ? br.A1Foe : "") }");
+        //    sb.AppendLine($"{ (br.A1Fights ? "Fights" : "Waits") } { (br.A1Fights ? br.A1Foe : "") }");
 
-            //////////////////////////
-            sb.AppendLine();
-            sb.AppendLine("A2");
-            sb.AppendLine($"Passes: { br.A2FocusPassed } - Keeps: { br.A2FocusKept }");
+        //    //////////////////////////
+        //    sb.AppendLine();
+        //    sb.AppendLine("A2");
+        //    sb.AppendLine($"Passes: { br.A2FocusPassed } - Keeps: { br.A2FocusKept }");
 
-            foreach (Hex h in br.A2Hexes)
-                sb.AppendLine($"Hexes: { h.FoeName } with { h.HexType.ToString() }");
+        //    foreach (Hex h in br.A2Hexes)
+        //        sb.AppendLine($"Hexes: { h.FoeName } with { h.HexType.ToString() }");
 
-            sb.AppendLine($"{ (br.A2Fights ? "Fights" : "Waits") } { (br.A2Fights ? br.A2Foe : "") }");
+        //    sb.AppendLine($"{ (br.A2Fights ? "Fights" : "Waits") } { (br.A2Fights ? br.A2Foe : "") }");
 
-            //////////////////////////
-            sb.AppendLine();
-            sb.AppendLine("P1");
-            sb.AppendLine($"{ (br.P1Fights ? "Fights" : "Waits") } { (br.P1Fights ? br.P1Foe : "") }");
+        //    //////////////////////////
+        //    sb.AppendLine();
+        //    sb.AppendLine("P1");
+        //    sb.AppendLine($"{ (br.P1Fights ? "Fights" : "Waits") } { (br.P1Fights ? br.P1Foe : "") }");
 
-            if (br.A1FocusPassed == 4)
-                sb.AppendLine($"Shields A1 { ((br.A1FocusPassed == 4) ? " AND Shields A2" : "") }");
-            else
-                sb.AppendLine("Shields A1");
+        //    if (br.A1FocusPassed == 4)
+        //        sb.AppendLine($"Shields A1 { ((br.A1FocusPassed == 4) ? " AND Shields A2" : "") }");
+        //    else
+        //        sb.AppendLine("Shields A1");
 
-            //////////////////////////
-            sb.AppendLine();
-            sb.AppendLine("P2");
-            sb.AppendLine($"{ (br.P2Fights ? "Fights" : "Waits") } { (br.P2Fights ? br.P2Foe : "") }");
-            if (br.P2ShieldsA2) 
-                sb.AppendLine($"{ (br.P2ShieldsA2 ? "Shields A2" : "") }") ;
+        //    //////////////////////////
+        //    sb.AppendLine();
+        //    sb.AppendLine("P2");
+        //    sb.AppendLine($"{ (br.P2Fights ? "Fights" : "Waits") } { (br.P2Fights ? br.P2Foe : "") }");
+        //    if (br.P2ShieldsA2) 
+        //        sb.AppendLine($"{ (br.P2ShieldsA2 ? "Shields A2" : "") }") ;
 
-            sb.AppendLine($"{ (br.Proficiency ? "Casts Proficiency" : "Waits for focus - No proficiency") }");
+        //    sb.AppendLine($"{ (br.Proficiency ? "Casts Proficiency" : "Waits for focus - No proficiency") }");
 
-            return sb.ToString();
-        }
+        //    return sb.ToString();
+        //}
 
 
         public static void CompareBoardResults(BoardResult b1, BoardResult b2)
