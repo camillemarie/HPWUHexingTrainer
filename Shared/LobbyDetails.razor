@@ -16,9 +16,9 @@
                             <td>
                                 @foreach (var foe in Foes)
                                 {<div>
-                                    <span style="background-color: @(@foe.Elite ? "plum" : "white")">
+                                        <span style="background-color: @(@foe.Elite ? "plum" : "white")">
                                             @foe.ToString()
-                                    </span>
+                                        </span>
                                     </div>
                                 }
                             </td>
@@ -40,6 +40,7 @@
 
 
 @code {
+
     public List<Foe> Foes = new List<Foe>();
     private string _result;
     private bool _hideAnswerButton = true;
@@ -58,6 +59,27 @@
         _hideResult = true;
         HideImage = true;
     }
+
+
+    //public void CreateLobbyImage()
+    //{
+    //    var imgBaseFile = Image.FromFile("images/blankboard.png");
+    //    var imgFoe1File = Image.FromFile("images/foes/Dangerous_pixie.png");
+    //    var imgFoe2File = Image.FromFile("images/foes/Fierce_Deater.png");
+
+
+    //    var iwmOps1 = new ImageWatermarkOptions { Location = TargetSpot.MiddleLeft };
+    //    var iwmOps2 = new ImageWatermarkOptions { Location = TargetSpot.TopMiddle };
+
+
+    //    imgBaseFile.Crop(500, 500)
+    //        .AddImageWatermark(imgFoe1File, iwmOps1)
+    //        .AddImageWatermark(imgFoe1File, iwmOps2)
+    //        .SaveAs(@"wwwroot\images\image-watermark-istanbul-panoramic.jpg");
+
+    //    imgFoe1File.Dispose();
+
+    //}
 
     private void GetAnswer()
     {
