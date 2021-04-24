@@ -1,5 +1,8 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">HPWU Hexing Initial Board</a>
+﻿
+@using HPWUHexingTrainer
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">HPWU Hexing Training</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -14,26 +17,36 @@
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="computergenerated">
-                <span class="oi oi-laptop" aria-hidden="true"></span> Generated boards
+                <span class="oi oi-laptop" aria-hidden="true"></span> Generated lobbies
             </NavLink>
         </li>
 
 
         @*<li class="nav-item px-3">
             <NavLink class="nav-link" href="usergenerated">
-                <span class="oi oi-person" aria-hidden="true"></span> Create boards
+                <span class="oi oi-person" aria-hidden="true"></span> Create lobbies
             </NavLink>
         </li>*@
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="test">
-                <span class="oi oi-pencil" aria-hidden="true"></span> Test Boards
+                <span class="oi oi-pencil" aria-hidden="true"></span> Test Lobbies
             </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="boards">
-                <span class="oi oi-list" aria-hidden="true"></span> Boards
+            <NavLink class="nav-link" href="lobbies">
+                <span class="oi oi-list" aria-hidden="true"></span> Lobbies
             </NavLink>
         </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="settings">
+                <span class="oi oi-cog" aria-hidden="true"></span> Settings
+            </NavLink>
+        </li>
+        @*<li class="nav-item px-3">
+            <NavLink class="nav-link" href="ando">
+                <span class="oi oi-list" aria-hidden="true"></span> For Ando
+            </NavLink>
+        </li>*@
     </ul>
 </div>
 

@@ -1,0 +1,166 @@
+﻿@inject Blazored.LocalStorage.ILocalStorageService localStore
+
+
+<div class="row">
+
+    <div class="col">
+        <div class="row">
+
+            <div class="col">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Foes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                @foreach (var foe in Foes)
+                                {<div>
+                                        <span style="background-color: @(@foe.Elite ? "plum" : "white")">
+                                            @foe.ToString()
+                                        </span>
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <img src="@ImgSrc" alt="@ImgName" hidden="@HideImage" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-9 pt-2">
+        <button class="btn btn-outline-primary" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
+
+        <label class="font-weight-bold float-right" hidden="@_hideTimer">Time: @_timeElapsed seconds</label>
+
+
+        <label class="pl-1" for="chkProficiency" hidden="@_hideProfiencyFields">Do we have proficiency?</label>
+        <input id="chkProficiency" type="checkbox" @bind="_userProficiencyAnswer" hidden="@_hideProfiencyFields" />
+        <label class="font-weight-bold" hidden="@_hideProficiencyAnswer">@_proficiencyAnswer</label>
+
+        <textarea id="TextAreaResults" class="resultsarea" readonly="readonly" @bind="_result" hidden="@_hideResult"></textarea>
+    </div>
+</div>
+
+
+@code {
+
+    public List<Foe> Foes = new List<Foe>();
+    private string _result;
+    private bool _hideAnswerButton = true;
+    private bool _hideResult = true;
+    private bool _hideResultSetting = false; // this is from the settings/local storage
+    private bool _hideProficiency = true;
+    private bool _hideProficiencyAnswer = true;
+    bool _hideTimer = true;
+
+    private string _proficiencyAnswer = "";
+    private bool _userProficiencyAnswer = false;
+
+    private bool _hideProfiencyFields;
+
+
+    // used for test lobbies
+    public bool HideImage = true;
+    public string ImgSrc;
+    public string ImgName;
+
+
+    private string _timeElapsed = "0.0";
+    Stopwatch myWatch = new Stopwatch();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        string showTimer = await localStore.GetItemAsync<string>("ShowTimer");
+
+        if (string.IsNullOrEmpty(showTimer))
+            showTimer = "Yes"; // default if we can't find a saved value
+
+        _hideTimer = showTimer == "Yes" ? false : true;
+
+
+        string showProf = await localStore.GetItemAsync<string>("ShowProficiency");
+
+        if (string.IsNullOrEmpty(showProf))
+            showProf = "Yes"; // default if we can't find a saved value
+
+        _hideProficiency = showProf == "Yes" ? false : true;
+        _hideProfiencyFields = _hideProficiency || _hideAnswerButton;
+
+
+        string showResults = await localStore.GetItemAsync<string>("ShowResults");
+
+        if (string.IsNullOrEmpty(showResults))
+            showResults = "Yes"; // default if we can't find a saved value
+
+        _hideResultSetting = showResults == "Yes" ? false : true;
+        _hideResult = _hideResultSetting || _hideAnswerButton;
+    }
+
+    public void Clear()
+    {
+        Foes.Clear();
+        _result = "";
+        _hideAnswerButton = true;
+        _hideResult = true;
+        _hideProficiencyAnswer = true;
+        _proficiencyAnswer = "";
+        _userProficiencyAnswer = false;
+        HideImage = true;
+        _timeElapsed = "0.0";
+    }
+
+
+    //public void CreateLobbyImage()
+    //{
+    //    var imgBaseFile = Image.FromFile("images/blankboard.png");
+    //    var imgFoe1File = Image.FromFile("images/foes/Dangerous_pixie.png");
+    //    var imgFoe2File = Image.FromFile("images/foes/Fierce_Deater.png");
+
+
+    //    var iwmOps1 = new ImageWatermarkOptions { Location = TargetSpot.MiddleLeft };
+    //    var iwmOps2 = new ImageWatermarkOptions { Location = TargetSpot.TopMiddle };
+
+
+    //    imgBaseFile.Crop(500, 500)
+    //        .AddImageWatermark(imgFoe1File, iwmOps1)
+    //        .AddImageWatermark(imgFoe1File, iwmOps2)
+    //        .SaveAs(@"wwwroot\images\image-watermark-istanbul-panoramic.jpg");
+
+    //    imgFoe1File.Dispose();
+
+    //}
+
+    private void GetAnswer()
+    {
+        LobbyResult lr = LobbyReader.Read(Foes);
+
+        _proficiencyAnswer = lr.Proficiency == _userProficiencyAnswer ? "Correct!" : "Try Again";
+        _result = lr.ToString();
+
+        _hideAnswerButton = true;
+        _hideResult = _hideResultSetting;
+        _hideProficiencyAnswer = _hideProficiency;
+
+        myWatch.Stop();
+        _timeElapsed = myWatch.GetElapsedTimeSecs().ToString();
+    }
+
+    public void Refresh()
+    {
+        _hideAnswerButton = false;
+        _hideResult = true;
+        _hideProficiencyAnswer = true;
+
+        _hideProfiencyFields = _hideProficiency || _hideAnswerButton;
+
+        myWatch.Start();
+        StateHasChanged();
+    }
+}

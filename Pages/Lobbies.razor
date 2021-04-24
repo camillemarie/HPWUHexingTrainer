@@ -1,0 +1,44 @@
+﻿@page "/lobbies"
+@using HPWUHexingTrainer
+
+<h3>Lobbies</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Foes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < testlobbies.Count; i++)
+        {
+            var local_i = i;
+            var lobby = testlobbies[i];
+            <tr>
+                <td>
+                    <div>@lobby.Name</div>
+                    <a href="test/@local_i" class="btn btn-outline-primary" role="button">Solve</a>
+                </td>
+                <td>
+                    @foreach (var foe in lobby.Foes)
+                    {
+                        <div>
+                            <span style="background-color: @(@foe.Elite ? "plum" : "white")">
+                                @foe.ToString()
+                            </span>
+                        </div>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@code {
+    private List<TestLobby> testlobbies = GenerateTestLobbies.Create();
+}
+
+

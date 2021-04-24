@@ -1,13 +1,13 @@
 ﻿@page "/test"
 @page "/test/{Id:int}"
 
-@using HPWUHexingInitialBoard.Shared
+@using HPWUHexingTrainer.Shared
 
-<h3>Test yourself with some boards from the training sessions</h3>
+<h3>Test yourself with some lobbies from the training sessions</h3>
 
 <div class="row pt-2">
     <div class="col">
-        <button class="btn btn-outline-primary" @onclick="GetNewBoard">New Board</button>
+        <button class="btn btn-outline-primary" @onclick="GetNewLobby">New Lobby</button>
 
         <label class="pl-1" for="chkRandom">Random order?</label>
         <input id="chkRandom" type="checkbox" @bind="@randomTests" />
@@ -17,7 +17,7 @@
 
 <div class="row pt-2">
     <div class="col">
-        <BoardDetails @ref="_bd"></BoardDetails>
+        <LobbyDetails @ref="_bd"></LobbyDetails>
     </div>
 </div>
 
@@ -26,12 +26,12 @@
     [Parameter]
     public int? Id { get; set; }
 
-    private BoardDetails _bd = new BoardDetails();
+    private LobbyDetails _bd = new LobbyDetails();
     private List<Foe> _foes = new List<Foe>();
     private bool randomTests = false;
     private int testListElement = -1;
     private string _imgName;
-    private List<TestBoard> _testBoards;
+    private List<TestLobby> _testLobbies;
 
 
     protected override void OnInitialized()
@@ -42,8 +42,8 @@
 
         if (Id >= 0)
         {
-            _testBoards = GenerateTestBoards.Create();
-            LoadBoard(_testBoards[Id.Value]);
+            _testLobbies = GenerateTestLobbies.Create();
+            LoadLobby(_testLobbies[Id.Value]);
         }
     }
 
@@ -52,36 +52,36 @@
     {
         if (Id.Value >= 0)
         {
-            RefreshBoardDetails(_testBoards[Id.Value]); // this needs to wait until rendering complete
+            RefreshLobbyDetails(_testLobbies[Id.Value]); // this needs to wait until rendering complete
             testListElement = Id.Value;
             Id = -1;
         }
     }
 
 
-    public void GetNewBoard()
+    public void GetNewLobby()
     {
-        _testBoards = GenerateTestBoards.Create();
+        _testLobbies = GenerateTestLobbies.Create();
 
         if (randomTests)
         {
             Random rnd = new Random();
-            testListElement = rnd.Next(0, _testBoards.Count);
+            testListElement = rnd.Next(0, _testLobbies.Count);
         }
         else
         {
             testListElement++;
 
             // if we are past the end of the list, go to the start again
-            if (testListElement == _testBoards.Count)
+            if (testListElement == _testLobbies.Count)
                 testListElement = 0;
         }
 
-        LoadBoard(_testBoards[testListElement]);
-        RefreshBoardDetails(_testBoards[testListElement]);
+        LoadLobby(_testLobbies[testListElement]);
+        RefreshLobbyDetails(_testLobbies[testListElement]);
     }
 
-    private void LoadBoard(TestBoard tb)
+    private void LoadLobby(TestLobby tb)
     {
         _foes.Clear();
         _bd.Clear();
@@ -89,13 +89,13 @@
         if (tb is null)
             return;
 
-        _imgName = tb.Name ?? "Board X";
+        _imgName = tb.Name ?? "Lobby X";
 
         if (tb.Foes != null)
             _foes = tb.Foes;
     }
 
-    private void RefreshBoardDetails(TestBoard tb)
+    private void RefreshLobbyDetails(TestLobby tb)
     {
 
         _bd.ImgSrc = tb.ImageFileName;
