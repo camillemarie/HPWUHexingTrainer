@@ -1,0 +1,53 @@
+﻿@page "/settings"
+@inject Blazored.LocalStorage.ILocalStorageService localStore
+<h3>Settings</h3>
+
+<div class="row pt-2">
+    <div class="col">
+        <label class="pl-1" for="chkTimer">Show a timer?</label>
+        <input id="chkTimer" type="checkbox" @bind="_showTimer" @onclick="UpdateLocalStorageTimer" />
+    </div>
+</div>
+<div class="row pt-2">
+    <div class="col">
+        <label class="pl-1" for="chkProficiency">Show proficency separately?</label>
+        <input id="chkProficiency" type="checkbox" @bind="_showProficiency" @onclick="UpdateLocalStorageProficiency" />
+    </div>
+</div>
+
+@code {
+    bool _showTimer = true;
+    bool _showProficiency = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string b = await localStore.GetItemAsync<string>("ShowTimer");
+
+        if (string.IsNullOrEmpty(b))
+            b = "Yes"; // default if we can't find a saved value
+
+        _showTimer = b == "Yes" ? true : false;
+
+
+        string prof = await localStore.GetItemAsync<string>("ShowProficiency");
+
+        if (string.IsNullOrEmpty(prof))
+            prof = "Yes"; // default if we can't find a saved value
+
+        _showProficiency = prof == "Yes" ? true : false;
+    }
+
+    #region update local storage
+    public async void UpdateLocalStorageTimer()
+    {
+        _showTimer = !_showTimer;
+        await localStore.SetItemAsync("ShowTimer", _showTimer == true ? "Yes" : "No");
+    }
+
+    public async void UpdateLocalStorageProficiency()
+    {
+        _showProficiency = !_showProficiency;
+        await localStore.SetItemAsync("ShowProficiency", _showProficiency == true ? "Yes" : "No");
+    }
+    #endregion
+}
