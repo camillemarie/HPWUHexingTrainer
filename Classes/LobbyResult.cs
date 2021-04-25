@@ -45,9 +45,9 @@ namespace HPWUHexingTrainer
             sb.AppendLine("A1");
 
             // if A1 has 4 focus to be passed, we can shield both Aurors AND get proficiency
-            if (A1FocusPassed == 4)
-                sb.AppendLine($"Passes 2 to P1 and 2 to P2 - Keeps: { A1FocusKept }");
-            else
+            //if (A1FocusPassed == 4)
+            //    sb.AppendLine($"Passes 2 to P1 and 2 to P2 - Keeps: { A1FocusKept }");
+            //else
                 sb.AppendLine($"Passes: { A1FocusPassed } to P2 - Keeps: { A1FocusKept }");
 
             foreach (Hex h in A1Hexes)
@@ -72,9 +72,9 @@ namespace HPWUHexingTrainer
             sb.AppendLine("P1");
             sb.AppendLine($"{ (P1Fights ? "Fights" : "Waits") } { (P1Fights ? P1Foe : "") }");
 
-            if (A1FocusPassed == 4)
-                sb.AppendLine($"Shields A1 { ((A1FocusPassed == 4) ? " AND Shields A2" : "") }");
-            else
+            //if (A1FocusPassed == 4)
+            //    sb.AppendLine($"Shields A1 { ((A1FocusPassed == 4) ? " AND Shields A2" : "") }");
+            //else
                 sb.AppendLine("Shields A1");
 
             //////////////////////////
