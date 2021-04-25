@@ -6,13 +6,12 @@
 <div class="row pt-2">
     <div class="col">
         <button class="btn btn-outline-primary" @onclick="GetNewLobby">Generate New Lobby</button>
-
     </div>
 </div>
 
 <div class="row pt-2">
     <div class="col">
-        <LobbyDetails  @ref="_bd"></LobbyDetails>
+        <LobbyDetails @ref="_bd"></LobbyDetails>
     </div>
 </div>
 
@@ -43,13 +42,25 @@
             foe.Elite = (isElite == 1) ? true : false;
 
             _foes.Add(foe);
-
-            _bd.Foes = _foes.ToList();
-
-            //_bd.CreateLobbyImage();
-
-            _bd.Refresh();
         }
+
+
+        //// Test case for 2 x 3 star pixies
+        //_foes.AddRange(new Foe[] {
+        //        new Foe(5, FoeType.Erkling),
+        //        new Foe(5, FoeType.DeathEater),
+        //        new Foe(3, FoeType.Pixie),
+        //        new Foe(5, FoeType.DarkWizard),
+        //        new Foe(3, FoeType.Pixie)
+        //    });
+
+
+
+        _bd.Foes = _foes.ToList();
+
+        //_bd.CreateLobbyImage();
+
+        _bd.Refresh();
     }
 }
 
