@@ -1,16 +1,62 @@
 ﻿@page "/usergenerated"
 
-<h1>Counter</h1>
+<ModalBootstrap @ref="modal1" OnClick="ModalClickHandler" Title="Add a foe">
+    <div class="row">
+        <div class="col">
+            Stars <input @bind="_star" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label class="pt-1" for="chkElite">Elite?</label>
+            <input id="chkElite" type="checkbox" @bind="_isElite" />
+        </div>
+    </div>
 
-<p>Current count: @currentCount</p>
+</ModalBootstrap>
+<button @onclick="openmodal">Add</button>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+star @_star
+Elite @_isElite;
+
+<div class="row pt-2">
+    <div class="col">
+        <LobbyDetails @ref="_bd"></LobbyDetails>
+    </div>
+</div>
+
 
 @code {
-    private int currentCount = 0;
+    List<Foe> _foes = new List<Foe>();
+    int? _star;
+    bool _isElite = false;
 
-    private void IncrementCount()
+    ModalBootstrap modal1;
+
+    LobbyDetails _bd = new LobbyDetails();
+
+
+
+    void openmodal()
     {
-        currentCount++;
+        _star = null;
+        _isElite = false;
+        modal1.Show();
     }
+
+    private void ModalClickHandler()
+    {
+        Foe f = new Foe();
+
+        if (_star.HasValue)
+            f.Stars = _star.Value;
+
+        f.Elite = _isElite;
+
+        _foes.Add(f);
+        _bd.Foes.Clear();
+        _bd.Foes = _foes;
+        _bd.Refresh();
+    }
+
 }
