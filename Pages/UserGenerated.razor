@@ -1,6 +1,6 @@
 ﻿@page "/usergenerated"
 
-<ModalBootstrap @ref="modal1" OnClick="ModalClickHandler" Title="Add a foe">
+<ModalBootstrap @ref="modal1" OnClick="ClickHandler" Title="Add a foe">
     <div class="row">
         <div class="col">
             Stars <input @bind="_star" />
@@ -14,7 +14,7 @@
     </div>
 
 </ModalBootstrap>
-<button @onclick="openmodal">Add</button>
+<button class="btn btn-outline-primary" @onclick="OpenModal">Add</button>
 
 star @_star
 Elite @_isElite;
@@ -27,7 +27,7 @@ Elite @_isElite;
 
 
 @code {
-    List<Foe> _foes = new List<Foe>();
+    //List<Foe> _foes = new List<Foe>();
     int? _star;
     bool _isElite = false;
 
@@ -37,15 +37,19 @@ Elite @_isElite;
 
 
 
-    void openmodal()
+    void OpenModal()
     {
         _star = null;
         _isElite = false;
         modal1.Show();
     }
 
-    private void ModalClickHandler()
+
+
+    void ClickHandler(string newMessage)
     {
+        modal1.Show();
+
         Foe f = new Foe();
 
         if (_star.HasValue)
@@ -53,9 +57,7 @@ Elite @_isElite;
 
         f.Elite = _isElite;
 
-        _foes.Add(f);
-        _bd.Foes.Clear();
-        _bd.Foes = _foes;
+        _bd.Foes.Add(f);
         _bd.Refresh();
     }
 
