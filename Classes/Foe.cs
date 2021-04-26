@@ -57,6 +57,4 @@ namespace HPWUHexingTrainer
         Dangerous = 4,
         Fierce = 5
     }
-
-
 }
