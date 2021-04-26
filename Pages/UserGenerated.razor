@@ -20,12 +20,12 @@
                     var foe = _foes[i];
                     <tr>
                         <td>
-                            @*<InputSelect @bind-Value="foe.Stars">
+                            <InputSelect @bind-Value="foe.Stars">
                                 @foreach (var starName in Enum.GetValues(typeof(StarName)))
                                     {
-                                    <option value="@starName">@starName</option>
+                                    <option>@starName</option>
                                     }
-                            </InputSelect>*@
+                            </InputSelect>
                         </td>
                         <td>
                             <InputSelect @bind-Value="foe.Type">
@@ -36,6 +36,7 @@
                             </InputSelect>
                         </td>
                         <td>
+                            <input type="checkbox" @bind="foe.Elite" />
                         </td>
                     </tr>
                 }
@@ -50,8 +51,6 @@
                     Stars <input @bind="foe.Stars" width="5" />
                 </div>
                 <div class="col-2">
-                    <label for="chkElite">Elite?</label>
-                    <input id="chkElite" type="checkbox" @bind="foe.Elite" @ />
                 </div>
             </div>*@
         

@@ -32,7 +32,7 @@
         for (int cnt = 0; cnt < 5; cnt++)
         {
             Foe foe = new Foe();
-            foe.Stars = rnd.Next(3, 6);
+            foe.Stars = (StarName) rnd.Next(3, 6);
 
             int foetype = rnd.Next(0, 6);
             foe.Type = (FoeType)foetype;
