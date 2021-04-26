@@ -1,6 +1,7 @@
 ﻿using Humanizer;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,13 @@ namespace HPWUHexingTrainer
 
         public FoeType Type { get; set; }
         public bool Elite { get; set; }
+
+
+
+        public static string FoeTypePretty(FoeType type)
+        {
+            return type.ToString().Humanize(LetterCasing.Title);
+        }
 
 
         public override string ToString()
@@ -49,4 +57,6 @@ namespace HPWUHexingTrainer
         Dangerous = 4,
         Fierce = 5
     }
+
+
 }
