@@ -1,16 +1,100 @@
 ﻿@page "/usergenerated"
+@using HPWUHexingTrainer
 
-<h1>Counter</h1>
 
-<p>Current count: @currentCount</p>
+<ModalBootstrap @ref="modal1" OnClick="ClickHandler" Title="Add foes" ButtonName="Save">
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    <EditForm Model="@_foes" OnValidSubmit="@HandleValidSubmit">
+        <label>Any incomplete foes will be removed from the final list</label>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Stars</th>
+                    <th>Type</th>
+                    <th>Elite?</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < 5; i++)
+                {
+                    var local_i = i;
+                    var foe = _foes[i];
+                    <tr>
+                        <td>
+                            <InputSelect @bind-Value="foe.Stars">
+                                @foreach (var starName in Enum.GetValues(typeof(StarName)))
+                                    {
+                                    <option>@starName</option>
+                                    }
+                            </InputSelect>
+                        </td>
+                        <td>
+                            <InputSelect @bind-Value="foe.Type">
+                                @foreach (FoeType t in Enum.GetValues(typeof(FoeType)))
+                                {
+                                <option value="@t">@Foe.FoeTypePretty(@t)</option>
+                                }
+                            </InputSelect>
+                        </td>
+                        <td>
+                            <input type="checkbox" @bind="foe.Elite" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </EditForm>
+</ModalBootstrap>
+
+<button class="btn btn-outline-primary" @onclick="ClearFoes">Clear</button>
+<button class="btn btn-outline-primary" @onclick="OpenModal">Add</button>
+
+<div class="row pt-2">
+    <div class="col">
+        <LobbyDetails @ref="_bd"></LobbyDetails>
+    </div>
+</div>
+
 
 @code {
-    private int currentCount = 0;
+    List<Foe> _foes = new List<Foe>();
+    ModalBootstrap modal1;
+    LobbyDetails _bd = new LobbyDetails();
 
-    private void IncrementCount()
+
+    void OpenModal()
     {
-        currentCount++;
+        _foes.Clear();
+        _foes.AddRange(new Foe[] {
+                new Foe(),
+                new Foe(),
+                new Foe(),
+                new Foe(),
+                new Foe()
+            });
+
+        modal1.Show();
     }
+
+    void ClearFoes()
+    {
+        _bd.Clear();
+        _bd.Refresh();
+    }
+
+    void ClickHandler(string newMessage)
+    {
+        modal1.Show(); // this will hide the modal
+
+        // remove any incomplete foes
+        _foes = _foes.Where(f => (int)f.Stars >= 3 && (int)f.Type > 0).ToList();
+
+        _bd.Foes = _foes.ToList();
+        _bd.Refresh();
+    }
+
+    private void HandleValidSubmit()
+    {
+    }
+
 }

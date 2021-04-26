@@ -65,7 +65,7 @@ namespace HPWUHexingTrainer
 
                 if (f.Type == FoeType.Pixie)
                 {
-                    if (f.Stars > 3)
+                    if ((int)f.Stars > 3)
                         AddHex(br, HexType.Weakening, f.ToString(), true);
                 }
                 // it is a wolf
@@ -73,13 +73,13 @@ namespace HPWUHexingTrainer
                 {
                     AddHex(br, HexType.Weakening, f.ToString(), true);
 
-                    if (f.Stars == 5)
+                    if (f.Stars == StarName.Fierce)
                         AddHex(br, HexType.Confusion, f.ToString(), true);
 
 
 
                     // if it is a 4 star wolf AND there will be no proficiency, also add a confusion
-                    else if (f.Stars == 4)
+                    else if (f.Stars == StarName.Dangerous)
                     {
                         // if A2 passed 3 -> Automatic proficiency - no confusion 
 
@@ -125,12 +125,12 @@ namespace HPWUHexingTrainer
             // we just take the top 1 magi foe as we only have 1 magi
             List<Foe> orderedMagiFoes = foes
                 .Where(m => m.Elite == false && (m.Type == FoeType.Acromantula || m.Type == FoeType.Erkling))
-                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == 3)
-                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == 3)
-                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == 4)
-                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == 5)
-                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == 4)
-                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == 5)
+                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == StarName.Imposing)
+                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == StarName.Imposing)
+                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == StarName.Dangerous)
+                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == StarName.Fierce)
+                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == StarName.Dangerous)
+                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == StarName.Fierce)
                 .Take(1)
                 .ToList();
 
@@ -139,7 +139,7 @@ namespace HPWUHexingTrainer
                 br.A2FocusKept += 1;
             else
             {
-                if (orderedMagiFoes[0].Type == FoeType.Erkling && orderedMagiFoes[0].Stars > 3)
+                if (orderedMagiFoes[0].Type == FoeType.Erkling && (int) orderedMagiFoes[0].Stars > 3)
                     AddHex(br, HexType.Confusion, orderedMagiFoes[0].ToString(), false);
 
                 br.MagiFights = true;
@@ -184,7 +184,7 @@ namespace HPWUHexingTrainer
                     br.A1Foe = f.ToString();
 
                     // This is the foe that Auror 1 will take, this Auror will always have a shield so don't hex 3 star
-                    if (f.Stars == 3)
+                    if ((int)f.Stars == 3)
                         continue;
                 }
                 else
@@ -194,7 +194,7 @@ namespace HPWUHexingTrainer
                 }
 
 
-                if (f.Stars == 5 && f.Type == FoeType.DarkWizard)
+                if (f.Stars == StarName.Fierce && f.Type == FoeType.DarkWizard)
                 {
                     AddHex(br, HexType.Confusion, orderedAurorFoes[cnt].ToString(), false);
 
@@ -210,7 +210,7 @@ namespace HPWUHexingTrainer
             }
 
             // we need to shield A2 due to hard Auror foes
-            var num5StarAurorFoes = orderedAurorFoes.Where(a => a.Stars == 5).Count();
+            var num5StarAurorFoes = orderedAurorFoes.Where(a => a.Stars == StarName.Fierce).Count();
             br.P2ShieldsA2 = num5StarAurorFoes == 2 ? true : false;
 
             return orderedAurorFoes;
@@ -230,7 +230,7 @@ namespace HPWUHexingTrainer
             if (focusPassedToP2 >= 3)
             {
                 // we got enough focus but the mons are too hard
-                var num5StarAurorFoes = orderedAurorFoes.Where(a => a.Stars == 5).Count();
+                var num5StarAurorFoes = orderedAurorFoes.Where(a => a.Stars == StarName.Fierce).Count();
                 br.P2ShieldsA2 = num5StarAurorFoes == 2 ? true : false;
                 br.Proficiency = !br.P2ShieldsA2;
             }
@@ -242,7 +242,8 @@ namespace HPWUHexingTrainer
                 // if we have 2 auror foes and not enough focus, see if A2 needs a shield
                 if (orderedAurorFoes.Count == 2)
                 {
-                    var a2Shield = orderedAurorFoes[1].Stars == 5 || (orderedAurorFoes[1].Stars == 4 && orderedAurorFoes[1].Type == FoeType.DeathEater);
+                    var a2Shield = orderedAurorFoes[1].Stars == StarName.Fierce || 
+                            (orderedAurorFoes[1].Stars == StarName.Dangerous && orderedAurorFoes[1].Type == FoeType.DeathEater);
                     br.P2ShieldsA2 = a2Shield;
                 }
             }

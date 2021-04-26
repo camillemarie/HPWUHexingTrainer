@@ -1,6 +1,7 @@
 ﻿using Humanizer;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,24 +10,30 @@ namespace HPWUHexingTrainer
 {
     public class Foe
     {
-        public int Stars { get; set; }
+        //public int Stars { get; set; }
+        public StarName Stars { get; set; }
+
         public FoeType Type { get; set; }
         public bool Elite { get; set; }
-        public string StarName()
+
+
+
+        public static string FoeTypePretty(FoeType type)
         {
-            StarName s = (StarName)Stars;
-            return s.ToString();
+            return type.ToString().Humanize(LetterCasing.Title);
         }
 
+
         public override string ToString()
-          => $"{ (Elite ? "Elite " : "")} {((StarName)Stars).ToString()}  { Type.ToString().Humanize(LetterCasing.Title) }";
+          => $"{ (Elite ? "Elite " : "")} { Stars.ToString()}  { Type.ToString().Humanize(LetterCasing.Title) }";
+          //=> $"{ (Elite ? "Elite " : "")} {((StarName)Stars).ToString()}  { Type.ToString().Humanize(LetterCasing.Title) }";
         //=> $"{ (Elite ? "Elite " : "")}{ Stars} star {((StarName)Stars).ToString()}  { Type.ToString().Humanize(LetterCasing.Title) }";
 
         public Foe()
         {
         }
 
-        public Foe(int stars, FoeType type, bool elite = false)
+        public Foe(StarName stars, FoeType type, bool elite = false)
         {
             Stars = stars;
             Type = type;
@@ -36,12 +43,12 @@ namespace HPWUHexingTrainer
 
     public enum FoeType
     {
-        Erkling,
-        Acromantula,
-        Werewolf,
-        Pixie,
-        DarkWizard,
-        DeathEater
+        Erkling = 1,
+        Acromantula = 2,
+        Werewolf = 3,
+        Pixie = 4,
+        DarkWizard = 5,
+        DeathEater = 6
     }
 
     public enum StarName
@@ -50,4 +57,6 @@ namespace HPWUHexingTrainer
         Dangerous = 4,
         Fierce = 5
     }
+
+
 }

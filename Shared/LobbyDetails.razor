@@ -154,7 +154,9 @@
 
     public void Refresh()
     {
-        _hideAnswerButton = false;
+        if (Foes.Count == 5)
+            _hideAnswerButton = false;
+
         _hideResult = true;
         _hideProficiencyAnswer = true;
 

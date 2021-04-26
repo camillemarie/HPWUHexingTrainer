@@ -76,7 +76,7 @@ namespace HPWUHexingTrainer
                     for (int elite = 0; elite < 2; elite++)
                     {
                         Foe f = new Foe();
-                        f.Stars = star;
+                        f.Stars = (StarName) star;
                         f.Type = (FoeType)foetype;
                         f.Elite = elite == 0 ? false : true;
                         uniqueFoes.Add(f);
