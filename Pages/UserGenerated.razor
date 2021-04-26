@@ -1,23 +1,64 @@
 ﻿@page "/usergenerated"
+@using HPWUHexingTrainer
 
-<ModalBootstrap @ref="modal1" OnClick="ClickHandler" Title="Add a foe">
-    <div class="row">
-        <div class="col">
-            Stars <input @bind="_star" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <label class="pt-1" for="chkElite">Elite?</label>
-            <input id="chkElite" type="checkbox" @bind="_isElite" />
-        </div>
-    </div>
+
+<ModalBootstrap @ref="modal1" OnClick="ClickHandler" Title="Add a foe" ButtonName="Save">
+
+    <EditForm Model="@_foes" OnValidSubmit="@HandleValidSubmit">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Stars</th>
+                    <th>Type</th>
+                    <th>Elite?</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < 5; i++)
+                {
+                    var local_i = i;
+                    var foe = _foes[i];
+                    <tr>
+                        <td>
+                            @*<InputSelect @bind-Value="foe.Stars">
+                                @foreach (var starName in Enum.GetValues(typeof(StarName)))
+                                    {
+                                    <option value="@starName">@starName</option>
+                                    }
+                            </InputSelect>*@
+                        </td>
+                        <td>
+                            <InputSelect @bind-Value="foe.Type">
+                                @foreach (var t in Enum.GetValues(typeof(FoeType)))
+                                    {
+                                    <option>@t</option>
+                                    }
+                            </InputSelect>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </EditForm>
+
+
+
+        @*<div class="row">
+                <div class="col-6">
+                    Stars <input @bind="foe.Stars" width="5" />
+                </div>
+                <div class="col-2">
+                    <label for="chkElite">Elite?</label>
+                    <input id="chkElite" type="checkbox" @bind="foe.Elite" @ />
+                </div>
+            </div>*@
+        
 
 </ModalBootstrap>
+<button class="btn btn-outline-primary" @onclick="ClearFoes">Clear</button>
 <button class="btn btn-outline-primary" @onclick="OpenModal">Add</button>
-
-star @_star
-Elite @_isElite;
 
 <div class="row pt-2">
     <div class="col">
@@ -27,38 +68,51 @@ Elite @_isElite;
 
 
 @code {
-    //List<Foe> _foes = new List<Foe>();
-    int? _star;
-    bool _isElite = false;
-
+    List<Foe> _foes = new List<Foe>();
     ModalBootstrap modal1;
-
     LobbyDetails _bd = new LobbyDetails();
+
 
 
 
     void OpenModal()
     {
-        _star = null;
-        _isElite = false;
+        _foes.Clear();
+        _foes.AddRange(new Foe[] {
+                new Foe(),
+                new Foe(),
+                new Foe(),
+                new Foe(),
+                new Foe()
+            });
+
         modal1.Show();
     }
 
-
+    void ClearFoes()
+    {
+        _bd.Clear();
+        _bd.Refresh();
+    }
 
     void ClickHandler(string newMessage)
     {
-        modal1.Show();
+        modal1.Show(); // this will hide the modal
 
-        Foe f = new Foe();
+        //List<Foe> _foes = new List<Foe>();
+        //Foe f = new Foe();
 
-        if (_star.HasValue)
-            f.Stars = _star.Value;
+        //if (_star.HasValue)
+        //    f.Stars = _star.Value;
 
-        f.Elite = _isElite;
+        //f.Elite = _isElite;
 
-        _bd.Foes.Add(f);
+        _bd.Foes = _foes.ToList();
         _bd.Refresh();
+    }
+
+    private void HandleValidSubmit()
+    {
     }
 
 }
