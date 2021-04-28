@@ -17,7 +17,6 @@ namespace HPWUHexingTrainer
         public bool Elite { get; set; }
 
 
-        public string FoeTypePretty => Type.ToString().Humanize(LetterCasing.Title);
 
 
         public string ImagePath => $"images/foes/{ToString()}.png";
@@ -26,7 +25,12 @@ namespace HPWUHexingTrainer
 
         public override string ToString()
         {
-            return $"{(Elite ? "Elite " : "")}{ Stars.ToString() } { FoeTypePretty }";
+            return $"{(Elite ? "Elite " : "")}{ Stars.ToString() } { FoeTypePretty(Type) }";
+        }
+
+        public static string FoeTypePretty(FoeType type)
+        {
+            return type.ToString().Humanize(LetterCasing.Title);
         }
 
         public Foe()

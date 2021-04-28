@@ -32,7 +32,7 @@
                             <InputSelect @bind-Value="foe.Type">
                                 @foreach (FoeType t in Enum.GetValues(typeof(FoeType)))
                                 {
-                                <option value="@t">@foe.FoeTypePretty</option>
+                                <option value="@t">@Foe.FoeTypePretty(@t)</option>
                                 }
                             </InputSelect>
                         </td>
