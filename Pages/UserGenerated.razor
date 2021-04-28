@@ -32,7 +32,7 @@
                             <InputSelect @bind-Value="foe.Type">
                                 @foreach (FoeType t in Enum.GetValues(typeof(FoeType)))
                                 {
-                                <option value="@t">@Foe.FoeTypePretty(@t)</option>
+                                <option value="@t">@foe.FoeTypePretty</option>
                                 }
                             </InputSelect>
                         </td>
@@ -90,6 +90,9 @@
         _foes = _foes.Where(f => (int)f.Stars >= 3 && (int)f.Type > 0).ToList();
 
         _bd.Foes = _foes.ToList();
+
+        _bd.ImgSrc = "images/blankboard.png";
+        _bd.HideImage = false;
         _bd.Refresh();
     }
 

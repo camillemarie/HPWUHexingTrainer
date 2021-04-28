@@ -2,11 +2,9 @@
 
 
 <div class="row">
-
     <div class="col">
         <div class="row">
-
-            <div class="col">
+            <div class="col" id="foeList">
                 <table class="table">
                     <thead>
                         <tr>
@@ -27,8 +25,21 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+        <div class="row" id="foeImage" >
+            <div class="col">
+                <div>
+                    <img class="foesImg" src="@ImgSrc" alt="@ImgName" hidden="@HideImage" />
 
-                <img src="@ImgSrc" alt="@ImgName" hidden="@HideImage" />
+                    @for (int cnt = 0; cnt < @Foes.Count; cnt++)
+                    {
+                        Foe f = Foes[cnt];
+                        <div>
+                            <img class="foeImg" src="@f.ImagePath" style="top: @f.Top; left: @f.Left">
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -61,7 +72,6 @@
 
     private string _proficiencyAnswer = "";
     private bool _userProficiencyAnswer = false;
-
     private bool _hideProfiencyFields;
 
 
@@ -101,6 +111,10 @@
 
         _hideResultSetting = showResults == "Yes" ? false : true;
         _hideResult = _hideResultSetting || _hideAnswerButton;
+
+
+
+
     }
 
     public void Clear()
@@ -117,25 +131,6 @@
     }
 
 
-    //public void CreateLobbyImage()
-    //{
-    //    var imgBaseFile = Image.FromFile("images/blankboard.png");
-    //    var imgFoe1File = Image.FromFile("images/foes/Dangerous_pixie.png");
-    //    var imgFoe2File = Image.FromFile("images/foes/Fierce_Deater.png");
-
-
-    //    var iwmOps1 = new ImageWatermarkOptions { Location = TargetSpot.MiddleLeft };
-    //    var iwmOps2 = new ImageWatermarkOptions { Location = TargetSpot.TopMiddle };
-
-
-    //    imgBaseFile.Crop(500, 500)
-    //        .AddImageWatermark(imgFoe1File, iwmOps1)
-    //        .AddImageWatermark(imgFoe1File, iwmOps2)
-    //        .SaveAs(@"wwwroot\images\image-watermark-istanbul-panoramic.jpg");
-
-    //    imgFoe1File.Dispose();
-
-    //}
 
     private void GetAnswer()
     {
@@ -154,7 +149,23 @@
 
     public void Refresh()
     {
-        //if (Foes.Count == 5)
+        // set the foe positions
+        int topOffset = 30;
+        int leftOffset = 10;
+        Random rnd = new Random();
+        for (int cnt = 0; cnt < Foes.Count; cnt++)
+        {
+            Foe f = Foes[cnt];
+            //int maxTopOffset = 300 + (cnt * 30);
+            topOffset = rnd.Next(topOffset, 300 + (cnt * 30));
+            f.Top = $"{topOffset}px";
+
+            var left = rnd.Next(leftOffset, 250);
+            f.Left = $"{left}px";
+
+            leftOffset += cnt + 35;
+        }
+
         _hideAnswerButton = false;
 
         _hideResult = true;

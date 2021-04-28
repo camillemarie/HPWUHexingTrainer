@@ -17,17 +17,17 @@ namespace HPWUHexingTrainer
         public bool Elite { get; set; }
 
 
+        public string FoeTypePretty => Type.ToString().Humanize(LetterCasing.Title);
 
-        public static string FoeTypePretty(FoeType type)
-        {
-            return type.ToString().Humanize(LetterCasing.Title);
-        }
 
+        public string ImagePath => $"images/foes/{ToString()}.png";
+        public string Top { get; set; }
+        public string Left { get; set; }
 
         public override string ToString()
-          => $"{ (Elite ? "Elite " : "")} { Stars.ToString()}  { Type.ToString().Humanize(LetterCasing.Title) }";
-          //=> $"{ (Elite ? "Elite " : "")} {((StarName)Stars).ToString()}  { Type.ToString().Humanize(LetterCasing.Title) }";
-        //=> $"{ (Elite ? "Elite " : "")}{ Stars} star {((StarName)Stars).ToString()}  { Type.ToString().Humanize(LetterCasing.Title) }";
+        {
+            return $"{(Elite ? "Elite " : "")}{ Stars.ToString() } { FoeTypePretty }";
+        }
 
         public Foe()
         {
