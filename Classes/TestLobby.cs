@@ -18,11 +18,6 @@ namespace HPWUHexingTrainer
         }
         public override string ToString()
         {
-            //IList<string> strings = new List<string>();    
-            //foreach (Foe f in Foes)
-            //{
-            //    strings.Add(f.ToString());
-            //}
             string joined = string.Join(", ", Foes.Select(f => f.ToString()));
 
             return joined;

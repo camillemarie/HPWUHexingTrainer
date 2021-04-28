@@ -51,20 +51,33 @@ a, .btn-link {
 
 .resultsarea {
     background-color: #eee;
-    width:100%;
+    width: 100%;
     overflow: hidden;
     height: 600px;
     border: 1px solid #ccc;
     overflow-y: auto;
 }
 
-.foesImg {
+
+.parent {
+    display: inline-block;
     position: absolute;
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 100px 100px 100px 100px 100px 100px;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+}
+
+.backgroundImg {
+    position: relative;
     z-index: 1;
     max-width: 400px;
     max-height: 800px;
     width: auto;
     height: auto;
+    grid-area: 1 / 1 / 4 / 6;
 }
 
 .foeImg {
@@ -75,20 +88,3 @@ a, .btn-link {
     width: auto;
     height: auto;
 }
-
-/*
-.blankImg {
-    position: absolute;
-    z-index: 1;
-    max-width: 400px;
-    max-height: 800px;
-    width: auto;
-    height: auto;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
-}*/
-
-

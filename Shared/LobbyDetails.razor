@@ -27,17 +27,20 @@
                 </table>
             </div>
         </div>
-        <div class="row" id="foeImage" >
+        <div class="row" id="foeImage">
             <div class="col">
-                <div>
-                    <img class="foesImg" src="@ImgSrc" alt="@ImgName" hidden="@HideImage" />
+                <div class="parent">
+                    <img class="backgroundImg" src="@ImgSrc" alt="@ImgName" hidden="@HideImage" />
 
-                    @for (int cnt = 0; cnt < @Foes.Count; cnt++)
+                    @if (ImgSrc == "images/blankboard.png")
                     {
-                        Foe f = Foes[cnt];
-                        <div>
-                            <img class="foeImg" src="@f.ImagePath" style="top: @f.Top; left: @f.Left">
-                        </div>
+                        @for (int cnt = 0; cnt < @Foes.Count; cnt++)
+                        {
+                            Foe f = Foes[cnt];
+                            <div style="grid-area: @f.GridArea;">
+                                <img class="foeImg" src="@f.ImagePath">
+                            </div>
+                        }
                     }
                 </div>
             </div>
@@ -60,7 +63,6 @@
 
 
 @code {
-
     public List<Foe> Foes = new List<Foe>();
     private string _result;
     private bool _hideAnswerButton = true;
@@ -111,11 +113,8 @@
 
         _hideResultSetting = showResults == "Yes" ? false : true;
         _hideResult = _hideResultSetting || _hideAnswerButton;
-
-
-
-
     }
+
 
     public void Clear()
     {
@@ -129,7 +128,6 @@
         HideImage = true;
         _timeElapsed = "0.0";
     }
-
 
 
     private void GetAnswer()
@@ -149,21 +147,30 @@
 
     public void Refresh()
     {
-        // set the foe positions
-        int topOffset = 30;
-        int leftOffset = 10;
         Random rnd = new Random();
+
         for (int cnt = 0; cnt < Foes.Count; cnt++)
         {
+
             Foe f = Foes[cnt];
-            //int maxTopOffset = 300 + (cnt * 30);
-            topOffset = rnd.Next(topOffset, 300 + (cnt * 30));
-            f.Top = $"{topOffset}px";
+            bool uniquePos = false;
+            int rndRow = 1;
+            int rndCol = 1;
 
-            var left = rnd.Next(leftOffset, 250);
-            f.Left = $"{left}px";
+            while (!uniquePos)
+            {
+                rndRow = rnd.Next(2, 7);
+                rndCol = rnd.Next(1, 4);
 
-            leftOffset += cnt + 35;
+                // if we don't already have a foe in this position, use it
+                if (Foes.Count(f => f.Col == rndCol && f.Row == rndRow) == 0)
+                {
+                    f.Col = rndCol;
+                    f.Row = rndRow;
+                    uniquePos = true;
+                }
+            }
+            f.GridArea = $" {rndRow} / {rndCol} / {rndRow + 1} / {rndCol + 1} ";
         }
 
         _hideAnswerButton = false;

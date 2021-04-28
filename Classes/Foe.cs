@@ -17,11 +17,10 @@ namespace HPWUHexingTrainer
         public bool Elite { get; set; }
 
 
-
-
         public string ImagePath => $"images/foes/{ToString()}.png";
-        public string Top { get; set; }
-        public string Left { get; set; }
+        public int Col { get; set; }
+        public int Row { get; set; }
+        public string GridArea { get; set; }
 
         public override string ToString()
         {
