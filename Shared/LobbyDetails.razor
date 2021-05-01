@@ -1,65 +1,66 @@
 ﻿@inject Blazored.LocalStorage.ILocalStorageService localStore
-
+<div class="d-none d-xl-block" style="background: #007bff; color: #fff; padding: 5px; text-align: center;">XL</div>
+<div class="d-none d-lg-block d-xl-none" style="background: #27a745; color: #fff; padding: 5px; text-align: center;">LG</div>
+<div class="d-none d-md-block d-lg-none" style="background: #ffc108; color: #fff; padding: 5px; text-align: center;">MD</div>
+<div class="d-none d-sm-block d-md-none" style="background: #18a2b8; color: #fff; padding: 5px; text-align: center;">SM</div>
+<div class="d-block d-sm-none" style="background: #dc3545; color: #fff; padding: 5px; text-align: center;">XS</div>
 
 <div class="row">
-    <div class="col">
-        <div class="row">
-            <div class="col" id="foeList">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Foes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                @foreach (var foe in Foes)
-                                {<div>
-                                        <span style="background-color: @(@foe.Elite ? "plum" : "white")">
-                                            @foe.ToString()
-                                        </span>
-                                    </div>
-                                }
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <div class="col-lg-5 col-xl-2">
+        <div class="div-height">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Foes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            @foreach (var foe in Foes)
+                            {<div>
+                                    <span style="background-color: @(@foe.Elite ? "plum" : "white")">
+                                        @foe.ToString()
+                                    </span>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div class="row" id="foeImage">
-            <div class="col">
-                <div class="parent">
-                    <img class="backgroundImg" src="@ImgSrc" alt="@ImgName" hidden="@HideImage" />
+    </div>
+    <div class="col-lg-7 col-xl-3 ">
+        <div class="div-height">
+            <img class="backgroundImg" src="@ImgSrc" alt="@ImgName" hidden="@HideImage" />
+            <div class="parent">
 
-                    @if (ImgSrc == "images/blankboard.png")
+                @if (ImgSrc == "images/blankboard.png")
+                {
+                    @for (int cnt = 0; cnt < @Foes.Count; cnt++)
                     {
-                        @for (int cnt = 0; cnt < @Foes.Count; cnt++)
-                        {
-                            Foe f = Foes[cnt];
-                            <div style="grid-area: @f.GridArea;">
-                                <img class="foeImg" src="@f.ImagePath">
-                            </div>
-                        }
+                        Foe f = Foes[cnt];
+                        <div style="grid-area: @f.GridArea;">
+                            <img class="foeImg" src="@f.ImagePath">
+                        </div>
                     }
-                </div>
+                }
+            </div>
+        </div>
+        </div>
+        <div class="col-xs col-sm pt-md-0 pt-2 col-md col-lg-12 col-xl-7">
+            <div class="div-height">
+                <button class="btn btn-outline-primary" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
+
+                <label class="font-weight-bold float-right" hidden="@_hideTimer">Time: @_timeElapsed seconds</label>
+                <label class="pl-1" for="chkProficiency" hidden="@_hideProfiencyFields">Do we have proficiency?</label>
+                <input id="chkProficiency" type="checkbox" @bind="_userProficiencyAnswer" hidden="@_hideProfiencyFields" />
+                <label class="font-weight-bold" hidden="@_hideProficiencyAnswer">@_proficiencyAnswer</label>
+
+                <textarea id="TextAreaResults" class="resultsarea" readonly="readonly" @bind="_result" hidden="@_hideResult"></textarea>
             </div>
         </div>
     </div>
-
-    <div class="col-9 pt-2">
-        <button class="btn btn-outline-primary" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
-
-        <label class="font-weight-bold float-right" hidden="@_hideTimer">Time: @_timeElapsed seconds</label>
-
-
-        <label class="pl-1" for="chkProficiency" hidden="@_hideProfiencyFields">Do we have proficiency?</label>
-        <input id="chkProficiency" type="checkbox" @bind="_userProficiencyAnswer" hidden="@_hideProfiencyFields" />
-        <label class="font-weight-bold" hidden="@_hideProficiencyAnswer">@_proficiencyAnswer</label>
-
-        <textarea id="TextAreaResults" class="resultsarea" readonly="readonly" @bind="_result" hidden="@_hideResult"></textarea>
-    </div>
-</div>
 
 
 @code {

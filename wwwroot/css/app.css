@@ -30,6 +30,7 @@ a, .btn-link {
     color: red;
 }
 
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -53,25 +54,23 @@ a, .btn-link {
     background-color: #eee;
     width: 100%;
     overflow: hidden;
-    height: 600px;
     border: 1px solid #ccc;
     overflow-y: auto;
+    height: auto;
 }
 
 
 .parent {
-    display: inline-block;
-    position: absolute;
     display: grid;
     justify-items: center;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 100px 100px 100px;
     grid-template-rows: 100px 100px 100px 100px 100px 100px;
     grid-column-gap: 0px;
     grid-row-gap: 0px;
 }
 
 .backgroundImg {
-    position: relative;
+    position: absolute;
     z-index: 1;
     max-width: 400px;
     max-height: 800px;
@@ -88,3 +87,12 @@ a, .btn-link {
     width: auto;
     height: auto;
 }
+
+.div-height {
+    border: 1px solid #444;
+    height: 100%;
+    width: 100%;
+}
+
+
+
