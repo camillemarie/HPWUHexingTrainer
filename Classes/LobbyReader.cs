@@ -168,7 +168,7 @@ namespace HPWUHexingTrainer
                 br.A2FocusKept += 2;
 
             else if (orderedAurorFoes.Count == 1)
-                br.A2FocusKept = 1; // keep 2 for the 2nd auror that has nothing to fight straight away
+                br.A2FocusKept += 1; // keep 1 for the 2nd auror that has nothing to fight straight away
 
             // we have 2 auror foes, reverse the order as A1 has a shield so gets the harder foe
             else
