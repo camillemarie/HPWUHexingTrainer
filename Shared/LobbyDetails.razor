@@ -1,4 +1,5 @@
-﻿@inject Blazored.LocalStorage.ILocalStorageService localStore
+﻿
+@using HPWUHexingTrainer.Classes
 
 <div class="d-none d-xl-block" style="background: #007bff; color: #fff; padding: 5px; text-align: center;">XL</div>
 <div class="d-none d-lg-block d-xl-none" style="background: #27a745; color: #fff; padding: 5px; text-align: center;">LG</div>
@@ -21,7 +22,7 @@
                             @foreach (var foe in Foes)
                             {<div>
                                     <span style="background-color: @(@foe.Elite ? "plum" : "white")">
-                                        @foe.ToString()
+                                        @_state.FoeFullName(foe)
                                     </span>
                                 </div>
                             }
@@ -52,7 +53,7 @@
         <div class="div-height">
             <button class="btn btn-outline-primary" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
 
-            <label class="font-weight-bold float-right" hidden="@_hideTimer">Time: @_timeElapsed seconds</label>
+            <label class="font-weight-bold float-right" hidden="(!@_state.ShowTimer)">Time: @_timeElapsed seconds</label>
             <label class="pl-1" for="chkProficiency" hidden="@_hideProfiencyFields">Do we have proficiency?</label>
             <input id="chkProficiency" type="checkbox" @bind="_userProficiencyAnswer" hidden="@_hideProfiencyFields" />
             <label class="font-weight-bold" hidden="@_hideProficiencyAnswer">@_proficiencyAnswer</label>
@@ -66,14 +67,17 @@
 
 
 @code {
+    [CascadingParameter]
+    public UserSettings _state { get; set; }
+
     public List<Foe> Foes = new List<Foe>();
     private string _result;
     private bool _hideAnswerButton = true;
     private bool _hideResult = true;
-    private bool _hideResultSetting = false; // this is from the settings/local storage
+    //private bool _hideResultSetting = false; // this is from the settings/local storage
     private bool _hideProficiency = true;
     private bool _hideProficiencyAnswer = true;
-    bool _hideTimer = true;
+    //bool _hideTimer = true;
 
     private string _proficiencyAnswer = "";
     private bool _userProficiencyAnswer = false;
@@ -88,35 +92,6 @@
 
     private string _timeElapsed = "0.0";
     Stopwatch myWatch = new Stopwatch();
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        string showTimer = await localStore.GetItemAsync<string>("ShowTimer");
-
-        if (string.IsNullOrEmpty(showTimer))
-            showTimer = "Yes"; // default if we can't find a saved value
-
-        _hideTimer = showTimer == "Yes" ? false : true;
-
-
-        string showProf = await localStore.GetItemAsync<string>("ShowProficiency");
-
-        if (string.IsNullOrEmpty(showProf))
-            showProf = "Yes"; // default if we can't find a saved value
-
-        _hideProficiency = showProf == "Yes" ? false : true;
-        _hideProfiencyFields = _hideProficiency || _hideAnswerButton;
-
-
-        string showResults = await localStore.GetItemAsync<string>("ShowResults");
-
-        if (string.IsNullOrEmpty(showResults))
-            showResults = "Yes"; // default if we can't find a saved value
-
-        _hideResultSetting = showResults == "Yes" ? false : true;
-        _hideResult = _hideResultSetting || _hideAnswerButton;
-    }
 
 
     public void Clear()
@@ -135,14 +110,14 @@
 
     private void GetAnswer()
     {
-        LobbyResult lr = LobbyReader.Read(Foes);
+        LobbyResult lr = LobbyReader.Read(Foes, _state);
 
         _proficiencyAnswer = lr.Proficiency == _userProficiencyAnswer ? "Correct!" : "Try Again";
         _result = lr.ToString();
 
 
         _hideAnswerButton = true;
-        _hideResult = _hideResultSetting;
+        _hideResult = !_state.ShowResults;
         _hideProficiencyAnswer = _hideProficiency;
 
         myWatch.Stop();

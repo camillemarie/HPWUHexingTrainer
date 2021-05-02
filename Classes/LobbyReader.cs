@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HPWUHexingTrainer.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,11 @@ namespace HPWUHexingTrainer
 {
     public class LobbyReader
     {
-        public static LobbyResult Read(List<Foe> foes)
+        static UserSettings _state;
+        public static LobbyResult Read(List<Foe> foes, UserSettings state)
         {
+            _state = state;
+
             LobbyResult br = new LobbyResult();
 
             br.A2Hexes = new List<Hex>();
@@ -139,11 +143,13 @@ namespace HPWUHexingTrainer
                 br.A2FocusKept += 1;
             else
             {
-                if (orderedMagiFoes[0].Type == FoeType.Erkling && (int) orderedMagiFoes[0].Stars > 3)
-                    AddHex(br, HexType.Confusion, orderedMagiFoes[0].ToString(), false);
+                if (orderedMagiFoes[0].Type == FoeType.Erkling && (int)orderedMagiFoes[0].Stars > 3)
+                    AddHex(br, HexType.Confusion, _state.FoeFullName(orderedMagiFoes[0]), false);
+                    //AddHex(br, HexType.Confusion, orderedMagiFoes[0].ToString(), false);
 
-                br.MagiFights = true;
-                br.MagiFoe = orderedMagiFoes[0].ToString();
+
+                    br.MagiFights = true;
+                br.MagiFoe = _state.FoeFullName(orderedMagiFoes[0]);
             }
         }
 

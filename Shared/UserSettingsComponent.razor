@@ -1,0 +1,45 @@
+﻿@inject UserSettingsProvider UserSettingsProvider
+@implements IDisposable
+
+@using HPWUHexingTrainer.Classes 
+
+@if (state == null)
+{
+    <p>loading...</p>
+}
+else
+{
+    <CascadingValue Value="@state" IsFixed="false">@ChildContent</CascadingValue>
+}
+
+@code{
+    private UserSettings state = null;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserSettingsProvider.Changed += UserSettingsChanged;
+        await Refresh();
+    }
+
+    public void Dispose()
+    {
+        UserSettingsProvider.Changed -= UserSettingsChanged;
+    }
+
+    private async void UserSettingsChanged(object sender, EventArgs e)
+    {
+        await InvokeAsync(async () =>
+        {
+            await Refresh();
+            StateHasChanged();
+        });
+    }
+
+    private async Task Refresh()
+    {
+        state = await UserSettingsProvider.Get();
+    }
+}

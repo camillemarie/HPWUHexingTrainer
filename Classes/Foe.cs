@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 
 namespace HPWUHexingTrainer
 {
@@ -17,15 +18,22 @@ namespace HPWUHexingTrainer
         public bool Elite { get; set; }
 
 
-        public string ImagePath => $"images/foes/{ToString()}.png";
+        public string ImagePath => $"images/foes/{DefaultFoeName}.png";
         public int Col { get; set; }
         public int Row { get; set; }
         public string GridArea { get; set; }
 
+        public string DefaultFoeName => $"{(Elite ? "Elite " : "")}{ Stars.ToString() } { FoeTypePretty(Type) }";
+        public string StarFoeName => $"{(Elite ? "Elite " : "")}{ (int)Stars }* { FoeTypePretty(Type) }";
+        public string FoeNameStarAndName => $"{(Elite ? "Elite " : "")}{ Stars.ToString() } ( { (int)Stars }*) { FoeTypePretty(Type) }";
+
+
         public override string ToString()
         {
-            return $"{(Elite ? "Elite " : "")}{ Stars.ToString() } { FoeTypePretty(Type) }";
+             return $"{(Elite ? "Elite " : "")}{ Stars.ToString() } { FoeTypePretty(Type) }";
         }
+
+
 
         public static string FoeTypePretty(FoeType type)
         {
