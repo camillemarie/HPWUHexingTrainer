@@ -59,26 +59,26 @@ namespace HPWUHexingTrainer
                 if (cnt == 0)
                 {
                     br.P1Fights = true;
-                    br.P1Foe = f.ToString();
+                    br.P1Foe = _state.FoeFullName(f);
                 }
                 else
                 {
                     br.P2Fights = true;
-                    br.P2Foe = f.ToString();
+                    br.P2Foe = _state.FoeFullName(f);
                 }
 
                 if (f.Type == FoeType.Pixie)
                 {
                     if ((int)f.Stars > 3)
-                        AddHex(br, HexType.Weakening, f.ToString(), true);
+                        AddHex(br, HexType.Weakening, _state.FoeFullName(f), true);
                 }
                 // it is a wolf
                 else
                 {
-                    AddHex(br, HexType.Weakening, f.ToString(), true);
+                    AddHex(br, HexType.Weakening, _state.FoeFullName(f), true);
 
                     if (f.Stars == StarName.Fierce)
-                        AddHex(br, HexType.Confusion, f.ToString(), true);
+                        AddHex(br, HexType.Confusion, _state.FoeFullName(f), true);
 
 
 
@@ -97,7 +97,7 @@ namespace HPWUHexingTrainer
                         // we need to double hex the 4 star wolf if P2 has shielded A2 or we need lots of hexes and A2 only passed 1
                         if (br.A2FocusPassed == 1 && br.A1Hexes.Count == 3 || br.P2ShieldsA2)
                             
-                            AddHex(br, HexType.Confusion, f.ToString(), true);
+                            AddHex(br, HexType.Confusion, _state.FoeFullName(f), true);
                     } 
                 }
             }
@@ -187,7 +187,7 @@ namespace HPWUHexingTrainer
                 if (cnt == 0)
                 {
                     br.A1Fights = true;
-                    br.A1Foe = f.ToString();
+                    br.A1Foe = _state.FoeFullName(f);
 
                     // This is the foe that Auror 1 will take, this Auror will always have a shield so don't hex 3 star
                     if ((int)f.Stars == 3)
@@ -196,13 +196,13 @@ namespace HPWUHexingTrainer
                 else
                 {
                     br.A2Fights = true;
-                    br.A2Foe = f.ToString();
+                    br.A2Foe = _state.FoeFullName(f);
                 }
 
 
                 if (f.Stars == StarName.Fierce && f.Type == FoeType.DarkWizard)
                 {
-                    AddHex(br, HexType.Confusion, orderedAurorFoes[cnt].ToString(), false);
+                    AddHex(br, HexType.Confusion, _state.FoeFullName(orderedAurorFoes[cnt]), false);
 
                     // Double hex the 5 star dark wizard for A1 as it always has a shield 
                     // & A2 as it will also need a shield due to 2 x 5 star Auror foes
@@ -212,7 +212,7 @@ namespace HPWUHexingTrainer
                     //    AddHex(br, HexType.Weakening, orderedAurorFoes[cnt].ToString(), false);
                 }
                 else
-                    AddHex(br, HexType.Weakening, orderedAurorFoes[cnt].ToString(), false);
+                    AddHex(br, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[cnt]), false);
             }
 
             // we need to shield A2 due to hard Auror foes

@@ -11,16 +11,16 @@ namespace HPWUHexingTrainer.Classes
     // The class that stores the user settings
     public class UserSettings : INotifyPropertyChanged
     {
-        private string username;
         private bool showTimer = true;
         private bool showProficiency = true;
         private bool showResults = true;
+        private string foeDisplayType = "Imposing Pixie";
 
-        public string Username
+        public string FoeDisplayType
         {
-            get => username; set
+            get => foeDisplayType; set
             {
-                username = value;
+                foeDisplayType = value;
                 RaisePropertyChanged();
             }
         }
@@ -53,11 +53,14 @@ namespace HPWUHexingTrainer.Classes
         {
             string r;
 
-            if (showTimer)
-                r = foe.DefaultFoeName;
-            else
+            if (foeDisplayType.Equals("3* Pixie"))
                 r = foe.StarFoeName;
 
+            else if (foeDisplayType.Equals("Imposing (3*) Pixie"))
+                r = foe.FoeNameStarAndName;
+
+            else
+                r = foe.DefaultFoeName;
             return r;
         }
 

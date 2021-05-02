@@ -25,13 +25,13 @@ namespace HPWUHexingTrainer
 
         public string DefaultFoeName => $"{(Elite ? "Elite " : "")}{ Stars.ToString() } { FoeTypePretty(Type) }";
         public string StarFoeName => $"{(Elite ? "Elite " : "")}{ (int)Stars }* { FoeTypePretty(Type) }";
-        public string FoeNameStarAndName => $"{(Elite ? "Elite " : "")}{ Stars.ToString() } ( { (int)Stars }*) { FoeTypePretty(Type) }";
+        public string FoeNameStarAndName => $"{(Elite ? "Elite " : "")}{ Stars.ToString() } ({ (int)Stars }*) { FoeTypePretty(Type) }";
 
 
-        public override string ToString()
-        {
-             return $"{(Elite ? "Elite " : "")}{ Stars.ToString() } { FoeTypePretty(Type) }";
-        }
+        //public override string ToString()
+        //{
+        //     return $"{(Elite ? "Elite " : "")}{ Stars.ToString() } { FoeTypePretty(Type) }";
+        //}
 
 
 

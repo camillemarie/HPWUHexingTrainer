@@ -1,5 +1,5 @@
 ﻿@page "/lobbies"
-@using HPWUHexingTrainer
+@using HPWUHexingTrainer.Classes
 
 <h3>Lobbies</h3>
 
@@ -25,7 +25,7 @@
                     {
                         <div>
                             <span style="background-color: @(@foe.Elite ? "plum" : "white")">
-                                @foe.ToString()
+                                @_state.FoeFullName(foe)
                             </span>
                         </div>
                     }
@@ -39,6 +39,9 @@
 
 @code {
     private List<TestLobby> testlobbies = GenerateTestLobbies.Create();
+
+    [CascadingParameter]
+    public UserSettings _state { get; set; }
 }
 
 
