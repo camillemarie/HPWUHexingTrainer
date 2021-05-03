@@ -70,9 +70,6 @@ a, .btn-link {
 }
 
 
-
-
-
 .foeImg {
     position: relative;
     z-index: 2;
@@ -83,14 +80,14 @@ a, .btn-link {
 }
 
 .div-height {
-    border: 1px solid #444;
+    /*border: 1px solid #444;*/
     height: 100%;
     width: 100%;
 }
 
 
-/*#backgroundImg {
+#backgroundImg {
     background-repeat: no-repeat;
 }
 
-*/
+
