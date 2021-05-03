@@ -32,7 +32,7 @@
             </table>
         </div>
     </div>
-    <div class="col-lg-7 col-xl-3" style="min-width: 350px;">
+    <div class="col-lg-7 col-xl-3">
 
         <div id="backgroundImg" class="div-height" style="background-image: url(@ImgSrc)" hidden="@HideImage">
 
@@ -54,14 +54,18 @@
         <div class="div-height">
             <button class="btn btn-outline-primary" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
 
-            <label class="font-weight-bold float-right" hidden="(!@_state.ShowTimer)">Time: @_timeElapsed seconds</label>
-            <label class="pl-1" for="chkProficiency" hidden="@_hideProfiencyFields">Do we have proficiency?</label>
-            <input id="chkProficiency" type="checkbox" @bind="_userProficiencyAnswer" hidden="@_hideProfiencyFields" />
+            <label class="font-weight-bold float-right" hidden="@_hideTimerElement">Time: @_timeElapsed seconds</label>
+
+            <label class="pl-1" for="chkProficiency" hidden="@_hideProfiencyElements">Do we have proficiency?</label>
+
+            <input id="chkProficiency" type="checkbox" @bind="_userProficiencyAnswer" hidden="@_hideProfiencyElements" />
+
             <label class="font-weight-bold" hidden="@_hideProficiencyAnswer">@_proficiencyAnswer</label>
 
+
             @*<pre id="TextAreaResults" class="resultsarea" hidden="@_hideResult">@_result</pre>*@
-            <div class="resultsarea" hidden="@_hideResult">
-                @if (lr != null && (!@_hideResult))
+            <div class="resultsarea" hidden="@_hideResultElement">
+                @if (lr != null && (!@_hideResultElement))
                     @resultTemplate(lr)
             </div>
         </div>
@@ -69,26 +73,27 @@
 </div>
 
 
-
 @code {
     [CascadingParameter]
     public UserSettings _state { get; set; }
 
+
+    private bool _hideResultElement = true;         // hide initially until answer button clicked.
+    private bool _hideAnswerButton = true;          // hide initially until board is generated.
+    private bool _hideTimerElement = true;          // hide initially until board is generated.
+    private bool _hideProfiencyElements = true;     // initially we want these hidden until board generated.
+
+
+
     public List<Foe> Foes = new List<Foe>();
-    //private string _result;
-    private bool _hideAnswerButton = true;
-    private bool _hideResult = true;
-    //private bool _hideResultSetting = false; // this is from the settings/local storage
     private bool _hideProficiency = true;
     private bool _hideProficiencyAnswer = true;
-    //bool _hideTimer = true;
 
     private string _proficiencyAnswer = "";
     private bool _userProficiencyAnswer = false;
-    private bool _hideProfiencyFields;
 
 
-    // used for test lobbies
+
     public bool HideImage = true;
     public string ImgSrc;
     public string ImgName;
@@ -96,7 +101,6 @@
     private string _timeElapsed = "0.0";
     Stopwatch myWatch = new Stopwatch();
 
-    //RenderFragment result;
     LobbyResult lr = new LobbyResult();
 
 
@@ -104,37 +108,45 @@
     public void Clear()
     {
         Foes.Clear();
-        _hideAnswerButton = true;
-        _hideResult = true;
+        _hideResultElement = true;  // hide until answer button clicked again.
+        _hideAnswerButton = true;   // hide until board is generated again in Refresh method.
+        _hideTimerElement = true;
+        _timeElapsed = "0.0";
+        _hideProfiencyElements = true;   // hide until board is generated again in Refresh method.
+
+
         _hideProficiencyAnswer = true;
         _proficiencyAnswer = "";
         _userProficiencyAnswer = false;
         HideImage = true;
-        _timeElapsed = "0.0";
     }
 
 
-    private void GetAnswer()
-    {
-        lr = LobbyReader.Read(Foes, _state);
-
-        _proficiencyAnswer = lr.Proficiency == _userProficiencyAnswer ? "Correct!" : "Try Again";
-        //_result = lr.ToString();
-
-
-
-        _hideAnswerButton = true;
-        _hideResult = !_state.ShowResults;
-        _hideProficiencyAnswer = _hideProficiency;
-
-        myWatch.Stop();
-        _timeElapsed = myWatch.GetElapsedTimeSecs().ToString();
-    }
-
+    /// <summary>
+    /// This is called from the parent component when they've loaded a board
+    /// </summary>
     public void Refresh()
     {
-        Random rnd = new Random();
+        LoadFoes();
 
+        _hideAnswerButton = false;                          // we have a board so show the Answer button
+        _hideTimerElement = !_state.ShowTimer;              // Hide Timer -> setting show timer = false
+        _hideProfiencyElements = !_state.ShowProficiency;   // Hide Proficency -> setting show proficiency = false
+
+
+
+        //_hideResult = true; // this should already be hidden
+        //_hideProficiencyAnswer = true; // this should already be hidden
+
+
+
+        myWatch.Start();
+        StateHasChanged();
+    }
+
+    private void LoadFoes()
+    {
+        Random rnd = new Random();
         for (int cnt = 0; cnt < Foes.Count; cnt++)
         {
 
@@ -158,16 +170,25 @@
             }
             f.GridArea = $" {rndRow} / {rndCol} / {rndRow + 1} / {rndCol + 1} ";
         }
+    }
 
-        _hideAnswerButton = false;
 
-        _hideResult = true;
-        _hideProficiencyAnswer = true;
+    /// <summary>
+    /// This is called when the Answer button was clicked
+    /// </summary>
+    private void GetAnswer()
+    {
+        lr = LobbyReader.Read(Foes, _state);
 
-        _hideProfiencyFields = _hideProficiency || _hideAnswerButton;
+        _hideResultElement = !_state.ShowResults;           // Hide Result -> setting show full results = false
+        _hideAnswerButton = true;                           // They've clicked the Answer button, hide it until they generate a new board
+        _hideProficiencyAnswer = _hideProfiencyElements;    // We're at the results stage, show the proficiency answer if we're showing the proficiency elements
 
-        myWatch.Start();
-        StateHasChanged();
+
+        _proficiencyAnswer = lr.Proficiency == _userProficiencyAnswer ? "Correct!" : "Try Again";
+
+        myWatch.Stop();
+        _timeElapsed = myWatch.GetElapsedTimeSecs().ToString();
     }
 
 
