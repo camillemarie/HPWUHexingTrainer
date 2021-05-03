@@ -32,7 +32,7 @@
         text-overflow: ellipsis;
     }
 
-@media (max-width: 640.98px) {
+@media (max-width: 699.98px) {
     .top-row:not(.auth)[b-sui4b2zxj9] {
         display: none;
     }
@@ -46,7 +46,7 @@
     }
 }
 
-@media (min-width: 641px) {
+@media (min-width: 700px) {
     .page[b-sui4b2zxj9] {
         flex-direction: row;
     }
@@ -122,7 +122,7 @@
     color: white;
 }
 
-@media (min-width: 641px) {
+@media (min-width: 700px) {
     .navbar-toggler[b-nltgzvv24d] {
         display: none;
     }
