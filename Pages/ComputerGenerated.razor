@@ -6,11 +6,10 @@
     <div class="col-12">
         <button class="btn btn-outline-primary" @onclick="GetNewLobby">Generate New Lobby</button>
     </div>    
-    <div class="col-12">
+    <div class="col-12 pt-2">
         <LobbyDetails @ref="_bd"></LobbyDetails>
     </div>
 </div>
-
 
 
 @code {
@@ -58,7 +57,7 @@
 
         _bd.ImgSrc = "images/blankboard.png";
         _bd.HideImage = false;
-        _bd.Refresh();
+        _bd.LoadLobby();
     }
 }
 

@@ -84,14 +84,12 @@
     private bool _hideProfiencyElements = true;     // initially we want these hidden until board generated.
 
 
-
     public List<Foe> Foes = new List<Foe>();
     private bool _hideProficiency = true;
     private bool _hideProficiencyAnswer = true;
 
     private string _proficiencyAnswer = "";
     private bool _userProficiencyAnswer = false;
-
 
 
     public bool HideImage = true;
@@ -125,7 +123,7 @@
     /// <summary>
     /// This is called from the parent component when they've loaded a board
     /// </summary>
-    public void Refresh()
+    public void LoadLobby()
     {
         LoadFoes();
 
@@ -133,16 +131,13 @@
         _hideTimerElement = !_state.ShowTimer;              // Hide Timer -> setting show timer = false
         _hideProfiencyElements = !_state.ShowProficiency;   // Hide Proficency -> setting show proficiency = false
 
-
-
-        //_hideResult = true; // this should already be hidden
-        //_hideProficiencyAnswer = true; // this should already be hidden
-
-
+        _hideResultElement = true;
+        _hideProficiencyAnswer = true;
 
         myWatch.Start();
-        StateHasChanged();
+        Refresh();
     }
+
 
     private void LoadFoes()
     {
@@ -174,6 +169,15 @@
 
 
     /// <summary>
+    /// This is called from the parent component to repaint 
+    /// </summary>
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+
+
+    /// <summary>
     /// This is called when the Answer button was clicked
     /// </summary>
     private void GetAnswer()
@@ -183,7 +187,6 @@
         _hideResultElement = !_state.ShowResults;           // Hide Result -> setting show full results = false
         _hideAnswerButton = true;                           // They've clicked the Answer button, hide it until they generate a new board
         _hideProficiencyAnswer = _hideProfiencyElements;    // We're at the results stage, show the proficiency answer if we're showing the proficiency elements
-
 
         _proficiencyAnswer = lr.Proficiency == _userProficiencyAnswer ? "Correct!" : "Try Again";
 
