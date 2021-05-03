@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using HPWUHexingTrainer.Classes;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,8 @@ namespace HPWUHexingTrainer
 
             builder.Services.AddBlazoredLocalStorage(config =>
                 config.JsonSerializerOptions.WriteIndented = true);
+
+            builder.Services.AddScoped<UserSettingsProvider, UserSettingsProvider>();
 
             await builder.Build().RunAsync();
         }

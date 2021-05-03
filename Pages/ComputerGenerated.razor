@@ -3,13 +3,10 @@
 <h3>Test yourself with some random lobbies</h3>
 
 <div class="row pt-2">
-    <div class="col">
+    <div class="col-12">
         <button class="btn btn-outline-primary" @onclick="GetNewLobby">Generate New Lobby</button>
-    </div>
-</div>
-
-<div class="row pt-2">
-    <div class="col">
+    </div>    
+    <div class="col-12 pt-2">
         <LobbyDetails @ref="_bd"></LobbyDetails>
     </div>
 </div>
@@ -58,7 +55,9 @@
 
         //_bd.CreateLobbyImage();
 
-        _bd.Refresh();
+        _bd.ImgSrc = "images/blankboard.png";
+        _bd.HideImage = false;
+        _bd.LoadLobby();
     }
 }
 

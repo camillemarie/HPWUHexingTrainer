@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HPWUHexingTrainer
+namespace HPWUHexingTrainer.Classes
 {
     public class LobbyRunner
     {
@@ -40,9 +40,9 @@ namespace HPWUHexingTrainer
                                 foes.Add(uniqueFoes[f4]);
                                 foes.Add(uniqueFoes[f5]);
 
-                                LobbyResult br = LobbyReader.Read(foes);
+                                //LobbyResult br = LobbyReader.Read(foes);
 
-                                results.Add(br);
+                                //results.Add(br);
                                 //csv.AppendLine(BuildCsvLine(br));
                             }
                         }
