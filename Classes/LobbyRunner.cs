@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HPWUHexingTrainer
+namespace HPWUHexingTrainer.Classes
 {
     public class LobbyRunner
     {
