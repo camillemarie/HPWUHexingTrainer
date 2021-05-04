@@ -10,6 +10,7 @@ namespace HPWUHexingTrainer.Classes
 {
     public class LobbyResult
     {
+        public bool Advanced { get; set; }
         [Name("proficiency")]
         public bool Proficiency { get; set; }
         public bool MagiFights { get; set; }
@@ -23,12 +24,20 @@ namespace HPWUHexingTrainer.Classes
         public bool P2Fights { get; set; }
         public string P2Foe { get; set; }
 
+        public bool P1ShieldsA2 { get; set; } // advanced rules only
         public bool P2ShieldsA2 { get; set; }
 
         public int A1FocusPassed { get; set; }
         public int A1FocusKept { get; set; }
         public int A2FocusPassed { get; set; }
         public int A2FocusKept { get; set; }
+
+        public int A1FocusPassedToP1 { get; set; } // advanced rules only
+        public int A1FocusPassedToP2 { get; set; } // advanced rules only
+        public int A2FocusPassedToP1 { get; set; } // advanced rules only
+        public int A2FocusPassedToP2 { get; set; } // advanced rules only
+
+
         public List<Hex> A1Hexes { get; set; }
         public List<Hex> A2Hexes { get; set; }
 
