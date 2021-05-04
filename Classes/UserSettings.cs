@@ -15,6 +15,7 @@ namespace HPWUHexingTrainer.Classes
         private bool showProficiency = true;
         private bool showResults = true;
         private string foeDisplayType = "Imposing Pixie";
+        private bool showAdvancedRules = false;
 
         public string FoeDisplayType
         {
@@ -45,6 +46,15 @@ namespace HPWUHexingTrainer.Classes
             get => showResults; set
             {
                 showResults = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool ShowAdvancedRules
+        {
+            get => showAdvancedRules; set
+            {
+                showAdvancedRules = value;
                 RaisePropertyChanged();
             }
         }

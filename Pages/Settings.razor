@@ -28,18 +28,24 @@
     <div class="col">
         <label class="pl-1" for="chkResults">How do you want foes displayed? e.g.</label>
         <EditForm Model="_state">
-        <InputRadioGroup @bind-Value="@_state.FoeDisplayType">
-            <div class="pl-3">
-                @foreach (var option in rdOptions)
-                {
-                    <div>
-                        <InputRadio Value="option" /> @option <br />
-                    </div>
-                }
-            </div>
+            <InputRadioGroup @bind-Value="@_state.FoeDisplayType">
+                <div class="pl-3">
+                    @foreach (var option in rdOptions)
+                    {
+                        <div>
+                            <InputRadio Value="option" /> @option <br />
+                        </div>
+                    }
+                </div>
             </InputRadioGroup>
-            </EditForm>
+        </EditForm>
+    </div>
 </div>
+<div class="row pt-2">
+    <div class="col">
+        <input id="chkAdvanced" type="checkbox" @bind="@_state.ShowAdvancedRules" />
+        <label class="pl-1" for="chkAdvanced">Show advanced rules in answer?</label>
+    </div>
 </div>
 
 @code {
