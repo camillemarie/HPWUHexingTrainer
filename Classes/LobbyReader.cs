@@ -166,15 +166,28 @@ namespace HPWUHexingTrainer
             //    Imposing Death Eater -> 
             //    Dangerous Dark Wizard->
             //    Dangerous Death Eater -> 
-            //    Fierce Dark Wizard->
-            //    Fierce Death Eater
+            //    Fierce Death Eater -> 
+            //    Fierce Dark Wizard
 
-            List<Foe> orderedAurorFoes = foes
-                .Where(a => a.Elite == false && (a.Type == FoeType.DeathEater || a.Type == FoeType.DarkWizard))
-                .OrderBy(a => a.Stars)
-                .ThenBy(a => a.Type.ToString())
-                .Take(2)
-                .ToList();
+            List<Foe> orderedAurorFoes = orderedAurorFoes = foes
+                 .Where(m => m.Elite == false && (m.Type == FoeType.DeathEater || m.Type == FoeType.DarkWizard))
+                 .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Imposing)
+                 .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Imposing)
+                 .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Dangerous)
+                 .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Dangerous)
+                 .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Fierce)
+                 .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Fierce)
+                 .Take(2)
+                 .ToList();
+
+
+
+            //List<Foe> orderedAurorFoes = foes
+            //    .Where(a => a.Elite == false && (a.Type == FoeType.DeathEater || a.Type == FoeType.DarkWizard))
+            //    .OrderBy(a => a.Stars)
+            //    .ThenBy(a => a.Type.ToString())
+            //    .Take(2)
+            //    .ToList();
 
             // if no auror mons, keep 2 focus for when they show up
             if (orderedAurorFoes.Count == 0)
