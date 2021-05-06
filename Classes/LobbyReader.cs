@@ -162,19 +162,55 @@ namespace HPWUHexingTrainer
 
         private static List<Foe> AssessAurorFoes(List<Foe> foes, LobbyResult br)
         {
-            //    Imposing Dark Wizard->
-            //    Imposing Death Eater -> 
-            //    Dangerous Dark Wizard->
-            //    Dangerous Death Eater -> 
-            //    Fierce Dark Wizard->
-            //    Fierce Death Eater
+            List<Foe> orderedAurorFoes = new List<Foe>();
 
-            List<Foe> orderedAurorFoes = foes
-                .Where(a => a.Elite == false && (a.Type == FoeType.DeathEater || a.Type == FoeType.DarkWizard))
-                .OrderBy(a => a.Stars)
-                .ThenBy(a => a.Type.ToString())
-                .Take(2)
-                .ToList();
+            if (_state.ShowAdvancedRules)
+                //    Imposing Dark Wizard->
+                //    Imposing Death Eater ->
+                //    Dangerous Death Eater ->  
+                //    Dangerous Dark Wizard->
+                //    Fierce Death Eater -> 
+                //    Fierce Dark Wizard
+
+                // I think this is too simplistic as this order is for shielded Aurors. A2 may not have a shield in which case it would be wrong. 
+                // Possibly we need to take top 3 and make a decision on the 2nd auror foe based on shields later.
+
+                orderedAurorFoes = orderedAurorFoes = foes
+                     .Where(m => m.Elite == false && (m.Type == FoeType.DeathEater || m.Type == FoeType.DarkWizard))
+                     .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Imposing)
+                     .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Imposing)
+                     .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Dangerous)
+                     .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Dangerous)
+                     .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Fierce)
+                     .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Fierce)
+                     .Take(2)
+                     .ToList(); // keep all of the list as we can't decide at this point what the correct order should be
+
+            else
+                //    Imposing Dark Wizard->
+                //    Imposing Death Eater -> 
+                //    Dangerous Dark Wizard->
+                //    Dangerous Death Eater -> 
+                //    Fierce Death Eater -> 
+                //    Fierce Dark Wizard
+                orderedAurorFoes = orderedAurorFoes = foes
+                     .Where(m => m.Elite == false && (m.Type == FoeType.DeathEater || m.Type == FoeType.DarkWizard))
+                     .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Imposing)
+                     .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Imposing)
+                     .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Dangerous)
+                     .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Dangerous)
+                     .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Fierce)
+                     .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Fierce)
+                     .Take(2)
+                     .ToList();
+
+
+            //List<Foe> orderedAurorFoes = foes
+            //    .Where(a => a.Elite == false && (a.Type == FoeType.DeathEater || a.Type == FoeType.DarkWizard))
+            //    .OrderBy(a => a.Stars)
+            //    .ThenBy(a => a.Type.ToString())
+            //    .Take(2)
+            //    .ToList();
 
             // if no auror mons, keep 2 focus for when they show up
             if (orderedAurorFoes.Count == 0)

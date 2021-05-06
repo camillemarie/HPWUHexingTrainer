@@ -26,6 +26,13 @@
 
 <div class="row pt-2">
     <div class="col">
+        <input id="chkAdvanced" type="checkbox" @bind="@_state.ShowAdvancedRules" />
+        <label class="pl-1" for="chkAdvanced">Show advanced rules in answer?</label>
+    </div>
+</div>
+
+<div class="row pt-2">
+    <div class="col">
         <label class="pl-1" for="chkResults">How do you want foes displayed? e.g.</label>
         <EditForm Model="_state">
             <InputRadioGroup @bind-Value="@_state.FoeDisplayType">
@@ -39,12 +46,6 @@
                 </div>
             </InputRadioGroup>
         </EditForm>
-    </div>
-</div>
-<div class="row pt-2">
-    <div class="col">
-        <input id="chkAdvanced" type="checkbox" @bind="@_state.ShowAdvancedRules" />
-        <label class="pl-1" for="chkAdvanced">Show advanced rules in answer?</label>
     </div>
 </div>
 
