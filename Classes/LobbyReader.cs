@@ -17,9 +17,15 @@ namespace HPWUHexingTrainer
 
             LobbyResult br = new LobbyResult();
             br.Advanced = _state.ShowAdvancedRules;
-
             br.A2Hexes = new List<Hex>();
             br.A1Hexes = new List<Hex>();
+
+            if (_state.ShowAdvancedRules)
+            {
+                ReadAdvanced(foes, br);
+                return br;
+            }
+
 
             List<Foe> orderedAurorFoes = SetA2Details(foes, br);
             SetA1Details(foes, br);
@@ -36,12 +42,7 @@ namespace HPWUHexingTrainer
         #region A1
         private static void SetA1Details(List<Foe> foes, LobbyResult br)
         {
-            List<Foe> orderedProfFoes = foes
-                .Where(p => p.Elite == false && (p.Type == FoeType.Pixie || p.Type == FoeType.Werewolf))
-                .OrderBy(p => p.Type.ToString())
-                .ThenBy(p => p.Stars)
-                .Take(2)
-                .ToList();
+            List<Foe> orderedProfFoes = GetProfFoes(foes);
 
             if (orderedProfFoes.Count == 0)
             {
@@ -110,6 +111,16 @@ namespace HPWUHexingTrainer
             }
             br.A1FocusPassed = 4 - br.A1Hexes.Count() - br.A1FocusKept;
         }
+
+        private static List<Foe> GetProfFoes(List<Foe> foes)
+        {
+            return foes
+                .Where(p => p.Elite == false && (p.Type == FoeType.Pixie || p.Type == FoeType.Werewolf))
+                .OrderBy(p => p.Type.ToString())
+                .ThenBy(p => p.Stars)
+                .Take(2)
+                .ToList();
+        }
         #endregion
 
         #region A2
@@ -133,17 +144,7 @@ namespace HPWUHexingTrainer
             //Dangerous Erkling->
             //Fierce Erkling
 
-            // we just take the top 1 magi foe as we only have 1 magi
-            List<Foe> orderedMagiFoes = foes
-                .Where(m => m.Elite == false && (m.Type == FoeType.Acromantula || m.Type == FoeType.Erkling))
-                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == StarName.Imposing)
-                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == StarName.Imposing)
-                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == StarName.Dangerous)
-                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == StarName.Fierce)
-                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == StarName.Dangerous)
-                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == StarName.Fierce)
-                .Take(1)
-                .ToList();
+            List<Foe> orderedMagiFoes = GetMagiFoe(foes);
 
             // if no magi mon, keep a focus for when one shows up
             if (orderedMagiFoes.Count() == 0)
@@ -158,6 +159,21 @@ namespace HPWUHexingTrainer
                 br.MagiFights = true;
                 br.MagiFoe = _state.FoeFullName(orderedMagiFoes[0]);
             }
+        }
+
+        private static List<Foe> GetMagiFoe(List<Foe> foes)
+        {
+            // we just take the top 1 magi foe as we only have 1 magi
+            return foes
+                .Where(m => m.Elite == false && (m.Type == FoeType.Acromantula || m.Type == FoeType.Erkling))
+                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == StarName.Imposing)
+                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == StarName.Imposing)
+                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == StarName.Dangerous)
+                .OrderBy(m => m.Type == FoeType.Acromantula && m.Stars == StarName.Fierce)
+                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == StarName.Dangerous)
+                .OrderBy(m => m.Type == FoeType.Erkling && m.Stars == StarName.Fierce)
+                .Take(1)
+                .ToList();
         }
 
         private static List<Foe> AssessAurorFoes(List<Foe> foes, LobbyResult br)
@@ -278,9 +294,9 @@ namespace HPWUHexingTrainer
                 }
             }
 
-            //// we need to shield A2 due to hard Auror foes
-            //var num5StarAurorFoes = orderedAurorFoes.Where(a => a.Stars == StarName.Fierce).Count();
-            //br.P2ShieldsA2 = num5StarAurorFoes == 2 ? true : false;
+            // we need to shield A2 due to hard Auror foes
+            var num5StarAurorFoes = orderedAurorFoes.Where(a => a.Stars == StarName.Fierce).Count();
+            br.P2ShieldsA2 = num5StarAurorFoes == 2 ? true : false;
 
 
 
@@ -457,13 +473,237 @@ namespace HPWUHexingTrainer
         }
 
 
-        public static void CompareLobbyResults(LobbyResult b1, LobbyResult b2)
+        public static void CompareLobbyResults(LobbyResult b1, LobbyResult result)
         {
             // Magi response. Fight if at least 1 magi foe, else wait
             //bool IsMagiCorrect = CheckMagi(foes, userResult);
         }
+
+        public static void ReadAdvanced(List<Foe> foes, LobbyResult result)
+        {
+            // You have 8 focus between both Aurors. A1 is hexing for the Professions and A2 is hexing for the Aurors and the Magi.
+
+            int magiFoeValue = 0, profFoeValue = 0, aurorFoeValue = 1;
+
+            //// A2 can always pass at least 1 focus.
+            //focusTotal--; // ???? think we don't want this as total focus is still 8
+            //focusPassed++;
+
+            /*
+             * After this, the mental process is complicated.But the main idea is to assign “focus value” to the foes.Only one Magi foe can have value, 
+             * two for Professor and two for Auror.
+             * If the total value of foes is 2 or higher, it means that we can get Proficiency up (Unless we have two Fierce Dark Forces).
+             * If the total value of foes is 4 or higher, it means that we can get Proficiency up and both shields.
+             */
+            result.Proficiency = false;
+
+            /*
+             Magi foe order = 
+            Imposing Erkling -> #Value 1
+            Imposing Acromantula -> #Value 1
+            Dangerous Acromantula -> #Value 1
+            Fierce Acromantula -> #Value 1
+            Dangerous Erkling -> #Value 0
+            Fierce Erkling #Value 0
+            */
+            List<Foe> orderedMagiFoes = GetMagiFoe(foes);
+
+            if (orderedMagiFoes.Count == 0)
+                magiFoeValue = 0;
+            else
+            {
+                if (orderedMagiFoes[0].Type == FoeType.Erkling && (int)orderedMagiFoes[0].Stars > 3)
+                {
+                    magiFoeValue = 0;
+                    AddHex(result, HexType.Confusion, _state.FoeFullName(orderedMagiFoes[0]), false);
+                }
+                else
+                    magiFoeValue = 1;
+
+                result.MagiFights = true;
+                result.MagiFoe = _state.FoeFullName(orderedMagiFoes[0]);
+            }
+
+            List<Foe> orderedProfFoes = GetProfFoes(foes);
+
+            /*
+             *  prof foe order = 
+                Imposing Pixie -> #Value 2
+                Dangerous Pixie -> #Value 2
+                Fierce Pixie-> #Value 1
+                Imposing Werewolf -> #Value 1
+                Dangerous Werewolf-> #Value 1, but it can change
+                Fierce Werewolf #Value 0
+            */
+            if (orderedProfFoes.Count == 0)
+                profFoeValue = 1;
+            else
+            {
+                //foreach (var f in orderedProfFoes)
+                for (int i = 0; i < orderedProfFoes.Count; i++)
+                {
+                    var f = orderedProfFoes[i];
+                    if (f.Type == FoeType.Pixie && (int)f.Stars < 5)
+                        profFoeValue += 2;
+                    else if ((f.Type == FoeType.Pixie && (int)f.Stars == 5) || (f.Type == FoeType.Werewolf && (int)f.Stars < 5))
+                    {
+                        AddHex(result, HexType.Weakening, _state.FoeFullName(f), true);
+                        profFoeValue++;
+                    }
+                    else if (f.Type == FoeType.Werewolf && (int)f.Stars == 5)
+                    {
+                        AddHex(result, HexType.Weakening, _state.FoeFullName(f), true);
+                        AddHex(result, HexType.Confusion, _state.FoeFullName(f), true);
+                    }
+
+                    if (i == 0)
+                    {
+                        result.P1Fights = true;
+                        result.P1Foe = _state.FoeFullName(f);
+                    }
+                    else
+                    {
+
+                        result.P2Fights = true;
+                        result.P2Foe = _state.FoeFullName(f);
+                    }
+                }
+            }
+
+            /*
+             * #For Auror foe order we will assume that the total value will be 4, and then do exceptions if it is lower than 2, or 2-3.
+                Auror foe order:
+                        Imposing Dark Wizard -> #Value 1
+                        Imposing Death Eater -> #Value 1
+                        Dangerous Death Eater -> #Value 1
+                        Dangerous Dark Wizard -> #Value 0
+                        Fierce Death Eater -> #Value 0
+                        Fierce Dark Wizard -> #Value 0
+            */
+
+            List<Foe> orderedAurorFoes = foes
+                 .Where(m => m.Elite == false && (m.Type == FoeType.DeathEater || m.Type == FoeType.DarkWizard))
+                 .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Imposing)
+                 .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Imposing)
+                 .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Dangerous)
+                 .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Dangerous)
+                 .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Fierce)
+                 .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Fierce)
+                 .Take(2)
+                 .ToList(); // keep all of the list as we can't decide at this point what the correct order should be
+
+            if (orderedAurorFoes.Count > 0)
+            {
+                foreach (var f in orderedAurorFoes)
+                {
+                    if (((int)f.Stars == 3) || (f.Type == FoeType.DeathEater && (int)f.Stars == 4))
+                        aurorFoeValue++;
+
+                    else if (f.Type == FoeType.DarkWizard && (int)f.Stars == 5)
+                        AddHex(result, HexType.Confusion, _state.FoeFullName(f), false);
+                    else
+                        AddHex(result, HexType.Weakening, _state.FoeFullName(f), false);
+                }
+            }
+
+            /*
+             * At this point, we assumed that we are in the best case scenario, where FoeValue >= 4, which means both shields and Proficiency up.
+             * Now, let’s see what happen in each case.
+             */
+            int foeValue = magiFoeValue + profFoeValue + aurorFoeValue;
+
+            // Case #1 Foevalue >= 4
+            if (foeValue >= 4)
+            {
+                result.Proficiency = true;
+                //result.P1ShieldsA1 = true; // this always happens so it is implicit
+                result.P1ShieldsA2 = true;
+            }
+            // else if (foeValue == 2 || foeValue == 3)
+            else
+            {
+                // First, we check if we need to shield both Aurors
+                if (foeValue == 2 || foeValue == 3)
+                {
+                    // we need to shield A2 due to hard Auror foes
+                    var num5StarAurorFoes = orderedAurorFoes.Where(a => a.Stars == StarName.Fierce).Count();
+
+                    if (num5StarAurorFoes == 2)
+                    {
+                        result.P2ShieldsA2 = true;
+                        result.Proficiency = false;
+                    }
+                    else
+                        result.Proficiency = true;
+                }
+                else
+                    result.Proficiency = false; ;
+
+                //If any professor foe is a Dangerous Werewolf, add the Confusion Hex and reduce Foe Value by one.
+                foreach (var f in orderedProfFoes.Where(p => p.Type == FoeType.Werewolf && (int)p.Stars == 4).ToList())
+                {
+                    AddHex(result, HexType.Confusion, _state.FoeFullName(f), true);
+                    profFoeValue--;
+                }
+
+                // After that, check foe selection for A2 again (now the 4*DW will go before the 4* DE). And the 4* DE gets 
+                // a FoeValue of 0 since it requires a Weakness Hex
+
+                if ((orderedAurorFoes[0].Type == FoeType.DeathEater && (int)orderedAurorFoes[0].Stars == 4) &&
+                        (orderedAurorFoes[1].Type == FoeType.DarkWizard && (int)orderedAurorFoes[1].Stars == 4))
+                {
+                    orderedAurorFoes.Reverse();
+                    AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false);
+                    aurorFoeValue--;
+                }
+            }
+
+            // work out how much focus passed/kept by each auror.
+            result.A1FocusPassed = profFoeValue;
+            result.A1FocusKept = 4 - result.A1Hexes.Count - profFoeValue;
+
+            result.A2FocusPassed = magiFoeValue + aurorFoeValue;
+            result.A2FocusKept = 4 - result.A2Hexes.Count - result.A2FocusPassed;
+
+            // work out the which auror passes what focus to each prof
+            if (result.A2FocusPassed == 4)
+            {
+                result.A2FocusPassedToP2 = 3;
+                result.A2FocusPassedToP1 = 1;
+            }
+            else
+                result.A2FocusPassedToP2 = result.A2FocusPassed; // P2 gets it all
+
+
+            // if A2 passed < 3 to P2, A1 should pass focus up to a max of 3 total (for both A1 & 2) or what they have
+            // any remaining focus from A1 goes to P1
+
+            if (result.A2FocusPassedToP2 < 3)
+                result.A1FocusPassedToP2 = 3 - result.A2FocusPassedToP2 - result.A1FocusPassed >= 0 ? 3 - result.A2FocusPassedToP2 - result.A1FocusPassedToP2 : result.A2FocusPassed;
+
+            result.A1FocusPassedToP1 = result.A1FocusPassed - result.A1FocusPassedToP2;
+
+            // work out which auror fights what/waits
+            for (int i = 0; i < orderedAurorFoes.Count; i++)
+            {
+                var f = orderedAurorFoes[i];
+
+                if (i == 0)
+                {
+                    result.A1Fights = true;
+                    result.A1Foe = _state.FoeFullName(f);
+                }
+                else
+                {
+
+                    result.A2Fights = true;
+                    result.A2Foe = _state.FoeFullName(f);
+                }
+            }
+        }
     }
 }
+
 
 
 
