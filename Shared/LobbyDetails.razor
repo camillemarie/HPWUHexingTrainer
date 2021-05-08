@@ -255,7 +255,9 @@
     </div>
 
     <br />
-    <b>P1</b> <br />
+    <b>P1</b>
+    @(result.Advanced ? $"(Focus received : { result.A1FocusPassedToP1 + result.A2FocusPassedToP1 })" : "")
+    <br />
     <div>Shields A1</div>
     @if (result.Advanced && result.P1ShieldsA2)
     {
@@ -273,7 +275,9 @@
     <br />
 
 
-    <b>P2</b> <br />
+    <b>P2</b>
+    @(result.Advanced ? $"(Focus received : { result.A1FocusPassedToP2 + result.A2FocusPassedToP2 })" : "")
+    <br />
     @if (@result.P2ShieldsA2)
     {
         <div>Shields A2</div>
@@ -288,14 +292,14 @@
     }
     @if (@result.P2Fights)
     {
-        <div>Fights: @result.P2Foe</div>}
+        <div>Fights: @result.P2Foe</div>
+    }
     else
     {
         <div>Waits </div>
     }
     <br />
-
-    <div>Total focus passed: (@result.A1FocusPassed + @result.A2FocusPassed)</div>}
+    <div>Total focus passed: @(result.A1FocusPassed + result.A2FocusPassed) </div>
 </p>;
     #endregion
 

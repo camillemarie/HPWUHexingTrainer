@@ -777,7 +777,7 @@ namespace HPWUHexingTrainer
             result.A1FocusPassed = profFoeValue;
             result.A1FocusKept = 4 - result.A1Hexes.Count - profFoeValue;
 
-            result.A2FocusPassed = magiFoeValue + aurorFoeValue;
+            result.A2FocusPassed = magiFoeValue + aurorFoeValue + 1; // + 1 for the focus always passed
             result.A2FocusKept = 4 - result.A2Hexes.Count - result.A2FocusPassed;
 
             // work out the which auror passes what focus to each prof
@@ -794,7 +794,8 @@ namespace HPWUHexingTrainer
             // any remaining focus from A1 goes to P1
 
             if (result.A2FocusPassedToP2 < 3)
-                result.A1FocusPassedToP2 = 3 - result.A2FocusPassedToP2 - result.A1FocusPassed >= 0 ? 3 - result.A2FocusPassedToP2 - result.A1FocusPassedToP2 : result.A2FocusPassed;
+                result.A1FocusPassedToP2 = 3 - result.A2FocusPassedToP2 > result.A1FocusPassed ? result.A1FocusPassed : 3 - result.A2FocusPassedToP2;
+
 
             result.A1FocusPassedToP1 = result.A1FocusPassed - result.A1FocusPassedToP2;
 
