@@ -208,86 +208,95 @@
     #region resultTemplate
     RenderFragment<LobbyResult> resultTemplate = (result) =>
     @<p>
-        <h5>@(result.Advanced ? "Advanced" : "Standard") Answer</h5>
-        <b>Magi</b> <br />
-        <div>
-            @(result.MagiFights ? $"Fights : { result.MagiFoe }" : "Waits")
-        </div>
+    <h5>@(result.Advanced ? "Advanced" : "Standard") Answer</h5>
+    <b>Magi</b> <br />
+    <div>
+        @(result.MagiFights ? $"Fights : { result.MagiFoe }" : "Waits")
+    </div>
 
-        <br />
-        <b>A1</b><br />
-        @if (result.Advanced)
-        {
-            <div>Passes: @result.A1FocusPassedToP1 to P1 and  @result.A1FocusPassedToP2 to P2 - Keeps: @result.A1FocusKept</div>
-        }
-        else
-        {
-            <div>Passes: @result.A1FocusPassed to P2 - Keeps: @result.A1FocusKept</div>
-        }
+    <br />
+    <b>A1</b><br />
+    @if (result.Advanced)
+    {
+        <div>Passes: @result.A1FocusPassedToP1 to P1 and  @result.A1FocusPassedToP2 to P2 - Keeps: @result.A1FocusKept</div>
+    }
+    else
+    {
+        <div>Passes: @result.A1FocusPassed to P2 - Keeps: @result.A1FocusKept</div>
+    }
 
-        @foreach (Hex h in @result.A1Hexes)
-        {
-            <div> Hexes: @h.FoeName with @h.HexType.ToString() </div>
-        }
-        <div>
-            @(result.A1Fights ? $"Fights : { result.A1Foe }" : "Waits")
-        </div>
+    @foreach (Hex h in @result.A1Hexes)
+    {
+        <div> Hexes: @h.FoeName with @h.HexType.ToString() </div>
+    }
+    <div>
+        @(result.A1Fights ? $"Fights : { result.A1Foe }" : "Waits")
+    </div>
 
-        <br />
-        <b>A2</b>  <br />
-        @if (result.Advanced)
-        {
-            <div>Passes: @result.A2FocusPassedToP1 to P1 and  @result.A2FocusPassedToP2 to P2 - Keeps: @result.A2FocusKept</div>
-        }
-        else
-        {
-            <div>Passes: @result.A2FocusPassed to P2 - Keeps: @result.A2FocusKept</div>
-        }
-
-
-        @foreach (Hex h in @result.A2Hexes)
-        {
-            <div> Hexes: @h.FoeName with @h.HexType.ToString() </div>
-        }
-
-        <div>
-            @(result.A2Fights ? $"Fights : { result.A2Foe }" : "Waits")
-        </div>
-
-        <br />
-        <b>P1</b> <br />
-        <div>Shields A1</div>
-        @if (result.Advanced && result.P1ShieldsA2)
-        {
-            <div>Shields A2</div>
-        }
-        <div>
-            @(result.P1Fights ? $"Fights : { result.P1Foe }" : "Waits")
-        </div>
-        <br />
+    <br />
+    <b>A2</b>  <br />
+    @if (result.Advanced)
+    {
+        <div>Passes: @result.A2FocusPassedToP1 to P1 and  @result.A2FocusPassedToP2 to P2 - Keeps: @result.A2FocusKept</div>
+    }
+    else
+    {
+        <div>Passes: @result.A2FocusPassed to P2 - Keeps: @result.A2FocusKept</div>
+    }
 
 
-        <b>P2</b> <br />
-        @if (@result.P2ShieldsA2)
-        {
-            <div>Shields A2</div>
-        }
-        @if (@result.Proficiency)
-        {
-            <div>Casts Proficiency</div>
-        }
-        else
-        {
-            <div>Waits for focus - No proficiency</div>
-        }
-        @if (@result.P2Fights)
-        {
-            <div>Fights: @result.P2Foe</div>}
-        else
-        {
-            <div>Waits </div>
-        }
-    </p>;
+    @foreach (Hex h in @result.A2Hexes)
+    {
+        <div> Hexes: @h.FoeName with @h.HexType.ToString() </div>
+    }
+
+    <div>
+        @(result.A2Fights ? $"Fights : { result.A2Foe }" : "Waits")
+    </div>
+
+    <br />
+    <b>P1</b> <br />
+    <div>Shields A1</div>
+    @if (result.Advanced && result.P1ShieldsA2)
+    {
+        <div>Shields A2</div>
+    }
+
+    @if (result.Advanced && result.P1ShieldsP2)
+    {
+        <div><b>P1 Shields P2!</b></div>
+    }
+
+    <div>
+        @(result.P1Fights ? $"Fights : { result.P1Foe }" : "Waits")
+    </div>
+    <br />
+
+
+    <b>P2</b> <br />
+    @if (@result.P2ShieldsA2)
+    {
+        <div>Shields A2</div>
+    }
+    @if (@result.Proficiency)
+    {
+        <div>Casts Proficiency</div>
+    }
+    else
+    {
+        <div>Waits for focus - No proficiency</div>
+    }
+    @if (@result.P2Fights)
+    {
+        <div>Fights: @result.P2Foe</div>}
+    else
+    {
+        <div>Waits </div>
+    }
+    <br />
+
+    <div>Total focus passed: (@result.A1FocusPassed + @result.A2FocusPassed)</div>}
+</p>;
     #endregion
 
 }
