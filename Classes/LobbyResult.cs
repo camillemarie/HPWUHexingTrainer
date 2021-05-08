@@ -27,6 +27,9 @@ namespace HPWUHexingTrainer.Classes
         public bool P1ShieldsA2 { get; set; } // advanced rules only
         public bool P2ShieldsA2 { get; set; }
 
+        public bool P1ShieldsP2 { get; set; }// advanced rules only
+
+
         public int A1FocusPassed { get; set; }
         public int A1FocusKept { get; set; }
         public int A2FocusPassed { get; set; }
