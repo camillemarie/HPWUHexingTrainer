@@ -482,12 +482,7 @@ namespace HPWUHexingTrainer
         public static void ReadAdvanced(List<Foe> foes, LobbyResult result)
         {
             // You have 8 focus between both Aurors. A1 is hexing for the Professions and A2 is hexing for the Aurors and the Magi.
-
-            int magiFoeValue = 0, profFoeValue = 0, aurorFoeValue = 0;
-
-            //// A2 can always pass at least 1 focus.
-            //focusTotal--; // ???? think we don't want this as total focus is still 8
-            //focusPassed++;
+            int magiFoeValue = 0, profFoeValue = 0, aurorFoeValue = 0; // A2 always passes 1, we add that in as necessary later
 
             /*
              * After this, the mental process is complicated.But the main idea is to assign “focus value” to the foes.Only one Magi foe can have value, 
@@ -495,8 +490,37 @@ namespace HPWUHexingTrainer
              * If the total value of foes is 2 or higher, it means that we can get Proficiency up (Unless we have two Fierce Dark Forces).
              * If the total value of foes is 4 or higher, it means that we can get Proficiency up and both shields.
              */
-            result.Proficiency = false;
+            magiFoeValue = SortOutMagi(foes, result);
+            List<Foe> orderedProfFoes = SortOutProfs(foes, result, ref profFoeValue);
 
+            List<Foe> orderedAurorFoesFull, orderedAurorFoes;
+            aurorFoeValue = SortOutAurors(foes, result, aurorFoeValue, out orderedAurorFoesFull, out orderedAurorFoes);
+
+            /*
+             * At this point, we assumed that we are in the best case scenario, where FoeValue >= 4, which means both shields and Proficiency up.
+             * Now, let’s see what happen in each case.
+             */
+            int foeValue = magiFoeValue + profFoeValue + aurorFoeValue;
+
+            // Case #1 Foevalue >= 4
+            if (foeValue >= 4) // this doesn't include the 1 focus always passed by A2 so we only need 4 here (5 focus passed in total)
+            {
+                result.Proficiency = true;
+                //result.P1ShieldsA1 = true; // this always happens so it is implicit
+                result.P1ShieldsA2 = true;
+                result.P1ShieldsP2 = (foeValue == 7);
+            }
+            else // less than 5 focus passed
+                DetermineProficiencyAndOptionalHexes(result, magiFoeValue, ref profFoeValue, ref aurorFoeValue, orderedProfFoes, orderedAurorFoesFull, orderedAurorFoes, foeValue);
+
+            DetermineFocusPassed(result, magiFoeValue, profFoeValue, aurorFoeValue);
+            DetermineAurorFoeSelection(result, orderedAurorFoes);
+        }
+
+
+        private static int SortOutMagi(List<Foe> foes, LobbyResult result)
+        {
+            int magiFoeValue;
             /*
              Magi foe order = 
             Imposing Erkling -> #Value 1
@@ -524,6 +548,11 @@ namespace HPWUHexingTrainer
                 result.MagiFoe = _state.FoeFullName(orderedMagiFoes[0]);
             }
 
+            return magiFoeValue;
+        }
+
+        private static List<Foe> SortOutProfs(List<Foe> foes, LobbyResult result, ref int profFoeValue)
+        {
             List<Foe> orderedProfFoes = GetProfFoes(foes);
 
             /*
@@ -570,6 +599,11 @@ namespace HPWUHexingTrainer
                 }
             }
 
+            return orderedProfFoes;
+        }
+
+        private static int SortOutAurors(List<Foe> foes, LobbyResult result, int aurorFoeValue, out List<Foe> orderedAurorFoesFull, out List<Foe> orderedAurorFoes)
+        {
             /*
              * #For Auror foe order we will assume that the total value will be 4, and then do exceptions if it is lower than 2, or 2-3.
                 Auror foe order:
@@ -582,7 +616,7 @@ namespace HPWUHexingTrainer
             */
 
             // we may need the 3rd foe later on, just have a full list and a shortened list
-            List<Foe> orderedAurorFoesFull = foes
+            orderedAurorFoesFull = foes
                  .Where(m => m.Elite == false && (m.Type == FoeType.DeathEater || m.Type == FoeType.DarkWizard))
                  .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Imposing)
                  .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Imposing)
@@ -591,13 +625,11 @@ namespace HPWUHexingTrainer
                  .OrderBy(m => m.Type == FoeType.DeathEater && m.Stars == StarName.Fierce)
                  .OrderBy(m => m.Type == FoeType.DarkWizard && m.Stars == StarName.Fierce)
                  .Take(3)
-                 .ToList(); // keep all of the list as we can't decide at this point what the correct order should be
+                 .ToList();
 
-
-            List<Foe> orderedAurorFoes = orderedAurorFoesFull
+            orderedAurorFoes = orderedAurorFoesFull
                 .Take(2)
                 .ToList();
-
             if (orderedAurorFoes.Count > 0)
             {
                 // if we have 2 foes, reverse unless you have a 3* followed by a 4* Dark Wizard
@@ -617,115 +649,127 @@ namespace HPWUHexingTrainer
                 }
             }
 
-            /*
-             * At this point, we assumed that we are in the best case scenario, where FoeValue >= 4, which means both shields and Proficiency up.
-             * Now, let’s see what happen in each case.
-             */
-            int foeValue = magiFoeValue + profFoeValue + aurorFoeValue;
+            return aurorFoeValue;
+        }
 
-            // Case #1 Foevalue >= 4
-            if (foeValue >= 4) // this doesn't include the 1 focus always passed by A2 so we only need 4 here (5 focus passed in total)
+        private static int TwoAurorFoes(LobbyResult result, int aurorFoeValue, List<Foe> orderedAurorFoesFull, List<Foe> orderedAurorFoes)
+        {
+            // if we have 2 auror foes
+            if (orderedAurorFoes.Count == 2)
             {
-                result.Proficiency = true;
-                //result.P1ShieldsA1 = true; // this always happens so it is implicit
-                result.P1ShieldsA2 = true;
-                result.P1ShieldsP2 = (foeValue == 7);
-            }
-            else // less than 5 focus passed
-            {
-                // First, we check if we need to shield both Aurors
-                if (foeValue == 2 || foeValue == 3)
+                //* if we don't have a shield for A2 (regardless of proficiency) add weakening to A2's foe if it is a 3*
+                if (!result.P1ShieldsA2 & !result.P2ShieldsA2 && (int)orderedAurorFoes[1].Stars == 3)
                 {
-                    // we need to shield A2 due to hard Auror foes
-                    var num5StarAurorFoes = orderedAurorFoes.Where(a => a.Stars == StarName.Fierce).Count();
-
-                    if (num5StarAurorFoes == 2)
-                    {
-                        result.P2ShieldsA2 = true;
-                        result.Proficiency = false;
-                    }
-                    else
-                        result.Proficiency = true;
-                }
-                else // we have < 3 focus passed -> no chance for proficiency
-                    result.Proficiency = false;
-
-
-                /* if we don't have a shield for A2 (regardless of proficiency)
-                 * - add weakening to A2's foe if it is a 3*
-                 * 
-                 * if we do not have a shield AND proficiency for A2
-                 * - if A1 and A2 both have 4* DE, check what the 3rd foe was (if any). 
-                 * - if the 3rd foe is a 4* DW, replace A2's 4* DE with the 4* DW. Add weakness hex to DW
-                 * - if there is no 3rd foe or it isn't a 4* DW, A2 will remain fighting the 4* DE and it gets a weakness hex
-                 * 
-                 * recalculate proficiency 
-                 * 
-                 * if we don't have proficiency and A1 is fighting a 4* DE, add a weakness hex
-                 * 
-                 * recalculate proficiency 
-                 * 
-                /* if we don't have proficiency:
-                 * - Profs need a confusion on 4* wolf
-                 * 
-                 * recalculate proficiency. 
-                 */
-
-
-                // if we have 2 auror foes
-                if (orderedAurorFoes.Count == 2)
-                {
-                    //* if we don't have a shield for A2 (regardless of proficiency) add weakening to A2's foe if it is a 3*
-                    if (!result.P1ShieldsA2 & !result.P2ShieldsA2 && (int)orderedAurorFoes[1].Stars == 3)
-                    {
-                        // add weakening to A2's foe if it is a 3*
-                        AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false);
-                        aurorFoeValue--;
-                    }
-
-                    // if A1 and A2 both have 4* DE, check what the 3rd foe was (if any). 
-                    else if ((orderedAurorFoes[0].Type == FoeType.DeathEater && (int)orderedAurorFoes[0].Stars == 4) &&
-                        (orderedAurorFoes[1].Type == FoeType.DeathEater && (int)orderedAurorFoes[1].Stars == 4))
-                    {
-                        // if we have 3 foes and the third foe is a 4* DW...
-                        if (orderedAurorFoesFull.Count == 3 &&
-                        (orderedAurorFoesFull[2].Type == FoeType.DarkWizard && (int)orderedAurorFoes[1].Stars == 4))
-                        {
-                            // replace the A2 foe with the DW and hex it
-                            orderedAurorFoes[1] = orderedAurorFoesFull[2];
-                        }
-                        // weaken A2's foe
-                        AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false);
-                        aurorFoeValue--;
-                    }
-                }
-
-                // recalculate proficiency (again) after the latest round of hexing - only if proficiency was true before
-                result.Proficiency = result.Proficiency && magiFoeValue + profFoeValue + aurorFoeValue >= 2; // + 1 that is always passed :)
-
-                // if we don't have proficiency and A1 is fighting a 4* DE, add a weakness hex
-                if (orderedAurorFoes.Count > 0  && !result.Proficiency && orderedAurorFoes[0].Type == FoeType.DeathEater && (int)orderedAurorFoes[0].Stars == 4)
-                {
-                    // weaken A1's foe
-                    AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[0]), false);
+                    // add weakening to A2's foe if it is a 3*
+                    AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false);
                     aurorFoeValue--;
                 }
 
-                // recalculate proficiency (again) after the latest round of hexing - only if proficiency was true before
-                result.Proficiency = result.Proficiency && magiFoeValue + profFoeValue + aurorFoeValue >= 2; // + 1 that is always passed :)
+                //// if A1 and A2 both have 4* DE, check what the 3rd foe was (if any). 
+                //else if
+                //    ((orderedAurorFoes[0].Type == FoeType.DeathEater && (int)orderedAurorFoes[0].Stars == 4) &&
+                //    (orderedAurorFoes[1].Type == FoeType.DeathEater && (int)orderedAurorFoes[1].Stars == 4))
 
-
-                if (!result.Proficiency)
+                // if A2 has 4* DE, check what the 3rd foe was (if any). 
+                else if (orderedAurorFoes[1].Type == FoeType.DeathEater && (int)orderedAurorFoes[1].Stars == 4)
                 {
-                    //If any professor foe is a Dangerous Werewolf, add the Confusion Hex and reduce Foe Value by one.
-                    foreach (var f in orderedProfFoes.Where(p => p.Type == FoeType.Werewolf && (int)p.Stars == 4).ToList())
+                    // if we have 3 foes and the third foe is a 4* DW...
+                    if (orderedAurorFoesFull.Count == 3 &&
+                    (orderedAurorFoesFull[2].Type == FoeType.DarkWizard && (int)orderedAurorFoes[1].Stars == 4))
                     {
-                        AddHex(result, HexType.Confusion, _state.FoeFullName(f), true);
-                        profFoeValue--;
+                        // replace the A2 foe with the DW and hex it
+                        orderedAurorFoes[1] = orderedAurorFoesFull[2];
                     }
+                    // weaken A2's foe
+                    AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false);
+                    aurorFoeValue--;
                 }
             }
 
+            return aurorFoeValue;
+        }
+
+        private static void DetermineProficiencyAndOptionalHexes(LobbyResult result, int magiFoeValue, ref int profFoeValue, ref int aurorFoeValue, 
+            List<Foe> orderedProfFoes, List<Foe> orderedAurorFoesFull, List<Foe> orderedAurorFoes, int foeValue)
+        {
+
+            // First, we check if we need to shield both Aurors
+            if (foeValue == 2 || foeValue == 3)
+            {
+                // we need to shield A2 due to hard Auror foes
+                var num5StarAurorFoes = orderedAurorFoes.Where(a => a.Stars == StarName.Fierce).Count();
+
+                if (num5StarAurorFoes == 2)
+                {
+                    result.P2ShieldsA2 = true;
+                    result.Proficiency = false;
+                }
+                else
+                    result.Proficiency = true;
+            }
+            else // we have < 3 focus passed -> no chance for proficiency
+
+                result.Proficiency = false;
+
+
+            /* if we don't have a shield for A2 (regardless of proficiency)
+             * - add weakening to A2's foe if it is a 3*
+             * 
+             * if we do not have a shield AND proficiency for A2
+             * - if A1 and A2 both have 4* DE, check what the 3rd foe was (if any). 
+             * - if the 3rd foe is a 4* DW, replace A2's 4* DE with the 4* DW. Add weakness hex to DW
+             * - if there is no 3rd foe or it isn't a 4* DW, A2 will remain fighting the 4* DE and it gets a weakness hex
+             * 
+             * recalculate proficiency 
+             * 
+             * if we don't have proficiency and A1 is fighting a 4* DE, add a weakness hex
+             * 
+             * recalculate proficiency 
+             * 
+             * if we don't have proficiency:
+             * - Profs need a confusion on 4* wolf
+             * 
+             * recalculate proficiency. 
+             */
+
+
+            aurorFoeValue = TwoAurorFoes(result, aurorFoeValue, orderedAurorFoesFull, orderedAurorFoes);
+
+            // recalculate proficiency (again) after the latest round of hexing - only if proficiency was true before
+            result.Proficiency = result.Proficiency && magiFoeValue + profFoeValue + aurorFoeValue >= 2; // + 1 that is always passed :)
+
+            // if we don't have proficiency and A1 is fighting a 4* DE, add a weakness hex
+            if (orderedAurorFoes.Count > 0 && !result.Proficiency && orderedAurorFoes[0].Type == FoeType.DeathEater && (int)orderedAurorFoes[0].Stars == 4)
+            {
+                // weaken A1's foe
+                AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[0]), false);
+                aurorFoeValue--;
+            }
+
+            // recalculate proficiency (again) after the latest round of hexing - only if proficiency was true before
+            result.Proficiency = result.Proficiency && magiFoeValue + profFoeValue + aurorFoeValue >= 2; // + 1 that is always passed :)
+
+
+            if (!result.Proficiency)
+            {
+                //If any professor foe is a Dangerous Werewolf, add the Confusion Hex and reduce Foe Value by one.
+                foreach (var f in orderedProfFoes.Where(p => p.Type == FoeType.Werewolf && (int)p.Stars == 4).ToList())
+                {
+                    AddHex(result, HexType.Confusion, _state.FoeFullName(f), true);
+                    profFoeValue--;
+                }
+
+                // if A2 is fighting a 4* DE and we don't have proficiency, P2 should shield A2 as long as A2 doesn't already have a shield
+                if ((orderedAurorFoes.Count == 2 && !result.Proficiency && !result.P1ShieldsA2 && !result.P2ShieldsA2
+                    && orderedAurorFoes[1].Type == FoeType.DeathEater && (int)orderedAurorFoes[1].Stars == 4))
+                {
+                    result.P2ShieldsA2 = true;
+                }
+            }
+        }
+
+        private static void DetermineFocusPassed(LobbyResult result, int magiFoeValue, int profFoeValue, int aurorFoeValue)
+        {
             // work out how much focus passed/kept by each auror.
             result.A1FocusPassed = profFoeValue;
             result.A1FocusKept = 4 - result.A1Hexes.Count - profFoeValue;
@@ -752,11 +796,13 @@ namespace HPWUHexingTrainer
 
             result.A1FocusPassedToP1 = result.A1FocusPassed - result.A1FocusPassedToP2;
 
-            // check if P1 got enough focus to shield A2
-            if (result.A1FocusPassedToP1 + result.A2FocusPassedToP1 >= 2)
+            // check if P1 got enough focus to shield A2 if it doesn't already have one
+            if (result.A1FocusPassedToP1 + result.A2FocusPassedToP1 >= 2 && !result.P1ShieldsA2 && !result.P2ShieldsA2)
                 result.P1ShieldsA2 = true;
+        }
 
-
+        private static void DetermineAurorFoeSelection(LobbyResult result, List<Foe> orderedAurorFoes)
+        {
             // work out which auror fights what/waits
             for (int i = 0; i < orderedAurorFoes.Count; i++)
             {
@@ -769,12 +815,12 @@ namespace HPWUHexingTrainer
                 }
                 else
                 {
-
                     result.A2Fights = true;
                     result.A2Foe = _state.FoeFullName(f);
                 }
             }
         }
+
     }
 }
 
