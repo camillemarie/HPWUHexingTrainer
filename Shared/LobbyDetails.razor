@@ -52,18 +52,18 @@
     </div>
     <div class="col-xs col-sm pt-md-0 pt-2 col-md col-lg-12 col-xl">
         <div class="div-height">
-            <button class="btn btn-outline-primary" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
+            <button class="btn btn-outline-primary mt-1 mb-1" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
 
-            <label class="font-weight-bold float-right" hidden="@_hideTimerElement">Time: @_timeElapsed seconds</label>
+            <label class="font-weight-bold float-right" hidden="@_hideTimerElement">Time: @_timeElapsed secs</label>
 
-            <label class="pl-1" for="chkProficiency" hidden="@_hideProfiencyElements">Do we have proficiency?</label>
+            <label class="pl-1" for="chkProficiency" hidden="@_hideProfiencyElements">Have proficiency?</label>
 
             <input id="chkProficiency" type="checkbox" @bind="_userProficiencyAnswer" hidden="@_hideProfiencyElements" />
 
             <label class="font-weight-bold" hidden="@_hideProficiencyAnswer">@_proficiencyAnswer</label>
 
 
-            <button class="btn btn-outline-primary pb-1" @onclick="ChangeAnswerRules"  hidden="@_hideRuleTypeButton">Show @(_state.ShowAdvancedRules ? "Standard" : "Advanced") 
+            <button class="btn btn-outline-primary m-1" @onclick="ChangeAnswerRules"  hidden="@_hideRuleTypeButton">Show @(_state.ShowAdvancedRules ? "Standard" : "Advanced") 
                     </button>
             <div class="resultsarea" hidden="@_hideResultElement">
                 @if (lr != null && (!@_hideResultElement))

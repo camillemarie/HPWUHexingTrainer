@@ -700,8 +700,8 @@ namespace HPWUHexingTrainer
                     }
                 }
 
-                // recalculate proficiency (again) after the latest round of hexing
-                result.Proficiency = magiFoeValue + profFoeValue + aurorFoeValue >= 2; // + 1 that is always passed :)
+                // recalculate proficiency (again) after the latest round of hexing - only if proficiency was true before
+                result.Proficiency = result.Proficiency && magiFoeValue + profFoeValue + aurorFoeValue >= 2; // + 1 that is always passed :)
 
                 // if we don't have proficiency and A1 is fighting a 4* DE, add a weakness hex
                 if (orderedAurorFoes.Count > 0  && !result.Proficiency && orderedAurorFoes[0].Type == FoeType.DeathEater && (int)orderedAurorFoes[0].Stars == 4)
@@ -711,8 +711,8 @@ namespace HPWUHexingTrainer
                     aurorFoeValue--;
                 }
 
-                // recalculate proficiency (again) after the latest round of hexing
-                result.Proficiency = magiFoeValue + profFoeValue + aurorFoeValue >= 2; // + 1 that is always passed :)
+                // recalculate proficiency (again) after the latest round of hexing - only if proficiency was true before
+                result.Proficiency = result.Proficiency && magiFoeValue + profFoeValue + aurorFoeValue >= 2; // + 1 that is always passed :)
 
 
                 if (!result.Proficiency)
@@ -724,53 +724,6 @@ namespace HPWUHexingTrainer
                         profFoeValue--;
                     }
                 }
-
-
-
-                //if (!result.Proficiency)
-                //{
-                //    // Check foe selection for A2 again 
-                //    if (orderedAurorFoes.Count == 2)
-                //    {
-                //        // if A2 is fighting a 3* and we don't have proficiency it needs a hex
-                //        if ((int)orderedAurorFoes[1].Stars == 3)
-                //        {
-                //            AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false);
-                //            aurorFoeValue--;
-                //        }
-
-
-                //        //If any professor foe is a Dangerous Werewolf, add the Confusion Hex and reduce Foe Value by one.
-                //        foreach (var f in orderedProfFoes.Where(p => p.Type == FoeType.Werewolf && (int)p.Stars == 4).ToList())
-                //        {
-                //            AddHex(result, HexType.Confusion, _state.FoeFullName(f), true);
-                //            profFoeValue--;
-                //        }
-
-
-                //        // recalculate proficiency (again) after the latest round of hexing
-                //        result.Proficiency = magiFoeValue + profFoeValue + aurorFoeValue >= 3;
-
-
-                //        // this is the hard bit....
-                //        var nonAurorFoeValue = magiFoeValue + profFoeValue;
-
-                //        if (aurorFoeValue == 2 && nonAurorFoeValue >= 2)
-
-                //            //(now the 4*DW will go before the 4* DE). And the 4* DE gets 
-                //            // a FoeValue of 0 since it requires a Weakness Hex
-
-                //            if ((orderedAurorFoes[0].Type == FoeType.DeathEater && (int)orderedAurorFoes[0].Stars == 4) &&
-                //                    (orderedAurorFoes[1].Type == FoeType.DarkWizard && (int)orderedAurorFoes[1].Stars == 4))
-                //            {
-                //                orderedAurorFoes.Reverse();
-                //                AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false);
-                //                aurorFoeValue--;
-                //            }
-                //    }
-
-                //    // TODO: check if A1 needs a shield if we don't have proficiency
-                //}
             }
 
             // work out how much focus passed/kept by each auror.
