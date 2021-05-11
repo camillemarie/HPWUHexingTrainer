@@ -26,7 +26,6 @@ namespace HPWUHexingTrainer
                 return br;
             }
 
-
             List<Foe> orderedAurorFoes = SetA2Details(foes, br);
             SetA1Details(foes, br);
             AssessProficiencyAndShieldForA2(br, orderedAurorFoes);
@@ -509,6 +508,16 @@ namespace HPWUHexingTrainer
                 //result.P1ShieldsA1 = true; // this always happens so it is implicit
                 result.P1ShieldsA2 = true;
                 result.P1ShieldsP2 = (foeValue == 7);
+
+                if (foeValue < 7)
+                {
+                    //P2 doesn't get a shield, if it is fighting a 3* wolf, add a weakening hex
+                    if (orderedProfFoes.Count == 2 && orderedProfFoes[1].Type == FoeType.Werewolf && (int)orderedProfFoes[1].Stars == 3)
+                    {
+                        AddHex(result, HexType.Weakening, _state.FoeFullName(orderedProfFoes[1]), true);
+                        profFoeValue--;
+                    }
+                }
             }
             else // less than 5 focus passed
                 DetermineProficiencyAndOptionalHexes(result, magiFoeValue, ref profFoeValue, ref aurorFoeValue, orderedProfFoes, orderedAurorFoesFull, orderedAurorFoes, foeValue);
@@ -572,8 +581,12 @@ namespace HPWUHexingTrainer
                 for (int i = 0; i < orderedProfFoes.Count; i++)
                 {
                     var f = orderedProfFoes[i];
-                    if (f.Type == FoeType.Pixie && (int)f.Stars < 5)
-                        profFoeValue += 2;
+                    if ((f.Type == FoeType.Pixie && (int)f.Stars < 5) ||
+
+                            // if P2 has a 3* wolf, hold off on hexing it for now
+                            (f.Type == FoeType.Werewolf && (int)f.Stars == 3 && i == 1))
+                        profFoeValue += 2; 
+
                     else if ((f.Type == FoeType.Pixie && (int)f.Stars == 5) || (f.Type == FoeType.Werewolf && (int)f.Stars < 5))
                     {
                         AddHex(result, HexType.Weakening, _state.FoeFullName(f), true);
