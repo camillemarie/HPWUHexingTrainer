@@ -1,30 +1,60 @@
 ﻿@page "/training"
+@using HPWUHexingTrainer.Classes
+
+<div class="d-none d-xl-block" style="background: #007bff; color: #fff; padding: 5px; text-align: center;">XL</div>
+<div class="d-none d-lg-block d-xl-none" style="background: #27a745; color: #fff; padding: 5px; text-align: center;">LG</div>
+<div class="d-none d-md-block d-lg-none" style="background: #ffc108; color: #fff; padding: 5px; text-align: center;">MD</div>
+<div class="d-none d-sm-block d-md-none" style="background: #18a2b8; color: #fff; padding: 5px; text-align: center;">SM</div>
+<div class="d-block d-sm-none" style="background: #dc3545; color: #fff; padding: 5px; text-align: center;">XS</div>
 
 <h3>Time yourself against some lobbies</h3>
 
 <div class="row pt-2">
-    <div class="col-12">
-
-
+    <div class="col-xl-2">
         <button class="btn btn-outline-primary @(proficiencySelected ? "active" : "")" @onclick="SetAsProficiency">Proficiency</button>
         <button class="btn btn-outline-primary @(proficiencySelected ? "" : "active") m-1" @onclick="SetAsFocus">Focus</button>
-
-        <div>
-            <label>Prof selected is @proficiencySelected</label>
+    </div>
+    <div class="col-xl-1">
+        <button class="btn btn-outline-primary m-4" @onclick="ChangeAnswerRules">
+            @(_state.ShowAdvancedRules ? "Standard" : "Advanced") rules
+        </button>
+    </div>
+</div>
+<div class="col-xl-3">
+    <div class="row">
+        <div col-11>
+            How many boards in test?
         </div>
-
-        <label>How many boards in test?</label><input class="ml-2" type="number" @bind="lobbiesToRun" />
-        <label>Error penalty in seconds?</label><input class="ml-2" type="number" @bind="penaltySeconds" />
+        <div col-1>
+            <input class="ml-2" type="number" min="1" max="50" @bind="lobbiesToRun" />
+        </div>
+    </div>
+    <div class="row pt-1">
+        <div col-11>
+            Error penalty in seconds?
+        </div>
+        <div col-1>
+            <input class="ml-2" type="number" min="1" max="20" @bind="penaltySeconds" />
+        </div>
+    </div>
+</div>
+<div class="col-xl">
+    <button class="btn btn-outline-success " @onclick="StartTraining">Start</button>
+</div>
     </div>
 
-
+<div class="row">
     <div class="col-12 pt-2">
         <LobbyDetails @ref="_bd"></LobbyDetails>
     </div>
 </div>
 
 
+
 @code {
+    [CascadingParameter]
+    public UserSettings _state { get; set; }
+
     LobbyDetails _bd = new LobbyDetails();
     int lobbiesToRun = 20;
     int penaltySeconds = 8;
@@ -42,6 +72,20 @@
     {
         proficiencySelected = false;
         penaltySeconds = 10;
+    }
+
+
+    private void ChangeAnswerRules()
+    {
+        _state.ShowAdvancedRules = !_state.ShowAdvancedRules;
+        //lr = LobbyReader.Read(Foes, _state);
+
+    }
+
+    private void StartTraining()
+    {
+        // set all the above fields to read-only. Show a Stop button.
+        // start the lobby details stuff
     }
 }
 
