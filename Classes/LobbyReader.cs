@@ -511,8 +511,10 @@ namespace HPWUHexingTrainer
 
                 if (foeValue < 7)
                 {
-                    //P2 doesn't get a shield, if it is fighting a 3* wolf, add a weakening hex
-                    if (orderedProfFoes.Count == 2 && orderedProfFoes[1].Type == FoeType.Werewolf && (int)orderedProfFoes[1].Stars == 3)
+                    // if P2 doesn't get a shield AND it is fighting a 3* wolf or 5* pixie, add a weakening hex
+                    if (orderedProfFoes.Count == 2 && 
+                        (orderedProfFoes[1].Type == FoeType.Werewolf && (int)orderedProfFoes[1].Stars == 3) ||
+                        (orderedProfFoes[1].Type == FoeType.Pixie && (int)orderedProfFoes[1].Stars == 5))
                     {
                         AddHex(result, HexType.Weakening, _state.FoeFullName(orderedProfFoes[1]), true);
                         profFoeValue--;
@@ -581,12 +583,19 @@ namespace HPWUHexingTrainer
                 for (int i = 0; i < orderedProfFoes.Count; i++)
                 {
                     var f = orderedProfFoes[i];
-                    if ((f.Type == FoeType.Pixie && (int)f.Stars < 5) ||
 
-                            // if P2 has a 3* wolf, hold off on hexing it for now
-                            (f.Type == FoeType.Werewolf && (int)f.Stars == 3 && i == 1))
-                        profFoeValue += 2; 
+                    // if P1 is fighting 3 or 4* pixie, no hexes
+                    if (i == 0 && f.Type == FoeType.Pixie && (int)f.Stars < 5)
+                        profFoeValue += 2;
 
+                    // if P2 is fighting a 3* wolf or a 5* pixie, don't hex at this stage. Check focus first as it may get a shield
+                    else if (i == 1 && f.Type == FoeType.Werewolf && (int)f.Stars == 3)
+                        profFoeValue += 2;
+
+                    else if (i == 1 && f.Type == FoeType.Pixie && (int)f.Stars == 5)
+                        profFoeValue += 2;
+
+                    // only automatically add hex to 5* pixie if P1 is going to fight it. P2 may get a shield in which case it wouldn't need a hex
                     else if ((f.Type == FoeType.Pixie && (int)f.Stars == 5) || (f.Type == FoeType.Werewolf && (int)f.Stars < 5))
                     {
                         AddHex(result, HexType.Weakening, _state.FoeFullName(f), true);
