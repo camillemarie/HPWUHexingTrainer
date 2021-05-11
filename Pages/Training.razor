@@ -1,0 +1,48 @@
+﻿@page "/training"
+
+<h3>Time yourself against some lobbies</h3>
+
+<div class="row pt-2">
+    <div class="col-12">
+
+
+        <button class="btn btn-outline-primary @(proficiencySelected ? "active" : "")" @onclick="SetAsProficiency">Proficiency</button>
+        <button class="btn btn-outline-primary @(proficiencySelected ? "" : "active") m-1" @onclick="SetAsFocus">Focus</button>
+
+        <div>
+            <label>Prof selected is @proficiencySelected</label>
+        </div>
+
+        <label>How many boards in test?</label><input class="ml-2" type="number" @bind="lobbiesToRun" />
+        <label>Error penalty in seconds?</label><input class="ml-2" type="number" @bind="penaltySeconds" />
+    </div>
+
+
+    <div class="col-12 pt-2">
+        <LobbyDetails @ref="_bd"></LobbyDetails>
+    </div>
+</div>
+
+
+@code {
+    LobbyDetails _bd = new LobbyDetails();
+    int lobbiesToRun = 20;
+    int penaltySeconds = 8;
+    bool proficiencySelected = true;
+
+
+
+    void SetAsProficiency()
+    {
+        proficiencySelected = true;
+        penaltySeconds = 8;
+    }
+
+    void SetAsFocus()
+    {
+        proficiencySelected = false;
+        penaltySeconds = 10;
+    }
+}
+
+

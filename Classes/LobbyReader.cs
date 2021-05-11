@@ -478,6 +478,7 @@ namespace HPWUHexingTrainer
             //bool IsMagiCorrect = CheckMagi(foes, userResult);
         }
 
+        #region advanced rules
         public static void ReadAdvanced(List<Foe> foes, LobbyResult result)
         {
             // You have 8 focus between both Aurors. A1 is hexing for the Professions and A2 is hexing for the Aurors and the Magi.
@@ -842,6 +843,7 @@ namespace HPWUHexingTrainer
                 }
             }
         }
+        #endregion
 
     }
 }

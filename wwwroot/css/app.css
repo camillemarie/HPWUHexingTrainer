@@ -3,16 +3,16 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-
+/*
 a, .btn-link {
     color: #0366d6;
-}
+}*/
 
-.btn-primary {
+/*.btn-primary {
     color: #fff;
     background-color: #1b6ec2;
     border-color: #1861ac;
-}
+}*/
 
 .content {
     padding-top: 1.1rem;
@@ -85,17 +85,9 @@ a, .btn-link {
     width: 100%;
 }
 
-/*div.sticky {
-    position: -webkit-sticky;*/ /* Safari */
-    /*position: sticky;
-    top: 0;
-}*/
-
-
 #backgroundImg { 
     background-repeat: no-repeat;
     min-height: 600px;
-/*    min-width: 350px;*/
 }
 
 
