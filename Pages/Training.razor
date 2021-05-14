@@ -1,5 +1,6 @@
 ﻿@page "/training"
 @using HPWUHexingTrainer.Classes
+@using System.Threading;
 
 <div class="d-none d-xl-block" style="background: #007bff; color: #fff; padding: 5px; text-align: center;">XL</div>
 <div class="d-none d-lg-block d-xl-none" style="background: #27a745; color: #fff; padding: 5px; text-align: center;">LG</div>
@@ -14,7 +15,7 @@
         <button class="btn btn-outline-primary @(proficiencySelected ? "active" : "")" @onclick="SetAsProficiency">Proficiency</button>
         <button class="btn btn-outline-primary @(proficiencySelected ? "" : "active") m-1" @onclick="SetAsFocus">Focus</button>
     </div>
-    <div class="col-xl-1">
+    <div class="col-xl-2">
         <button class="btn btn-outline-primary m-4" @onclick="ChangeAnswerRules">
             @(_state.ShowAdvancedRules ? "Standard" : "Advanced") rules
         </button>
@@ -38,16 +39,22 @@
         </div>
     </div>
 </div>
-<div class="col-xl">
+<div class="col-xl-3">
     <button class="btn btn-outline-success " @onclick="StartTraining">Start</button>
-</div>
-    </div>
+    <button class="btn btn-outline-primary " @onclick="FinishTraining">Finish</button>
+    <label class="font-weight-bold float-right">Time: @_timeElapsed secs</label>
 
-<div class="row">
-    <div class="col-12 pt-2">
-        <LobbyDetails @ref="_bd"></LobbyDetails>
-    </div>
+
+
 </div>
+
+
+<h1>@Count seconds</h1>
+
+<button @onclick=@StartTimer>Start Timer</button>
+<button @onclick=@StopTimer>Stop Timer</button>
+
+
 
 
 
@@ -59,6 +66,44 @@
     int lobbiesToRun = 20;
     int penaltySeconds = 8;
     bool proficiencySelected = true;
+
+    private string _timeElapsed = "0.0";
+    Stopwatch myWatch = new Stopwatch();
+
+    private int Count { get; set; } = 0;
+    bool timerStarted = true;
+    Timer timer;
+
+    void StartCountdown()
+    {
+        timer = new Timer(new TimerCallback(_ =>
+        {
+            if (timerStarted)
+            {
+                Count++;
+
+                // Note that the following line is necessary because otherwise
+                // Blazor would not recognize the state change and not refresh the UI
+                InvokeAsync(() =>
+                {
+                    StateHasChanged();
+                });
+            }
+        }), null, 1000, 1000);
+    }
+
+    void StartTimer()
+    {
+        Count = 0;
+        timerStarted = true;
+        StartCountdown();
+    }
+
+    void StopTimer()
+    {
+        timerStarted = false;
+        timer.Dispose();
+    }
 
 
 
@@ -78,14 +123,27 @@
     private void ChangeAnswerRules()
     {
         _state.ShowAdvancedRules = !_state.ShowAdvancedRules;
-        //lr = LobbyReader.Read(Foes, _state);
-
     }
 
     private void StartTraining()
     {
+        _timeElapsed = "0.0";
+        myWatch.Start();
+        Refresh();
+
         // set all the above fields to read-only. Show a Stop button.
         // start the lobby details stuff
+    }
+
+    private void FinishTraining()
+    {
+        myWatch.Stop();
+        _timeElapsed = myWatch.GetElapsedTimeSecs().ToString();
+    }
+
+    public void Refresh()
+    {
+        StateHasChanged();
     }
 }
 

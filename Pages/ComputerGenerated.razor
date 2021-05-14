@@ -39,22 +39,7 @@
 
             _foes.Add(foe);
         }
-
-
-        //// Test case for 2 x 3 star pixies
-        //_foes.AddRange(new Foe[] {
-        //        new Foe(5, FoeType.Erkling),
-        //        new Foe(5, FoeType.DeathEater),
-        //        new Foe(3, FoeType.Pixie),
-        //        new Foe(5, FoeType.DarkWizard),
-        //        new Foe(3, FoeType.Pixie)
-        //    });
-
-
         _bd.Foes = _foes.ToList();
-
-        //_bd.CreateLobbyImage();
-
         _bd.ImgSrc = "images/blankboard.png";
         _bd.HideImage = false;
         _bd.LoadLobby();
