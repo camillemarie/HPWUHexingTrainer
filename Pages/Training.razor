@@ -40,22 +40,13 @@
     </div>
 </div>
 <div class="col-xl-3">
-    <button class="btn btn-outline-success " @onclick="StartTraining">Start</button>
-    <button class="btn btn-outline-primary " @onclick="FinishTraining">Finish</button>
+    <button class="btn btn-outline-success " @onclick="StartTimer">Start</button>
+    <button class="btn btn-outline-primary " @onclick="StopTimer">Finish</button>
     <label class="font-weight-bold float-right">Time: @_timeElapsed secs</label>
 
 
 
 </div>
-
-
-<h1>@Count seconds</h1>
-
-<button @onclick=@StartTimer>Start Timer</button>
-<button @onclick=@StopTimer>Stop Timer</button>
-
-
-
 
 
 @code {
@@ -70,17 +61,20 @@
     private string _timeElapsed = "0.0";
     Stopwatch myWatch = new Stopwatch();
 
-    private int Count { get; set; } = 0;
+    private double Count { get; set; } = 0;
     bool timerStarted = true;
     Timer timer;
 
-    void StartCountdown()
+    void StartClock()
     {
         timer = new Timer(new TimerCallback(_ =>
         {
             if (timerStarted)
             {
-                Count++;
+                Count+= 0.5;
+
+                _timeElapsed = String.Format("{0:0.0}", Count);
+                //_timeElapsed = Count.ToString();
 
                 // Note that the following line is necessary because otherwise
                 // Blazor would not recognize the state change and not refresh the UI
@@ -89,14 +83,17 @@
                     StateHasChanged();
                 });
             }
-        }), null, 1000, 1000);
+        }), null, 500, 500);
     }
+
 
     void StartTimer()
     {
-        Count = 0;
+        Count = 0.0;
+        //_timeElapsed = Count.ToString();
+        _timeElapsed = String.Format("{0:0.0}", Count);
         timerStarted = true;
-        StartCountdown();
+        StartClock();
     }
 
     void StopTimer()
@@ -104,7 +101,6 @@
         timerStarted = false;
         timer.Dispose();
     }
-
 
 
     void SetAsProficiency()
@@ -123,22 +119,6 @@
     private void ChangeAnswerRules()
     {
         _state.ShowAdvancedRules = !_state.ShowAdvancedRules;
-    }
-
-    private void StartTraining()
-    {
-        _timeElapsed = "0.0";
-        myWatch.Start();
-        Refresh();
-
-        // set all the above fields to read-only. Show a Stop button.
-        // start the lobby details stuff
-    }
-
-    private void FinishTraining()
-    {
-        myWatch.Stop();
-        _timeElapsed = myWatch.GetElapsedTimeSecs().ToString();
     }
 
     public void Refresh()
