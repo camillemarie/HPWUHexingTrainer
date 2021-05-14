@@ -8,18 +8,55 @@
 <div class="d-none d-sm-block d-md-none" style="background: #18a2b8; color: #fff; padding: 5px; text-align: center;">SM</div>
 <div class="d-block d-sm-none" style="background: #dc3545; color: #fff; padding: 5px; text-align: center;">XS</div>
 
-<h4>See how quickly you can read some lobbies</h4>
+<h5>See how quickly you can read some lobbies</h5>
 
 <div class="row pt-2">
     <div class="col-lg-7 col-xl-6">
         <button class="btn  @(proficiencySelected ? "btn-primary" : "btn-outline-primary")" @onclick="SetAsProficiency" disabled="@IsSettingDisabled">Proficiency</button>
-        <button class="btn  @(proficiencySelected ? "btn-outline-primary" : "btn-primary") m-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled">Focus</button>
+        <button class="btn  @(proficiencySelected ? "btn-outline-primary" : "btn-primary") ml-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled">Focus</button>
 
-        <button class="btn btn-outline-primary m-4" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled">
+        <button class="btn btn-outline-primary ml-3" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled">
             @(_state.ShowAdvancedRules ? "Standard" : "Advanced") rules
         </button>
     </div>
-    <div class="col-lg col-xl-6">
+    <div class="col-lg col-xl-6 pt-2 pt-lg-0">
+        <table>
+            <tr>
+                <td>
+                    <label>Boards in test?</label>
+                </td>
+                <td>
+                    <input class="ml-2" type="number" min="1" max="50" @bind="lobbiesToRun" disabled="@IsSettingDisabled" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Error penalty in seconds?</label>
+                </td>
+                <td>
+                    <input class="ml-2" type="number" min="1" max="20" @bind="penaltySeconds" disabled="@IsSettingDisabled" />
+                </td>
+            </tr>
+        </table>
+        @*<div class="row">
+            <div col-11>
+                <label>How many boards in test?</label>
+            </div>
+            <div col-1>
+                <input class="ml-2" type="number" min="1" max="50" @bind="lobbiesToRun" disabled="@IsSettingDisabled" />
+            </div>
+        </div>
+        <div class="row pt-1">
+            <div col-11>
+                Error penalty in seconds?
+            </div>
+            <div col-1>
+                <input class="ml-2" type="number" min="1" max="20" @bind="penaltySeconds" disabled="@IsSettingDisabled" />
+            </div>
+        </div>*@
+    </div>
+
+    @*<div class="col-lg col-xl-6">
         <div class="row">
             <div col-11>
                 How many boards in test?
@@ -35,14 +72,14 @@
             <div col-1>
                 <input class="ml-2" type="number" min="1" max="20" @bind="penaltySeconds" disabled="@IsSettingDisabled" />
             </div>
-        </div>
-    </div>
+        </div>*@
 </div>
+
 <div class="row pt-2">
     <div class="col">
         <button class="btn btn-outline-success @(IsSettingDisabled ? "active" : "")" @onclick="StartTimer" disabled=@trainingInProgress>Start</button>
         <button class="btn btn-outline-primary " @onclick="StopTimer">Finish</button>
-        <label class="font-weight-bold ml-3">Time: @_timeElapsed secs</label>
+        <label class="font-weight-bold ml-3">Time: @_timeElapsed seconds</label>
     </div>
 </div>
 
