@@ -64,7 +64,36 @@ namespace HPWUHexingTrainer
 
                 _foes.Add(foe);
             }
-            return _foes;
+            return _foes.ToList();
+        }
+
+
+        public static void PositionFoes(List<Foe> foes)
+        {
+            Random rnd = new Random();
+            for (int cnt = 0; cnt < foes.Count; cnt++)
+            {
+
+                Foe f = foes[cnt];
+                bool uniquePos = false;
+                int rndRow = 1;
+                int rndCol = 1;
+
+                while (!uniquePos)
+                {
+                    rndRow = rnd.Next(2, 7);
+                    rndCol = rnd.Next(1, 4);
+
+                    // if we don't already have a foe in this position, use it
+                    if (foes.Count(f => f.Col == rndCol && f.Row == rndRow) == 0)
+                    {
+                        f.Col = rndCol;
+                        f.Row = rndRow;
+                        uniquePos = true;
+                    }
+                }
+                f.GridArea = $" {rndRow} / {rndCol} / {rndRow + 1} / {rndCol + 1} ";
+            }
         }
     }
 

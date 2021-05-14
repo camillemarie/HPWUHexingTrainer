@@ -513,7 +513,7 @@ namespace HPWUHexingTrainer
                 if (foeValue < 7)
                 {
                     // if P2 doesn't get a shield AND it is fighting a 3* wolf or 5* pixie, add a weakening hex
-                    if (orderedProfFoes.Count == 2 && 
+                    if (orderedProfFoes != null && orderedProfFoes.Count == 2 && 
                         (orderedProfFoes[1].Type == FoeType.Werewolf && (int)orderedProfFoes[1].Stars == 3) ||
                         (orderedProfFoes[1].Type == FoeType.Pixie && (int)orderedProfFoes[1].Stars == 5))
                     {

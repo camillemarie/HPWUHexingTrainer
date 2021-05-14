@@ -8,20 +8,18 @@
 <div class="d-none d-sm-block d-md-none" style="background: #18a2b8; color: #fff; padding: 5px; text-align: center;">SM</div>
 <div class="d-block d-sm-none" style="background: #dc3545; color: #fff; padding: 5px; text-align: center;">XS</div>
 
-<h3>Time yourself against some lobbies</h3>
-<div >
-    <div class="row pt-2">
-        <div class="col-xl-2">
-            <button class="btn  @(proficiencySelected ? "btn-primary" : "btn-outline-primary")" @onclick="SetAsProficiency" disabled="@IsSettingDisabled" >Proficiency</button>
-            <button class="btn  @(proficiencySelected ? "btn-outline-primary" : "btn-primary") m-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled" >Focus</button>
-        </div>
-        <div class="col-xl-2">
-            <button class="btn btn-outline-primary m-4" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled" >
-                @(_state.ShowAdvancedRules ? "Standard" : "Advanced") rules
-            </button>
-        </div>
+<h4>See how quickly you can read some lobbies</h4>
+
+<div class="row pt-2">
+    <div class="col-lg-7 col-xl-6">
+        <button class="btn  @(proficiencySelected ? "btn-primary" : "btn-outline-primary")" @onclick="SetAsProficiency" disabled="@IsSettingDisabled">Proficiency</button>
+        <button class="btn  @(proficiencySelected ? "btn-outline-primary" : "btn-primary") m-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled">Focus</button>
+
+        <button class="btn btn-outline-primary m-4" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled">
+            @(_state.ShowAdvancedRules ? "Standard" : "Advanced") rules
+        </button>
     </div>
-    <div class="col-xl-3">
+    <div class="col-lg col-xl-6">
         <div class="row">
             <div col-11>
                 How many boards in test?
@@ -35,36 +33,91 @@
                 Error penalty in seconds?
             </div>
             <div col-1>
-                <input class="ml-2" type="number" min="1" max="20" @bind="penaltySeconds" disabled="@IsSettingDisabled"  />
+                <input class="ml-2" type="number" min="1" max="20" @bind="penaltySeconds" disabled="@IsSettingDisabled" />
             </div>
         </div>
     </div>
 </div>
-<div class="col-xl-3">
-    <button class="btn btn-outline-success @(IsSettingDisabled ? "active" : "")" @onclick="StartTimer">Start</button>
-    <button class="btn btn-outline-primary " @onclick="StopTimer">Finish</button>
-    <label class="font-weight-bold float-right">Time: @_timeElapsed secs</label>
+<div class="row pt-2">
+    <div class="col">
+        <button class="btn btn-outline-success @(IsSettingDisabled ? "active" : "")" @onclick="StartTimer" disabled=@trainingInProgress>Start</button>
+        <button class="btn btn-outline-primary " @onclick="StopTimer">Finish</button>
+        <label class="font-weight-bold ml-3">Time: @_timeElapsed secs</label>
+    </div>
 </div>
+
+<div class="row pt-2" hidden=@(!trainingInProgress)>
+    <div col-sm-5>
+        <LobbyImage @ref="_li"></LobbyImage>
+    </div>
+    <div col-sm>
+        <div class="row ml-3 pt-1">
+            <div col>
+                <button class="btn btn-lg btn-outline-primary " @onclick="() => IsProficiency(true)" hidden=@(!proficiencySelected)>Yes</button>
+                <button class="btn btn-lg btn-outline-primary ml-3" @onclick="() => IsProficiency(false)" hidden=@(!proficiencySelected)>No</button>
+
+                @if (!proficiencySelected)
+                {
+                    @for (int focus = 1; focus < 5; focus++)
+                    {
+                        var local_focus = focus;
+                        <button id="focus-button-@focus" class="btn btn-lg btn-outline-primary mr-2" type="button" @onclick="() => GetFocus(local_focus)">@focus</button>
+                    }
+                }
+
+            </div>
+        </div>
+        <div class="row ml-3 pt-2" hidden="@proficiencySelected">
+            <div col>
+                @for (int focus = 5; focus < 9; focus++)
+                {
+                    var local_focus = focus;
+                    <button id="focus-button-@focus" class="btn btn-lg btn-outline-primary mr-2" type="button" @onclick="() => GetFocus(local_focus)">@focus</button>
+                }
+            </div>
+        </div>
+        <div class="row ml-3">
+            <div col>
+                <label class="pt-2">Correct: @correct Incorrect: @incorrect</label>
+            </div>
+        </div>
+    </div>
+</div>
+<h5 class="pt-3" hidden=@(!trainingFinished)>@result</h5>
+<h5 hidden=@(!trainingFinished)>@resultAverage</h5>
 
 
 @code {
     [CascadingParameter]
     public UserSettings _state { get; set; }
 
-    LobbyDetails _bd = new LobbyDetails();
     int lobbiesToRun = 20;
     int penaltySeconds = 8;
     bool proficiencySelected = true;
     protected bool IsSettingDisabled { get; set; }
 
+    //int focusPassed;
+
+    int lobbiesRead = 0;
+    int correct = 0;
+    int incorrect = 0;
+    bool trainingInProgress = false;
+    bool trainingFinished = false;
+    string result;
+    string resultAverage;
+
     private string _timeElapsed = "0.0";
     Stopwatch myWatch = new Stopwatch();
+
+
 
     private double Count { get; set; } = 0;
     bool timerStarted = true;
     Timer timer;
 
-
+    LobbyImage _li = new LobbyImage();
+    LobbyResult lr = new LobbyResult();
+    List<Foe> _foes = new List<Foe>();
 
     #region Training settings
     void SetAsProficiency()
@@ -77,6 +130,11 @@
     {
         proficiencySelected = false;
         penaltySeconds = 10;
+    }
+
+    private void ChangeAnswerRules()
+    {
+        _state.ShowAdvancedRules = !_state.ShowAdvancedRules;
     }
 
     #endregion
@@ -92,9 +150,9 @@
 
                 _timeElapsed = String.Format("{0:0.0}", Count);
 
-                // Note that the following line is necessary because otherwise
-                // Blazor would not recognize the state change and not refresh the UI
-                InvokeAsync(() =>
+            // Note that the following line is necessary because otherwise
+            // Blazor would not recognize the state change and not refresh the UI
+            InvokeAsync(() =>
                 {
                     StateHasChanged();
                 });
@@ -109,11 +167,14 @@
         _timeElapsed = String.Format("{0:0.0}", Count);
         timerStarted = true;
         IsSettingDisabled = true;
+        lobbiesRead = 0;
+        correct = 0;
+        incorrect = 0;
+        trainingInProgress = true;
+        trainingFinished = false;
+
         StartClock();
-
-
-
-        List<Foe> _foes = Foe.GetNewLobby();
+        GetNextLobby();
     }
 
     void StopTimer()
@@ -121,19 +182,108 @@
         timerStarted = false;
         timer.Dispose();
         IsSettingDisabled = false;
+        trainingInProgress = false;
+        trainingFinished = true;
+
+        result = $"Results: { correct }/{lobbiesRead } Percent: { String.Format("{0:P1}", (correct * 1.0 / lobbiesRead)) }";
+        resultAverage = $"Average Time: { String.Format("{0:0.0}", Count / lobbiesRead) } seconds";
     }
     #endregion
 
 
-    private void ChangeAnswerRules()
+
+    private void GetNextLobby()
     {
-        _state.ShowAdvancedRules = !_state.ShowAdvancedRules;
+        if (lobbiesRead < lobbiesToRun)
+        {
+            lobbiesRead++;
+
+            // show the next lobby
+            _foes = Foe.GetNewLobby();
+            Foe.PositionFoes(_foes);
+
+            _li.Foes = _foes.ToList();
+            _li.ImgSrc = "images/blankboard.png"; ;
+            _li.HideImage = false;
+            _li.Refresh();
+        }
+        else
+        {
+            StopTimer();
+        }
     }
+
+    //private void ProficiencyYes()
+    //{
+    //    IsProficiency(true);
+    //}
+
+    //private void ProficiencyNo()
+    //{
+    //    IsProficiency(false);
+    //}
+
+    private void IsProficiency(bool proficiency)
+    {
+        // read the lobby
+        lr = LobbyReader.Read(_foes, _state);
+
+        // compare answer with lobby reader.proficiency
+        if (lr.Proficiency == proficiency)
+        {
+            correct++;
+        }
+        else
+        {
+            incorrect++;
+
+            // if they got it wrong, add the penalty time to the timer
+            Count += penaltySeconds;
+        }
+        GetNextLobby();
+    }
+
+    protected void GetFocus(int focus)
+    {
+        // read the lobby
+        lr = LobbyReader.Read(_foes, _state);
+
+        if (lr.A1FocusPassed + lr.A2FocusPassed == focus)
+            correct++;
+        else
+        {
+            incorrect++;
+
+            // if they got it wrong, add the penalty time to the timer
+            Count += penaltySeconds;
+        }
+        GetNextLobby();
+    }
+
+
+    //private void GetNext()
+    //{
+    //    // read the lobby
+    //    lr = LobbyReader.Read(_foes, _state);
+
+    //    if (lr.A1FocusPassed + lr.A2FocusPassed == focusPassed)
+    //        correct++;
+    //    else
+    //    {
+    //        incorrect++;
+
+    //        // if they got it wrong, add the penalty time to the timer
+    //        Count += penaltySeconds;
+    //    }
+    //    GetNextLobby();
+    //}
+
 
     public void Refresh()
     {
         StateHasChanged();
     }
+
 }
 
 
