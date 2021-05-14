@@ -584,8 +584,8 @@ namespace HPWUHexingTrainer
                 {
                     var f = orderedProfFoes[i];
 
-                    // if P1 is fighting 3 or 4* pixie, no hexes
-                    if (i == 0 && f.Type == FoeType.Pixie && (int)f.Stars < 5)
+                    // if prof is fighting 3 or 4* pixie, no hexes
+                    if (f.Type == FoeType.Pixie && (int)f.Stars < 5)
                         profFoeValue += 2;
 
                     // if P2 is fighting a 3* wolf or a 5* pixie, don't hex at this stage. Check focus first as it may get a shield
