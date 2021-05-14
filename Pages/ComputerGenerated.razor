@@ -14,31 +14,15 @@
 
 @code {
     LobbyDetails _bd = new LobbyDetails();
-    public static int PERCENT_ELITES = 10;
     List<Foe> _foes = new List<Foe>();
 
 
     public void GetNewLobby()
     {
-        Random rnd = new Random();
         _foes.Clear();
+
+        _foes = Foe.GetNewLobby();
         _bd.Clear();
-
-
-        // generate 5 random foes
-        for (int cnt = 0; cnt < 5; cnt++)
-        {
-            Foe foe = new Foe();
-            foe.Stars = (StarName) rnd.Next(3, 6);
-
-            int foetype = rnd.Next(1, 7);
-            foe.Type = (FoeType)foetype;
-
-            int isElite = rnd.Next(1, PERCENT_ELITES);
-            foe.Elite = (isElite == 1) ? true : false;
-
-            _foes.Add(foe);
-        }
         _bd.Foes = _foes.ToList();
         _bd.ImgSrc = "images/blankboard.png";
         _bd.HideImage = false;

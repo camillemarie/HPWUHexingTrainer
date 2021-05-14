@@ -28,18 +28,6 @@ namespace HPWUHexingTrainer
         public string FoeNameStarAndName => $"{(Elite ? "Elite " : "")}{ Stars.ToString() } ({ (int)Stars }*) { FoeTypePretty(Type) }";
 
 
-        //public override string ToString()
-        //{
-        //     return $"{(Elite ? "Elite " : "")}{ Stars.ToString() } { FoeTypePretty(Type) }";
-        //}
-
-
-
-        public static string FoeTypePretty(FoeType type)
-        {
-            return type.ToString().Humanize(LetterCasing.Title);
-        }
-
         public Foe()
         {
         }
@@ -49,6 +37,34 @@ namespace HPWUHexingTrainer
             Stars = stars;
             Type = type;
             Elite = elite;
+        }
+
+        public static string FoeTypePretty(FoeType type)
+        {
+            return type.ToString().Humanize(LetterCasing.Title);
+        }
+
+        public static List<Foe> GetNewLobby()
+        {
+            List<Foe> _foes = new List<Foe>();
+            int PERCENT_ELITES = 10;
+            Random rnd = new Random();
+
+            // generate 5 random foes
+            for (int cnt = 0; cnt < 5; cnt++)
+            {
+                Foe foe = new Foe();
+                foe.Stars = (StarName)rnd.Next(3, 6);
+
+                int foetype = rnd.Next(1, 7);
+                foe.Type = (FoeType)foetype;
+
+                int isElite = rnd.Next(1, PERCENT_ELITES);
+                foe.Elite = (isElite == 1) ? true : false;
+
+                _foes.Add(foe);
+            }
+            return _foes;
         }
     }
 

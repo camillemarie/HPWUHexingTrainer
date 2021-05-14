@@ -9,43 +9,41 @@
 <div class="d-block d-sm-none" style="background: #dc3545; color: #fff; padding: 5px; text-align: center;">XS</div>
 
 <h3>Time yourself against some lobbies</h3>
-
-<div class="row pt-2">
-    <div class="col-xl-2">
-        <button class="btn btn-outline-primary @(proficiencySelected ? "active" : "")" @onclick="SetAsProficiency">Proficiency</button>
-        <button class="btn btn-outline-primary @(proficiencySelected ? "" : "active") m-1" @onclick="SetAsFocus">Focus</button>
+<div >
+    <div class="row pt-2">
+        <div class="col-xl-2">
+            <button class="btn  @(proficiencySelected ? "btn-primary" : "btn-outline-primary")" @onclick="SetAsProficiency" disabled="@IsSettingDisabled" >Proficiency</button>
+            <button class="btn  @(proficiencySelected ? "btn-outline-primary" : "btn-primary") m-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled" >Focus</button>
+        </div>
+        <div class="col-xl-2">
+            <button class="btn btn-outline-primary m-4" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled" >
+                @(_state.ShowAdvancedRules ? "Standard" : "Advanced") rules
+            </button>
+        </div>
     </div>
-    <div class="col-xl-2">
-        <button class="btn btn-outline-primary m-4" @onclick="ChangeAnswerRules">
-            @(_state.ShowAdvancedRules ? "Standard" : "Advanced") rules
-        </button>
+    <div class="col-xl-3">
+        <div class="row">
+            <div col-11>
+                How many boards in test?
+            </div>
+            <div col-1>
+                <input class="ml-2" type="number" min="1" max="50" @bind="lobbiesToRun" disabled="@IsSettingDisabled" />
+            </div>
+        </div>
+        <div class="row pt-1">
+            <div col-11>
+                Error penalty in seconds?
+            </div>
+            <div col-1>
+                <input class="ml-2" type="number" min="1" max="20" @bind="penaltySeconds" disabled="@IsSettingDisabled"  />
+            </div>
+        </div>
     </div>
 </div>
 <div class="col-xl-3">
-    <div class="row">
-        <div col-11>
-            How many boards in test?
-        </div>
-        <div col-1>
-            <input class="ml-2" type="number" min="1" max="50" @bind="lobbiesToRun" />
-        </div>
-    </div>
-    <div class="row pt-1">
-        <div col-11>
-            Error penalty in seconds?
-        </div>
-        <div col-1>
-            <input class="ml-2" type="number" min="1" max="20" @bind="penaltySeconds" />
-        </div>
-    </div>
-</div>
-<div class="col-xl-3">
-    <button class="btn btn-outline-success " @onclick="StartTimer">Start</button>
+    <button class="btn btn-outline-success @(IsSettingDisabled ? "active" : "")" @onclick="StartTimer">Start</button>
     <button class="btn btn-outline-primary " @onclick="StopTimer">Finish</button>
     <label class="font-weight-bold float-right">Time: @_timeElapsed secs</label>
-
-
-
 </div>
 
 
@@ -57,6 +55,7 @@
     int lobbiesToRun = 20;
     int penaltySeconds = 8;
     bool proficiencySelected = true;
+    protected bool IsSettingDisabled { get; set; }
 
     private string _timeElapsed = "0.0";
     Stopwatch myWatch = new Stopwatch();
@@ -65,16 +64,33 @@
     bool timerStarted = true;
     Timer timer;
 
+
+
+    #region Training settings
+    void SetAsProficiency()
+    {
+        proficiencySelected = true;
+        penaltySeconds = 8;
+    }
+
+    void SetAsFocus()
+    {
+        proficiencySelected = false;
+        penaltySeconds = 10;
+    }
+
+    #endregion
+
+    #region clock functions
     void StartClock()
     {
         timer = new Timer(new TimerCallback(_ =>
         {
             if (timerStarted)
             {
-                Count+= 0.5;
+                Count += 0.5;
 
                 _timeElapsed = String.Format("{0:0.0}", Count);
-                //_timeElapsed = Count.ToString();
 
                 // Note that the following line is necessary because otherwise
                 // Blazor would not recognize the state change and not refresh the UI
@@ -90,30 +106,23 @@
     void StartTimer()
     {
         Count = 0.0;
-        //_timeElapsed = Count.ToString();
         _timeElapsed = String.Format("{0:0.0}", Count);
         timerStarted = true;
+        IsSettingDisabled = true;
         StartClock();
+
+
+
+        List<Foe> _foes = Foe.GetNewLobby();
     }
 
     void StopTimer()
     {
         timerStarted = false;
         timer.Dispose();
+        IsSettingDisabled = false;
     }
-
-
-    void SetAsProficiency()
-    {
-        proficiencySelected = true;
-        penaltySeconds = 8;
-    }
-
-    void SetAsFocus()
-    {
-        proficiencySelected = false;
-        penaltySeconds = 10;
-    }
+    #endregion
 
 
     private void ChangeAnswerRules()
