@@ -85,17 +85,9 @@ a, .btn-link {
     width: 100%;
 }
 
-/*div.sticky {
-    position: -webkit-sticky;*/ /* Safari */
-    /*position: sticky;
-    top: 0;
-}*/
-
-
 #backgroundImg { 
     background-repeat: no-repeat;
     min-height: 600px;
-/*    min-width: 350px;*/
 }
 
 
