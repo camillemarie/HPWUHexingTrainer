@@ -32,7 +32,9 @@
             </table>
         </div>
     </div>
-    <div class="col-lg-7 col-xl-3" style="min-width: 350px">
+    <LobbyImage @ref="_li"></LobbyImage>
+
+    @*<div class="col-lg-7 col-xl-3" style="min-width: 350px">
 
         <div id="backgroundImg" class="div-height" style="background-image: url(@ImgSrc)" hidden="@HideImage">
 
@@ -49,7 +51,7 @@
                 </div>
             }
         </div>
-    </div>
+    </div>*@
     <div class="col-xs col-sm pt-md-0 pt-2 col-md col-lg-12 col-xl">
         <div class="div-height">
             <button class="btn btn-outline-primary mt-1 mb-1" @onclick="GetAnswer" hidden="@_hideAnswerButton">Get Answer</button>
@@ -66,9 +68,8 @@
             <button class="btn btn-outline-primary m-1" @onclick="ChangeAnswerRules" hidden="@_hideRuleTypeButton">
                 Show @(_state.ShowAdvancedRules ? "Standard" : "Advanced")
             </button>
-            <div class="resultsarea" hidden="@_hideResultElement">
-                @if (lr != null && (!@_hideResultElement))
-                    @resultTemplate(lr)
+            <div  hidden="@_hideResultElement">
+                <LobbyResultComponent @ref="lrc"></LobbyResultComponent>
             </div>
         </div>
     </div>
@@ -78,6 +79,8 @@
 @code {
     [CascadingParameter]
     public UserSettings _state { get; set; }
+
+    LobbyImage _li = new LobbyImage();
 
 
     private bool _hideResultElement = true;         // hide initially until answer button clicked.
@@ -102,6 +105,7 @@
     Stopwatch myWatch = new Stopwatch();
 
     LobbyResult lr = new LobbyResult();
+    LobbyResultComponent lrc = new LobbyResultComponent();
 
 
 
@@ -118,7 +122,8 @@
         _hideProficiencyAnswer = true;
         _proficiencyAnswer = "";
         _userProficiencyAnswer = false;
-        HideImage = true;
+
+        _li.HideImage = true;
     }
 
 
@@ -127,7 +132,12 @@
     /// </summary>
     public void LoadLobby()
     {
-        LoadFoes();
+        //LoadFoes();
+        Foe.PositionFoes(Foes);
+        _li.Foes = Foes.ToList();
+        _li.ImgSrc = ImgSrc;
+        _li.HideImage = false;
+        _li.Refresh();
 
         _hideAnswerButton = false;                          // we have a board so show the Answer button
         _hideTimerElement = !_state.ShowTimer;              // Hide Timer -> setting show timer = false
@@ -137,36 +147,8 @@
         _hideProficiencyAnswer = true;
         _timeElapsed = "0.0";
         myWatch.Start();
+
         Refresh();
-    }
-
-
-    private void LoadFoes()
-    {
-        Random rnd = new Random();
-        for (int cnt = 0; cnt < Foes.Count; cnt++)
-        {
-
-            Foe f = Foes[cnt];
-            bool uniquePos = false;
-            int rndRow = 1;
-            int rndCol = 1;
-
-            while (!uniquePos)
-            {
-                rndRow = rnd.Next(2, 7);
-                rndCol = rnd.Next(1, 4);
-
-                // if we don't already have a foe in this position, use it
-                if (Foes.Count(f => f.Col == rndCol && f.Row == rndRow) == 0)
-                {
-                    f.Col = rndCol;
-                    f.Row = rndRow;
-                    uniquePos = true;
-                }
-            }
-            f.GridArea = $" {rndRow} / {rndCol} / {rndRow + 1} / {rndCol + 1} ";
-        }
     }
 
 
@@ -196,6 +178,9 @@
         _timeElapsed = myWatch.GetElapsedTimeSecs().ToString();
 
         _hideRuleTypeButton = false; // now that the answer has been displayed, offer the other rule type
+
+        lrc.lobbyResult = lr;
+        lrc.Refresh();
     }
 
     private void ChangeAnswerRules()
@@ -203,10 +188,13 @@
         _state.ShowAdvancedRules = !_state.ShowAdvancedRules;
         lr = LobbyReader.Read(Foes, _state);
 
+        lrc.lobbyResult = lr;
+        lrc.Refresh();
     }
 
 
-    #region resultTemplate
+
+    @*#region resultTemplate
     RenderFragment<LobbyResult> resultTemplate = (result) =>
     @<p>
     <h5>@(result.Advanced ? "Advanced" : "Standard") Answer</h5>
@@ -284,7 +272,7 @@
     <br />
     <div>Total focus passed: @(result.A1FocusPassed + result.A2FocusPassed) </div>
 </p>;
-    #endregion
+    #endregion*@
 
 }
 

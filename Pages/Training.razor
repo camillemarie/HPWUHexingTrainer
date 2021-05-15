@@ -1,0 +1,342 @@
+﻿@page "/training"
+@using HPWUHexingTrainer.Classes
+@using System.Threading;
+
+@*<div class="d-none d-xl-block" style="background: #007bff; color: #fff; padding: 5px; text-align: center;">XL</div>
+<div class="d-none d-lg-block d-xl-none" style="background: #27a745; color: #fff; padding: 5px; text-align: center;">LG</div>
+<div class="d-none d-md-block d-lg-none" style="background: #ffc108; color: #fff; padding: 5px; text-align: center;">MD</div>
+<div class="d-none d-sm-block d-md-none" style="background: #18a2b8; color: #fff; padding: 5px; text-align: center;">SM</div>
+<div class="d-block d-sm-none" style="background: #dc3545; color: #fff; padding: 5px; text-align: center;">XS</div>*@
+
+<h5>See how quickly you can read some lobbies</h5>
+
+<div class="row pt-2">
+    <div class="col-lg-7 col-xl-6">
+        <button class="btn  @(proficiencySelected ? "btn-primary" : "btn-outline-primary")" @onclick="SetAsProficiency" disabled="@IsSettingDisabled">Proficiency</button>
+        <button class="btn  @(proficiencySelected ? "btn-outline-primary" : "btn-primary") ml-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled">Focus</button>
+
+        <button class="btn btn-outline-primary ml-3" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled">
+            Using @(_state.ShowAdvancedRules ? "Advanced" : "Standard")
+        </button>
+    </div>
+    <div class="col-lg col-xl-6 pt-2 pt-lg-0">
+        <table>
+            <tr>
+                <td><label>Lobbies in test?</label></td>
+                <td> <input class="ml-2" type="number" min="1" max="50" @bind="lobbiesToRun" disabled="@IsSettingDisabled" /> </td>
+            </tr>
+            <tr>
+                <td><label>Error penalty in seconds?</label></td>
+                <td><input class="ml-2" type="number" min="1" max="20" @bind="penaltySeconds" disabled="@IsSettingDisabled" /></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="row pt-2">
+    <div class="col">
+        <button class="btn btn-outline-success @(IsSettingDisabled ? "active" : "")" @onclick="StartTimer" disabled=@trainingInProgress>Start</button>
+        <button class="btn btn-outline-primary " @onclick="StopTimer">Finish</button>
+        <label class="font-weight-bold ml-3">Time: @_timeElapsed seconds</label>
+    </div>
+</div>
+
+<div class="row pt-2" hidden=@(!trainingInProgress)>
+    <div col-sm-5>
+        <LobbyImage @ref="_li"></LobbyImage>
+    </div>
+    <div col-sm>
+        <div class="row ml-3 pt-1">
+            <div col>
+                <button class="btn btn-lg btn-outline-primary " @onclick="() => GetAnswer(true)" hidden=@(!proficiencySelected)>Yes</button>
+                <button class="btn btn-lg btn-outline-primary ml-3" @onclick="() => GetAnswer(false)" hidden=@(!proficiencySelected)>No</button>
+
+                @if (!proficiencySelected)
+                {
+                    @for (int focus = 1; focus < 5; focus++)
+                    {
+                        var local_focus = focus;
+                        <button id="focus-button-@focus" class="btn btn-lg btn-outline-primary mr-2" type="button" @onclick="() => GetAnswer(false, local_focus)">@focus</button>
+                    }
+                }
+
+            </div>
+        </div>
+        <div class="row ml-3 pt-2" hidden="@proficiencySelected">
+            <div col>
+                @for (int focus = 5; focus < 9; focus++)
+                {
+                    var local_focus = focus;
+                    <button id="focus-button-@focus" class="btn btn-lg btn-outline-primary mr-2" type="button" @onclick="() => GetAnswer(false, local_focus)">@focus</button>
+                }
+            </div>
+        </div>
+        <div class="row ml-3">
+            <div col>
+                <label class="pt-2">Correct: @correct Incorrect: @incorrect</label>
+            </div>
+        </div>
+    </div>
+</div>
+<h5 class="pt-3" hidden=@(!trainingFinished)>@result</h5>
+<h5 hidden=@(!trainingFinished)>@resultAverage</h5>
+<button class="btn btn-outline-primary " @onclick="ReviewAnswers" hidden=@hideReviewButton>@reviewButtonName</button>
+
+
+<div class="row pt-2" hidden=@(!reviewInProgress)>
+    <div class="col-sm-6 col-md-4 col-lg-2 font-weight-bold">
+        <table>
+            <tr>
+                <td>Lobby:</td>
+                <td>@reviewItem</td>
+            </tr>
+            <tr>
+                <td>You:</td>
+                <td>@yourAnswer</td>
+            </tr>
+            <tr>
+                <td>Correct:</td>
+                <td>@correctAnswer</td>
+            </tr>
+            <tr>
+            </tr>
+        </table>
+
+        @*<label>Your answer: @yourAnswer</label>
+        <label>Corrrect answer: @correctAnswer</label>*@
+    </div>
+    <div>
+        <LobbyImage @ref="_liReview"></LobbyImage>
+    </div>
+    <div class="col-12 col-lg xl pt-2 pt-lg-0">
+        <LobbyResultComponent @ref="lrc"></LobbyResultComponent>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public UserSettings _state { get; set; }
+
+    int lobbiesToRun = 20;
+    int penaltySeconds = 8;
+    bool proficiencySelected = true;
+    protected bool IsSettingDisabled { get; set; }
+
+    List<Result> _results = new List<Result>();
+
+    int lobbiesRead = 0;
+    //int lobbiesAnswered;
+    int correct = 0;
+    int incorrect = 0;
+    bool trainingInProgress = false;
+    bool trainingFinished = false;
+    bool reviewInProgress = false;
+    int reviewItem = 0;
+    string result;
+    string resultAverage;
+    //bool _hideResultElement = true;  // show only once they've clicked review
+    bool hideReviewButton = true;
+    string reviewButtonName = "Review Incorrect";
+
+    private string _timeElapsed = "0.0";
+    Stopwatch myWatch = new Stopwatch();
+
+
+
+    private double Count { get; set; } = 0;
+    bool timerStarted = true;
+    Timer timer;
+
+    LobbyImage _li = new LobbyImage();
+    LobbyImage _liReview = new LobbyImage();
+
+    LobbyResult lr = new LobbyResult();
+    List<Foe> _foes = new List<Foe>();
+
+    LobbyResultComponent lrc = new LobbyResultComponent();
+
+    string yourAnswer;
+    string correctAnswer;
+
+    #region Training settings
+    void SetAsProficiency()
+    {
+        proficiencySelected = true;
+        penaltySeconds = 8;
+    }
+
+    void SetAsFocus()
+    {
+        proficiencySelected = false;
+        penaltySeconds = 10;
+    }
+
+    private void ChangeAnswerRules()
+    {
+        _state.ShowAdvancedRules = !_state.ShowAdvancedRules;
+    }
+
+    #endregion
+
+    #region clock functions
+    void StartClock()
+    {
+        timer = new Timer(new TimerCallback(_ =>
+        {
+            if (timerStarted)
+            {
+                Count += 0.5;
+
+                _timeElapsed = String.Format("{0:0.0}", Count);
+
+                // Note that the following line is necessary because otherwise
+                // Blazor would not recognize the state change and not refresh the UI
+                InvokeAsync(() =>
+                {
+                    StateHasChanged();
+                });
+            }
+        }), null, 500, 500);
+    }
+
+
+    void StartTimer()
+    {
+        Count = 0.0;
+        _timeElapsed = String.Format("{0:0.0}", Count);
+        timerStarted = true;
+        IsSettingDisabled = true;
+        lobbiesRead = 0;
+        //lobbiesAnswered = 0;
+        correct = 0;
+        incorrect = 0;
+        trainingInProgress = true;
+        trainingFinished = false;
+        reviewInProgress = false;
+        reviewItem = 0;
+        reviewButtonName = "Review Incorrect";
+        hideReviewButton = true;
+        _results.Clear();
+
+        StartClock();
+        GetNextLobby();
+    }
+
+    void StopTimer()
+    {
+        timerStarted = false;
+        timer.Dispose();
+        IsSettingDisabled = false;
+        trainingInProgress = false;
+        trainingFinished = true;
+
+        var totalAnswered = correct + incorrect;
+        result = $"Results: { correct }/{ totalAnswered } Percent: { String.Format("{0:P1}", (correct * 1.0 / totalAnswered)) }";
+        resultAverage = $"Average Time: { String.Format("{0:0.0}", Count / totalAnswered) } seconds";
+
+        if (incorrect > 0)
+            hideReviewButton = false;
+    }
+    #endregion
+
+
+
+    private void GetNextLobby()
+    {
+        if (lobbiesRead < lobbiesToRun)
+        {
+            lobbiesRead++;
+
+            // show the next lobby
+            _foes = Foe.GetNewLobby();
+
+            // read the lobby
+            lr = LobbyReader.Read(_foes, _state);
+
+
+            Foe.PositionFoes(_foes);
+
+            _li.Foes = _foes.ToList();
+            _li.ImgSrc = "images/blankboard.png"; ;
+            _li.HideImage = false;
+            _li.Refresh();
+        }
+        else
+        {
+            StopTimer();
+        }
+    }
+
+    private void GetAnswer(bool proficiency, int focus = 0)
+    {
+        bool isCorrect = true;
+
+        if (proficiencySelected && lr.Proficiency == proficiency ||
+                !proficiency && lr.A1FocusPassed + lr.A2FocusPassed == focus)
+            correct++;
+        else
+        {
+            isCorrect = false;
+            incorrect++;
+
+            // if they got it wrong, add the penalty time to the timer
+            Count += penaltySeconds;
+        }
+
+        // add this foe list and result to a list for review later
+        _results.Add(new Result(lobbiesRead, _foes, lr, proficiency, focus, isCorrect));
+        //lobbiesAnswered++; // if the user hits finish before all the lobbies in the test they shouldn't be classed as having read one wrong
+
+        GetNextLobby();
+    }
+
+    private void ReviewAnswers()
+    {
+        if (!reviewInProgress)
+        {
+            reviewItem = 0;
+            reviewInProgress = true;
+            reviewButtonName = "Next";
+        }
+
+        Result incorrectResult = _results.Where(r => !r.CorrectAnswer && r.LobbyNumber > reviewItem).FirstOrDefault();
+
+        if (incorrectResult != null)
+        {
+            reviewItem = incorrectResult.LobbyNumber;
+
+            if (proficiencySelected)
+            {
+                yourAnswer = incorrectResult.ProficiencyAnswer ? "Yes" : "No";
+                correctAnswer = incorrectResult.LobbyResult.Proficiency ? "Yes" : "No";
+            }
+            else
+            {
+                yourAnswer = incorrectResult.FocusAnswer.ToString();
+                correctAnswer = (incorrectResult.LobbyResult.A1FocusPassed + incorrectResult.LobbyResult.A2FocusPassed).ToString();
+            }
+
+            _liReview.Foes = incorrectResult.FoesList;
+            _liReview.ImgSrc = "images/blankboard.png"; ;
+            _liReview.HideImage = false;
+            _liReview.Refresh();
+
+            lrc.lobbyResult = incorrectResult.LobbyResult;
+            lrc.Refresh();
+        }
+        else
+        {
+            reviewInProgress = false;
+            reviewButtonName = "Review Incorrect";
+        }
+    }
+
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+
+}
+
+
