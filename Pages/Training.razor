@@ -3,10 +3,10 @@
 @using System.Threading;
 
 @*<div class="d-none d-xl-block" style="background: #007bff; color: #fff; padding: 5px; text-align: center;">XL</div>
-<div class="d-none d-lg-block d-xl-none" style="background: #27a745; color: #fff; padding: 5px; text-align: center;">LG</div>
-<div class="d-none d-md-block d-lg-none" style="background: #ffc108; color: #fff; padding: 5px; text-align: center;">MD</div>
-<div class="d-none d-sm-block d-md-none" style="background: #18a2b8; color: #fff; padding: 5px; text-align: center;">SM</div>
-<div class="d-block d-sm-none" style="background: #dc3545; color: #fff; padding: 5px; text-align: center;">XS</div>*@
+    <div class="d-none d-lg-block d-xl-none" style="background: #27a745; color: #fff; padding: 5px; text-align: center;">LG</div>
+    <div class="d-none d-md-block d-lg-none" style="background: #ffc108; color: #fff; padding: 5px; text-align: center;">MD</div>
+    <div class="d-none d-sm-block d-md-none" style="background: #18a2b8; color: #fff; padding: 5px; text-align: center;">SM</div>
+    <div class="d-block d-sm-none" style="background: #dc3545; color: #fff; padding: 5px; text-align: center;">XS</div>*@
 
 <h5>See how quickly you can read some lobbies</h5>
 
@@ -80,8 +80,9 @@
 </div>
 <h5 class="pt-3" hidden=@(!trainingFinished)>@result</h5>
 <h5 hidden=@(!trainingFinished)>@resultAverage</h5>
-<button class="btn btn-outline-primary " @onclick="ReviewAnswers" hidden=@hideReviewButton>@reviewButtonName</button>
+<h5 class=@(passFailText == "Pass" ? "text-success" : "text-danger")  hidden=@(!trainingFinished)>@passFailText</h5>
 
+<button class="btn btn-outline-primary " @onclick="ReviewAnswers" hidden=@hideReviewButton>@reviewButtonName</button>
 
 <div class="row pt-2" hidden=@(!reviewInProgress)>
     <div class="col-sm-6 col-md-4 col-lg-2 font-weight-bold">
@@ -98,12 +99,13 @@
                 <td>Correct:</td>
                 <td>@correctAnswer</td>
             </tr>
-            <tr>
-            </tr>
+            @*<tr>
+                <td class=@(passFailText == "Pass" ? "text-success" : "text-warning") colspan="2">@passFailText</td>
+            </tr>*@
         </table>
 
         @*<label>Your answer: @yourAnswer</label>
-        <label>Corrrect answer: @correctAnswer</label>*@
+            <label>Corrrect answer: @correctAnswer</label>*@
     </div>
     <div>
         <LobbyImage @ref="_liReview"></LobbyImage>
@@ -118,7 +120,7 @@
     public UserSettings _state { get; set; }
 
     int lobbiesToRun = 20;
-    int penaltySeconds = 8;
+    int penaltySeconds = 12;
     bool proficiencySelected = true;
     protected bool IsSettingDisabled { get; set; }
 
@@ -157,18 +159,19 @@
 
     string yourAnswer;
     string correctAnswer;
+    string passFailText;
 
     #region Training settings
     void SetAsProficiency()
     {
         proficiencySelected = true;
-        penaltySeconds = 8;
+        //penaltySeconds = 12; // 8;
     }
 
     void SetAsFocus()
     {
         proficiencySelected = false;
-        penaltySeconds = 10;
+        //penaltySeconds = 12; // 10;
     }
 
     private void ChangeAnswerRules()
@@ -232,7 +235,11 @@
 
         var totalAnswered = correct + incorrect;
         result = $"Results: { correct }/{ totalAnswered } Percent: { String.Format("{0:P1}", (correct * 1.0 / totalAnswered)) }";
+        var avg = Count / totalAnswered;
+
         resultAverage = $"Average Time: { String.Format("{0:0.0}", Count / totalAnswered) } seconds";
+
+        passFailText = proficiencySelected && avg <= 8 || !proficiencySelected && avg <= 12 ? "Pass" : "Try Again";
 
         if (incorrect > 0)
             hideReviewButton = false;
