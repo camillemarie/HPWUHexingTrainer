@@ -513,13 +513,16 @@ namespace HPWUHexingTrainer
                 if (foeValue < 7)
                 {
                     // if P2 doesn't get a shield AND it is fighting a 3* wolf or 5* pixie, add a weakening hex
-                    if (orderedProfFoes != null && orderedProfFoes.Count == 2 && 
-                        (orderedProfFoes[1].Type == FoeType.Werewolf && (int)orderedProfFoes[1].Stars == 3) ||
-                        (orderedProfFoes[1].Type == FoeType.Pixie && (int)orderedProfFoes[1].Stars == 5))
-                    {
-                        AddHex(result, HexType.Weakening, _state.FoeFullName(orderedProfFoes[1]), true);
-                        profFoeValue--;
-                    }
+                    if (orderedProfFoes != null && orderedProfFoes.Count == 2)
+                        if (
+                                (orderedProfFoes[1].Type == FoeType.Werewolf && (int)orderedProfFoes[1].Stars == 3)
+                                ||
+                                (orderedProfFoes[1].Type == FoeType.Pixie && (int)orderedProfFoes[1].Stars == 5)
+                        )
+                        {
+                            AddHex(result, HexType.Weakening, _state.FoeFullName(orderedProfFoes[1]), true);
+                            profFoeValue--;
+                        }
                 }
             }
             else // less than 5 focus passed
@@ -712,7 +715,7 @@ namespace HPWUHexingTrainer
             return aurorFoeValue;
         }
 
-        private static void DetermineProficiencyAndOptionalHexes(LobbyResult result, int magiFoeValue, ref int profFoeValue, ref int aurorFoeValue, 
+        private static void DetermineProficiencyAndOptionalHexes(LobbyResult result, int magiFoeValue, ref int profFoeValue, ref int aurorFoeValue,
             List<Foe> orderedProfFoes, List<Foe> orderedAurorFoesFull, List<Foe> orderedAurorFoes, int foeValue)
         {
 
