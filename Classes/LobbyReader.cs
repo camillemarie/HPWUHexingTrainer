@@ -658,11 +658,21 @@ namespace HPWUHexingTrainer
             orderedAurorFoes = orderedAurorFoesFull
                 .Take(2)
                 .ToList();
+
             if (orderedAurorFoes.Count > 0)
             {
+                // if we have 3 auror foes and 2nd is a 4* DE and the 3rd is a 4* DW, switch them around
+                if (orderedAurorFoesFull.Count == 3 &&
+                     orderedAurorFoesFull[1].Type == FoeType.DeathEater && (int)orderedAurorFoesFull[1].Stars == 4 &&
+                    orderedAurorFoesFull[2].Type == FoeType.DarkWizard && (int)orderedAurorFoesFull[2].Stars == 4)
+                {
+                    // replace the A2 DE foe with the DW
+                    orderedAurorFoes[1] = orderedAurorFoesFull[2];
+                }
+
                 // if we have 2 foes, reverse unless you have a 3* followed by a 4* Dark Wizard
                 if (orderedAurorFoes.Count == 2 &&
-                    !((int)orderedAurorFoes[0].Stars == 3 && (int)orderedAurorFoes[1].Stars == 4 && orderedAurorFoes[1].Type == FoeType.DarkWizard))
+                !((int)orderedAurorFoes[0].Stars == 3 && (int)orderedAurorFoes[1].Stars == 4 && orderedAurorFoes[1].Type == FoeType.DarkWizard))
                     orderedAurorFoes.Reverse();
 
                 foreach (var f in orderedAurorFoes)
@@ -693,25 +703,25 @@ namespace HPWUHexingTrainer
                     aurorFoeValue--;
                 }
 
-                //// if A1 and A2 both have 4* DE, check what the 3rd foe was (if any). 
-                //else if
-                //    ((orderedAurorFoes[0].Type == FoeType.DeathEater && (int)orderedAurorFoes[0].Stars == 4) &&
-                //    (orderedAurorFoes[1].Type == FoeType.DeathEater && (int)orderedAurorFoes[1].Stars == 4))
+                ////// if A1 and A2 both have 4* DE, check what the 3rd foe was (if any). 
+                ////else if
+                ////    ((orderedAurorFoes[0].Type == FoeType.DeathEater && (int)orderedAurorFoes[0].Stars == 4) &&
+                ////    (orderedAurorFoes[1].Type == FoeType.DeathEater && (int)orderedAurorFoes[1].Stars == 4))
 
-                // if A2 has 4* DE, check what the 3rd foe was (if any). 
-                else if (orderedAurorFoes[1].Type == FoeType.DeathEater && (int)orderedAurorFoes[1].Stars == 4)
-                {
-                    // if we have 3 foes and the third foe is a 4* DW...
-                    if (orderedAurorFoesFull.Count == 3 &&
-                    (orderedAurorFoesFull[2].Type == FoeType.DarkWizard && (int)orderedAurorFoesFull[2].Stars == 4))
-                    {
-                        // replace the A2 foe with the DW and hex it
-                        orderedAurorFoes[1] = orderedAurorFoesFull[2];
-                    }
-                    // weaken A2's foe
-                    AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false);
-                    aurorFoeValue--;
-                }
+                //// if A2 has 4* DE, check what the 3rd foe was (if any). 
+                //else if (orderedAurorFoes[1].Type == FoeType.DeathEater && (int)orderedAurorFoes[1].Stars == 4)
+                //{
+                //    // if we have 3 foes and the third foe is a 4* DW...
+                //    if (orderedAurorFoesFull.Count == 3 &&
+                //    (orderedAurorFoesFull[2].Type == FoeType.DarkWizard && (int)orderedAurorFoesFull[2].Stars == 4))
+                //    {
+                //        // replace the A2 foe with the DW and hex it
+                //        orderedAurorFoes[1] = orderedAurorFoesFull[2];
+                //    }
+                //    // weaken A2's foe
+                //    AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false);
+                //    aurorFoeValue--;
+                //}
             }
 
             return aurorFoeValue;
