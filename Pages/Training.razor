@@ -2,11 +2,11 @@
 @using HPWUHexingTrainer.Classes
 @using System.Threading;
 
-@*<div class="d-none d-xl-block" style="background: #007bff; color: #fff; padding: 5px; text-align: center;">XL</div>
+<div class="d-none d-xl-block" style="background: #007bff; color: #fff; padding: 5px; text-align: center;">XL</div>
     <div class="d-none d-lg-block d-xl-none" style="background: #27a745; color: #fff; padding: 5px; text-align: center;">LG</div>
     <div class="d-none d-md-block d-lg-none" style="background: #ffc108; color: #fff; padding: 5px; text-align: center;">MD</div>
     <div class="d-none d-sm-block d-md-none" style="background: #18a2b8; color: #fff; padding: 5px; text-align: center;">SM</div>
-    <div class="d-block d-sm-none" style="background: #dc3545; color: #fff; padding: 5px; text-align: center;">XS</div>*@
+    <div class="d-block d-sm-none" style="background: #dc3545; color: #fff; padding: 5px; text-align: center;">XS</div>
 
 <h5>See how quickly you can read some lobbies</h5>
 
@@ -17,6 +17,10 @@
 
         <button class="btn btn-outline-primary ml-3" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled">
             Using @(_state.ShowAdvancedRules ? "Advanced" : "Standard")
+        </button>
+
+        <button class="btn btn-outline-primary" @onclick="ChangeShowProgress" disabled="@IsSettingDisabled">
+            @(_state.ShowProgressDuringTraining ? "Showing Progress" : "Don't show progress")
         </button>
     </div>
     <div class="col-lg col-xl-6 pt-2 pt-lg-0">
@@ -29,6 +33,11 @@
                 <td><label>Error penalty in seconds?</label></td>
                 <td><input class="ml-2" type="number" min="1" max="20" @bind="penaltySeconds" disabled="@IsSettingDisabled" /></td>
             </tr>
+
+            @*<tr>
+                <td colspan="2"><button class="btn btn-outline-primary" @onclick="ChangeShowProgress" disabled="@IsSettingDisabled">
+                    @(_state.ShowProgressDuringTraining ? "Showing Progress" : "Don't show progress")</button></td>
+            </tr>*@
         </table>
     </div>
 </div>
@@ -71,7 +80,7 @@
                 }
             </div>
         </div>
-        <div class="row ml-3">
+        <div class="row ml-3" hidden=@(!_state.ShowProgressDuringTraining)>
             <div col>
                 <label class="pt-2">Correct: @correct Incorrect: @incorrect</label>
             </div>
@@ -103,9 +112,6 @@
                 <td class=@(passFailText == "Pass" ? "text-success" : "text-warning") colspan="2">@passFailText</td>
             </tr>*@
         </table>
-
-        @*<label>Your answer: @yourAnswer</label>
-            <label>Corrrect answer: @correctAnswer</label>*@
     </div>
     <div>
         <LobbyImage @ref="_liReview"></LobbyImage>
@@ -127,7 +133,6 @@
     List<Result> _results = new List<Result>();
 
     int lobbiesRead = 0;
-    //int lobbiesAnswered;
     int correct = 0;
     int incorrect = 0;
     bool trainingInProgress = false;
@@ -165,13 +170,13 @@
     void SetAsProficiency()
     {
         proficiencySelected = true;
-        //penaltySeconds = 12; // 8;
+        penaltySeconds = 12; // 8;
     }
 
     void SetAsFocus()
     {
         proficiencySelected = false;
-        //penaltySeconds = 12; // 10;
+        penaltySeconds = 12; // 10;
     }
 
     private void ChangeAnswerRules()
@@ -210,7 +215,6 @@
         timerStarted = true;
         IsSettingDisabled = true;
         lobbiesRead = 0;
-        //lobbiesAnswered = 0;
         correct = 0;
         incorrect = 0;
         trainingInProgress = true;
@@ -235,8 +239,14 @@
 
         var totalAnswered = correct + incorrect;
         result = $"Results: { correct }/{ totalAnswered } Percent: { String.Format("{0:P1}", (correct * 1.0 / totalAnswered)) }";
-        var avg = Count / totalAnswered;
 
+
+        // if we're not showing progress during training, add the penalty time to the timer now for each incorrect answer
+        if (!_state.ShowProgressDuringTraining)
+            Count += (penaltySeconds * incorrect);
+
+        _timeElapsed = String.Format("{0:0.0}", Count);
+        var avg = Count / totalAnswered;
         resultAverage = $"Average Time: { String.Format("{0:0.0}", Count / totalAnswered) } seconds";
 
         passFailText = proficiencySelected && avg <= 8 || !proficiencySelected && avg <= 12 ? "Pass" : "Try Again";
@@ -259,8 +269,6 @@
 
             // read the lobby
             lr = LobbyReader.Read(_foes, _state);
-
-
             Foe.PositionFoes(_foes);
 
             _li.Foes = _foes.ToList();
@@ -286,13 +294,13 @@
             isCorrect = false;
             incorrect++;
 
-            // if they got it wrong, add the penalty time to the timer
-            Count += penaltySeconds;
+            // if they got it wrong, add the penalty time to the timer if they are showing the correct/incorrect values
+            if (_state.ShowProgressDuringTraining)
+                Count += penaltySeconds;
         }
 
         // add this foe list and result to a list for review later
         _results.Add(new Result(lobbiesRead, _foes, lr, proficiency, focus, isCorrect));
-        //lobbiesAnswered++; // if the user hits finish before all the lobbies in the test they shouldn't be classed as having read one wrong
 
         GetNextLobby();
     }
@@ -336,6 +344,12 @@
             reviewInProgress = false;
             reviewButtonName = "Review Incorrect";
         }
+    }
+
+
+    private void ChangeShowProgress()
+    {
+        _state.ShowProgressDuringTraining = !_state.ShowProgressDuringTraining;
     }
 
 

@@ -33,6 +33,13 @@
 
 <div class="row pt-2">
     <div class="col">
+        <input id="chkAdvanced" type="checkbox" @bind="@_state.ShowProgressDuringTraining" />
+        <label class="pl-1" for="chkAdvanced">Show progress during Training run?</label>
+    </div>
+</div>
+
+<div class="row pt-2">
+    <div class="col">
         <label class="pl-1" for="chkResults">How do you want foes displayed? e.g.</label>
         <EditForm Model="_state">
             <InputRadioGroup @bind-Value="@_state.FoeDisplayType">
