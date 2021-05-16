@@ -510,22 +510,24 @@ namespace HPWUHexingTrainer
                 result.P1ShieldsA2 = true;
                 result.P1ShieldsP2 = (foeValue == 7);
 
-                if (foeValue < 7)
-                {
-                    // if P2 doesn't get a shield AND it is fighting a 3* wolf or 5* pixie, add a weakening hex
-                    if (orderedProfFoes != null && orderedProfFoes.Count == 2)
-                        if (
-                                (orderedProfFoes[1].Type == FoeType.Werewolf && (int)orderedProfFoes[1].Stars == 3)
-                                ||
-                                (orderedProfFoes[1].Type == FoeType.Pixie && (int)orderedProfFoes[1].Stars == 5)
-                        )
-                        {
-                            AddHex(result, HexType.Weakening, _state.FoeFullName(orderedProfFoes[1]), true);
-                            profFoeValue--;
-                        }
-                }
+                //if (foeValue < 7)
+                //{
+                //    // if P2 doesn't get a shield AND it is fighting a 3* wolf or 5* pixie, add a weakening hex
+                //    if (orderedProfFoes != null && orderedProfFoes.Count == 2)
+                //        if (
+                //                (orderedProfFoes[1].Type == FoeType.Werewolf && (int)orderedProfFoes[1].Stars == 3)
+                //                ||
+                //                (orderedProfFoes[1].Type == FoeType.Pixie && (int)orderedProfFoes[1].Stars == 5)
+                //        )
+                //        {
+                //            AddHex(result, HexType.Weakening, _state.FoeFullName(orderedProfFoes[1]), true);
+                //            profFoeValue--;
+                //        }
+                //}
             }
-            else // less than 5 focus passed
+            //else // less than 5 focus passed
+
+            if (foeValue < 7)
                 DetermineProficiencyAndOptionalHexes(result, magiFoeValue, ref profFoeValue, ref aurorFoeValue, orderedProfFoes, orderedAurorFoesFull, orderedAurorFoes, foeValue);
 
             DetermineFocusPassed(result, magiFoeValue, profFoeValue, aurorFoeValue);
@@ -701,7 +703,7 @@ namespace HPWUHexingTrainer
                 {
                     // if we have 3 foes and the third foe is a 4* DW...
                     if (orderedAurorFoesFull.Count == 3 &&
-                    (orderedAurorFoesFull[2].Type == FoeType.DarkWizard && (int)orderedAurorFoes[1].Stars == 4))
+                    (orderedAurorFoesFull[2].Type == FoeType.DarkWizard && (int)orderedAurorFoesFull[2].Stars == 4))
                     {
                         // replace the A2 foe with the DW and hex it
                         orderedAurorFoes[1] = orderedAurorFoesFull[2];
@@ -719,7 +721,26 @@ namespace HPWUHexingTrainer
             List<Foe> orderedProfFoes, List<Foe> orderedAurorFoesFull, List<Foe> orderedAurorFoes, int foeValue)
         {
 
-            // First, we check if we need to shield both Aurors
+            if (foeValue < 7)
+            {
+                // if P2 doesn't get a shield AND it is fighting a 3* wolf or 5* pixie, add a weakening hex
+                if (orderedProfFoes != null && orderedProfFoes.Count == 2)
+                    if (
+                            (orderedProfFoes[1].Type == FoeType.Werewolf && (int)orderedProfFoes[1].Stars == 3)
+                            ||
+                            (orderedProfFoes[1].Type == FoeType.Pixie && (int)orderedProfFoes[1].Stars == 5)
+                    )
+                    {
+                        AddHex(result, HexType.Weakening, _state.FoeFullName(orderedProfFoes[1]), true);
+                        profFoeValue--;
+                    }
+
+                // if foe value is between 5 and 7, the only optional hex is the prof 2 foe
+                if (foeValue >= 4)
+                    return;
+            }
+
+            //  Check if we need to shield both Aurors
             if (foeValue == 2 || foeValue == 3)
             {
                 // we need to shield A2 due to hard Auror foes
