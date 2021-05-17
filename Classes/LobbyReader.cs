@@ -878,7 +878,6 @@ namespace HPWUHexingTrainer
             }
         }
         #endregion
-
     }
 }
 
