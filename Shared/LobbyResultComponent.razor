@@ -9,6 +9,7 @@
 
 @code {
     public LobbyResult lobbyResult;
+
     //public bool HideResult = true;
 
     /// <summary>
@@ -23,81 +24,98 @@
     #region resultTemplate
     RenderFragment<LobbyResult> resultTemplate = (result) =>
     @<p>
-        <h5>@(result.Advanced ? "Advanced" : "Standard") Answer</h5>
-        <b>Magi</b> <br />
-        <div>
-            @(result.MagiFights ? $"Fights : { result.MagiFoe }" : "Waits")
-        </div>
+    <h5>@(result.Advanced ? "Advanced" : "Standard") Answer</h5>
+    <b>Magi</b> <br />
+    <div>
+        @(result.MagiFights ? $"Fights : { result.MagiFoe }" : "Waits")
+    </div>
 
-        <br />
-        <b>A1</b><br />
-        <div>
-            @(result.Advanced ? $"Passes : { result.A1FocusPassedToP1 } to P1 and {result.A1FocusPassedToP2} to P2 - Keeps :  {result.A1FocusKept}"
+    <br />
+    <b>A1</b><br />
+    <div>
+        @(result.Advanced ? $"Passes : { result.A1FocusPassedToP1 } to P1 and {result.A1FocusPassedToP2} to P2 - Keeps :  {result.A1FocusKept}"
                             : $"Passes : { result.A1FocusPassed } to P2 - Keeps :  {result.A1FocusKept}" )
-        </div>
+    </div>
 
-        @foreach (Hex h in @result.A1Hexes)
+    @foreach (Hex h in @result.A1Hexes)
+    {
+     <div> Hexes: @(result.Advanced ? $"{ h.FoeNameWithHexes}" : $"{ h.FoeName} with {h.HexType.ToString()}") </div>
+    }
+    @*@foreach (Hex h in @result.A1Hexes)
+    {
+        <div> Hexes: @h.FoeNameWithHexes </div>
+    }*@
+    @*@foreach (Hex h in @result.A1Hexes)
         {
             <div> Hexes: @h.FoeName with @h.HexType.ToString() </div>
-        }
-        <div>
-            @(result.A1Fights ? $"Fights : { result.A1Foe }" : "Waits")
-        </div>
+        }*@
+    <div>
+        @(result.A1Fights ? $"Fights : { result.A1Foe }" : "Waits")
+    </div>
 
-        <br />
-        <b>A2</b>  <br />
-        <div>
-            @(result.Advanced ? $"Passes : { result.A2FocusPassedToP1 } to P1 and {result.A2FocusPassedToP2} to P2 - Keeps :  {result.A2FocusKept}"
+    <br />
+    <b>A2</b>  <br />
+    <div>
+        @(result.Advanced ? $"Passes : { result.A2FocusPassedToP1 } to P1 and {result.A2FocusPassedToP2} to P2 - Keeps :  {result.A2FocusKept}"
                             : $"Passes : { result.A2FocusPassed } to P2 - Keeps :  {result.A2FocusKept}" )
-        </div>
+    </div>
+    @foreach (Hex h in @result.A2Hexes)
+    {
+        <div> Hexes: @(result.Advanced ? $"{ h.FoeNameWithHexes}" : $"{ h.FoeName} with {h.HexType.ToString()}") </div>
+    }
 
-        @foreach (Hex h in @result.A2Hexes)
+    @*@foreach (Hex h in @result.A2Hexes)
+        {
+            <div> Hexes: @h.FoeNameWithHexes </div>
+        }*@
+
+    @*@foreach (Hex h in @result.A2Hexes)
         {
             <div> Hexes: @h.FoeName with @h.HexType.ToString() </div>
-        }
+        }*@
 
-        <div>
-            @(result.A2Fights ? $"Fights : { result.A2Foe }" : "Waits")
-        </div>
+    <div>
+        @(result.A2Fights ? $"Fights : { result.A2Foe }" : "Waits")
+    </div>
 
-        <br />
-        <b>P1</b>
-        @(result.Advanced ? $"(Focus received : { result.A1FocusPassedToP1 + result.A2FocusPassedToP1 })" : "")
-        <br />
-        <div>Shields A1</div>
-        @if (result.Advanced && result.P1ShieldsA2)
-        {
-            <div>Shields A2</div>
-        }
+    <br />
+    <b>P1</b>
+    @(result.Advanced ? $"(Focus received : { result.A1FocusPassedToP1 + result.A2FocusPassedToP1 })" : "")
+    <br />
+    <div>Shields A1</div>
+    @if (result.Advanced && result.P1ShieldsA2)
+    {
+        <div>Shields A2</div>
+    }
 
-        @if (result.Advanced && result.P1ShieldsP2)
-        {
-            <div><b>P1 Shields P2!</b></div>
-        }
+    @if (result.Advanced && result.P1ShieldsP2)
+    {
+        <div><b>P1 Shields P2!</b></div>
+    }
 
-        <div>
-            @(result.P1Fights ? $"Fights : { result.P1Foe }" : "Waits")
-        </div>
-        <br />
+    <div>
+        @(result.P1Fights ? $"Fights : { result.P1Foe }" : "Waits")
+    </div>
+    <br />
 
 
-        <b>P2</b>
-        @(result.Advanced ? $"(Focus received : { result.A1FocusPassedToP2 + result.A2FocusPassedToP2 })" : "")
-        <br />
+    <b>P2</b>
+    @(result.Advanced ? $"(Focus received : { result.A1FocusPassedToP2 + result.A2FocusPassedToP2 })" : "")
+    <br />
 
-        @if (@result.P2ShieldsA2)
-        {
-            <div>Shields A2</div>
-        }
-        <div>
-            @(result.Proficiency ? "Casts Proficiency" : "No proficiency")
-        </div>
-        <div>
-            @(result.P2Fights ? $"Fights : { result.P2Foe }" : "Waits")
-        </div>
-        <br />
-        <div>Total focus passed: @(result.A1FocusPassed + result.A2FocusPassed) </div>
-    </p>;
+    @if (@result.P2ShieldsA2)
+    {
+        <div>Shields A2</div>
+    }
+    <div>
+        @(result.Proficiency ? "Casts Proficiency" : "No proficiency")
+    </div>
+    <div>
+        @(result.P2Fights ? $"Fights : { result.P2Foe }" : "Waits")
+    </div>
+    <br />
+    <div>Total focus passed: @(result.A1FocusPassed + result.A2FocusPassed) </div>
+</p>;
     #endregion
 
 }
