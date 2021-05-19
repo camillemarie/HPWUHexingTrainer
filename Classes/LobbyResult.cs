@@ -13,10 +13,13 @@ namespace HPWUHexingTrainer.Classes
         public bool Advanced { get; set; }
         [Name("proficiency")]
         public bool Proficiency { get; set; }
+
+
         public bool MagiFights { get; set; }
         public string MagiFoe { get; set; }
         public bool A1Fights { get; set; }
         public string A1Foe { get; set; }
+
         public bool A2Fights { get; set; }
         public string A2Foe { get; set; }
         public bool P1Fights { get; set; }
@@ -40,6 +43,7 @@ namespace HPWUHexingTrainer.Classes
         public int A2FocusPassedToP1 { get; set; } // advanced rules only
         public int A2FocusPassedToP2 { get; set; } // advanced rules only
 
+        public List<FoeFighter> FoeFighters { get; set; } // advanced rules only
 
         public List<Hex> A1Hexes { get; set; }
         public List<Hex> A2Hexes { get; set; }
@@ -108,6 +112,7 @@ namespace HPWUHexingTrainer.Classes
     {
         public HexType HexType { get; set; }
         public string FoeName { get; set; }
+        public string FoeNameWithHexes { get; set; }
     }
 
     public enum HexType
