@@ -88,8 +88,8 @@
     </div>
 </div>
 <h5 class="pt-3" hidden=@(!trainingFinished)>@result</h5>
-<h5 hidden=@(!trainingFinished)>@resultAverage</h5>
-<h5 class=@(passFailText == "Pass" ? "text-success" : "text-danger")  hidden=@(!trainingFinished)>@passFailText</h5>
+<h5 hidden=@(!trainingFinished || correct + incorrect == 0)>@resultAverage</h5>
+<h5 class=@(passFailText == "Pass" ? "text-success" : "text-danger")  hidden=@(!trainingFinished || correct + incorrect == 0)>@passFailText</h5>
 
 <button class="btn btn-outline-primary " @onclick="ReviewAnswers" hidden=@hideReviewButton>@reviewButtonName</button>
 
@@ -238,18 +238,26 @@
         trainingFinished = true;
 
         var totalAnswered = correct + incorrect;
-        result = $"Results: { correct }/{ totalAnswered } Percent: { String.Format("{0:P1}", (correct * 1.0 / totalAnswered)) }";
+        double percent = totalAnswered == 0 ? 0 : correct * 1.0 / totalAnswered;
 
+        result = $"Results: { correct }/{ totalAnswered } Percent: { String.Format("{0:P1}", percent) }";
 
         // if we're not showing progress during training, add the penalty time to the timer now for each incorrect answer
         if (!_state.ShowProgressDuringTraining)
             Count += (penaltySeconds * incorrect);
 
         _timeElapsed = String.Format("{0:0.0}", Count);
-        var avg = Count / totalAnswered;
-        resultAverage = $"Average Time: { String.Format("{0:0.0}", Count / totalAnswered) } seconds";
+        var avg = totalAnswered == 0 ? 0 : Count * 1.0 / totalAnswered;
 
-        passFailText = proficiencySelected && avg <= 8 || !proficiencySelected && avg <= 12 ? "Pass" : "Try Again";
+
+        resultAverage = $"Average Time: { String.Format("{0:0.0}", avg) } seconds";
+
+        //resultAverage = $"Average Time: { String.Format("{0:0.0}", Count / totalAnswered) } seconds";
+
+        bool percentPass = totalAnswered > 0 && percent * 100 >= 80;
+        bool timePass = (proficiencySelected && avg <= 8) || (!proficiencySelected && avg <= 12);
+
+        passFailText = percentPass && timePass ? "Pass" : "Try Again";
 
         if (incorrect > 0)
             hideReviewButton = false;
