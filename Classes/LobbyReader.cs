@@ -814,8 +814,10 @@ namespace HPWUHexingTrainer
 
                         // weaken A2's foe - this is if it was a 4* DE and still is OR it was a 4* DE and is now a 4* DW
                         //AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false);
-                        a2.Hexes.Add(HexType.Weakening);
-                        aurorFoeValue--;
+
+                        // hold off on adding this weakening, this foe may yet become A1's foe
+                        //a2.Hexes.Add(HexType.Weakening);
+                        //aurorFoeValue--;
                     }
 
 
@@ -825,22 +827,32 @@ namespace HPWUHexingTrainer
                         orderedAurorFoes.Reverse();
 
                         // we've changed the foe order so we need to update our foe fighter fought by 
-                        for (int i = 0; i < orderedAurorFoes.Count; i++)
-                        {
-                            string foughtBy = i == 0 ? "A1" : "A2"; // who fights what may change later
-                            var f = orderedAurorFoes[i];
+                        result.FoeFighters.Where(f => f.FoughtBy == "A1").First().FoughtBy = "ATemp";
+                        result.FoeFighters.Where(f => f.FoughtBy == "A2").First().FoughtBy = "A1";
+                        result.FoeFighters.Where(f => f.FoughtBy == "ATemp").First().FoughtBy = "A2";
 
-                            result.FoeFighters.Where(f => f.FoughtBy == "A1").First().FoughtBy = "A2";
-                            result.FoeFighters.Where(f => f.FoughtBy == "A2").First().FoughtBy = "A1";
-                        }
+
+                        //// we've changed the foe order so we need to update our foe fighter fought by 
+                        //for (int i = 0; i < orderedAurorFoes.Count; i++)
+                        //{
+                        //    string foughtBy = i == 0 ? "A1" : "A2"; // who fights what may change later
+                        //    var f = orderedAurorFoes[i];
+
+
+                        //    result.FoeFighters.Where(f => f.FoughtBy == "A1").First().FoughtBy = "ATemp";
+                            
+                        //    result.FoeFighters.Where(f => f.FoughtBy == "A2").First().FoughtBy = "A1";
+                        //    result.FoeFighters.Where(f => f.FoughtBy == "ATemp").First().FoughtBy = "A2";
+                        //}
+                        a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
                     }
 
 
 
                     //* if we don't have a shield for A2 (regardless of proficiency) add weakening to A2's foe if it is a 3*
-                    if ((int)orderedAurorFoes[1].Stars == 3)
+                    if ((int)orderedAurorFoes[1].Stars < 5)
                     {
-                        // add weakening to A2's foe if it is a 3*
+                        // add weakening to A2's foe if it is a 3* or 4*
                         //AddHex(result, HexType.Weakening, _state.FoeFullName(orderedAurorFoes[1]), false); 
                         a2.Hexes.Add(HexType.Weakening);
                         aurorFoeValue--;
