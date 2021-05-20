@@ -944,14 +944,14 @@ namespace HPWUHexingTrainer
         {
             ///////////////////////////////////////////////////
             //A1 Hexes
-            var foesThatA1Hexes = result.FoeFighters.Where(f => f.FoughtBy == "M" || f.FoughtBy == "P1" || f.FoughtBy == "P2").ToList();
+            var foesThatA1Hexes = result.FoeFighters.Where(f => f.FoughtBy == "P1" || f.FoughtBy == "P2").ToList();
 
             foreach (var foe in foesThatA1Hexes)
                 SetAurorHexes(result, foe, "A1");
 
             ///////////////////////////////////////////////////
             //A2 Hexes
-            var foesThatA2Hexes = result.FoeFighters.Where(f => f.FoughtBy == "A1" || f.FoughtBy == "A2").ToList();
+            var foesThatA2Hexes = result.FoeFighters.Where(f => f.FoughtBy == "A1" || f.FoughtBy == "A2" || f.FoughtBy == "M").ToList();
 
             foreach (var foe in foesThatA2Hexes)
                 SetAurorHexes(result, foe, "A2");
