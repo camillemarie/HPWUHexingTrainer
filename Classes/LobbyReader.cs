@@ -758,9 +758,6 @@ namespace HPWUHexingTrainer
 
             if (!result.Proficiency)
             {
-                //If any professor foe is a Dangerous Werewolf, add the Confusion Hex and reduce Foe Value by one.
-                // foreach (var f in orderedProfFoes.Where(p => p.Type == FoeType.Werewolf && (int)p.Stars == 4).ToList())
-
                 var profFoes = orderedProfFoes.Where(p => p.Type == FoeType.Werewolf && (int)p.Stars == 4).ToList();
 
                 for (int i = 0; i < profFoes.Count; i++)
@@ -770,11 +767,6 @@ namespace HPWUHexingTrainer
                     profFoe.Hexes.Add(HexType.Confusion);
                     profFoeValue--;
                 }
-
-                //{
-                //    AddHex(result, HexType.Confusion, _state.FoeFullName(f), true);
-                //    profFoeValue--;
-                //}
 
                 // if A2 is fighting a 4* DE and we don't have proficiency, P2 should shield A2 as long as A2 doesn't already have a shield
                 if ((orderedAurorFoes.Count == 2 && !result.Proficiency && !result.P1ShieldsA2 && !result.P2ShieldsA2
@@ -828,14 +820,6 @@ namespace HPWUHexingTrainer
                         ReverseFoeOrder(result, orderedAurorFoes);
                         a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
                     }
-
-                    //// if we have 2 foes, reverse unless you have a 3* followed by a 4* Dark Wizard
-                    //if (!((int)orderedAurorFoes[0].Stars == 3 && (int)orderedAurorFoes[1].Stars == 4 && orderedAurorFoes[1].Type == FoeType.DarkWizard))
-                    //{
-                    //    ReverseFoeOrder(result, orderedAurorFoes);
-
-                    //    a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
-                    //}
 
                     //* if we don't have a shield for A2 (regardless of proficiency) add weakening to A2's foe if it is a 3* or 4* (that doesn't already have a weakening)
                     var hasWeakening = a2.Hexes.Any(a => a == HexType.Weakening);
