@@ -549,7 +549,7 @@ namespace HPWUHexingTrainer
             if (orderedMagiFoes.Count == 0)
             {
                 magiFoeValue = 0;
-                result.Decisions.Add($"Magi has nothing to fight. Keep a focus for the next Magi foe to turn up.");
+               // result.Decisions.Add($"Magi has nothing to fight. Keep a focus for the next Magi foe to turn up.");
             }
             else
             {
@@ -703,7 +703,7 @@ namespace HPWUHexingTrainer
                     var f = orderedAurorFoes[i];
 
                     AddFoeFighter(result, f, null, foughtBy);
-                    result.Decisions.Add($"{foughtBy} - will fight a {_state.FoeFullName(f)}.");
+                    result.Decisions.Add($"{foughtBy} - starts with a {_state.FoeFullName(f)}.");
                     var ff = result.FoeFighters.Last();
 
                     if (((int)f.Stars == 3) || (f.Type == FoeType.DeathEater && (int)f.Stars == 4))
