@@ -50,6 +50,8 @@ namespace HPWUHexingTrainer.Classes
 
         public List<Foe> Foes { get; set; }
 
+        public List<string> Decisions { get; set; }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
