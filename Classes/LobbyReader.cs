@@ -833,6 +833,8 @@ namespace HPWUHexingTrainer
 
         private static int TwoAurorFoes(LobbyResult result, int aurorFoeValue, List<Foe> orderedAurorFoesFull, List<Foe> orderedAurorFoes)
         {
+            bool hasBeenReversed = false; // we don't want to reverse twice...
+
             // if we have 2 auror foes
             if (orderedAurorFoes.Count == 2)
             {
@@ -842,7 +844,7 @@ namespace HPWUHexingTrainer
                 if ((int)orderedAurorFoes[1].Stars == 4 && orderedAurorFoes[1].Type == FoeType.DeathEater)
                 {
                     result.Decisions.Add("Reverse the auror foe order as A2 has a 4* Death Eater.");
-                    ReverseFoeOrder(result, orderedAurorFoes);
+                    hasBeenReversed = ReverseFoeOrder(result, orderedAurorFoes);
                 }
 
                 FoeFighter a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
@@ -870,21 +872,42 @@ namespace HPWUHexingTrainer
                     }
 
                     // if A1 has a 3* or 4*DE AND A2 has a 4* DW do nothing, otherwise reverse the foes
-                    bool A1correctForNotReversing = (int)orderedAurorFoes[0].Stars == 3 ||
-                        ((int)orderedAurorFoes[0].Stars == 4 && orderedAurorFoes[0].Type == FoeType.DeathEater);
+                    //bool A1correctForNotReversing = (int)orderedAurorFoes[0].Stars == 3 ||
+                    //    ((int)orderedAurorFoes[0].Stars == 4 && orderedAurorFoes[0].Type == FoeType.DeathEater);
 
-                    bool A2correctForNotReversing = (int)orderedAurorFoes[1].Stars == 4 && orderedAurorFoes[1].Type == FoeType.DarkWizard;
+                    //bool A2correctForNotReversing = (int)orderedAurorFoes[1].Stars == 4 && orderedAurorFoes[1].Type == FoeType.DarkWizard;
 
-                    if (!A1correctForNotReversing || !A2correctForNotReversing)
+
+                    // if A1 has a 3* or 4*DE AND A2 has a 4* DW do nothing, otherwise reverse the foes
+                    bool A1ForReversing = !((int)orderedAurorFoes[0].Stars == 3) && !((int)orderedAurorFoes[0].Stars == 4 && orderedAurorFoes[0].Type == FoeType.DeathEater);
+                    bool A2ForReversing = !((int)orderedAurorFoes[1].Stars == 4 && orderedAurorFoes[1].Type == FoeType.DarkWizard);
+
+
+                    //if (hasBeenReversed || !A1correctForNotReversing || !A2correctForNotReversing)
+
+                    if (!hasBeenReversed) // only reverse once
                     {
-                        result.Decisions.Add("Reverse the auror foe order.");
-                        ReverseFoeOrder(result, orderedAurorFoes);
-                        a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
+                        if (A1ForReversing && A2ForReversing)
+                        {
+                            result.Decisions.Add("If A1 has a 3* or 4*DE AND A2 has a 4* DW do nothing, otherwise reverse the foes.");
+                            hasBeenReversed = ReverseFoeOrder(result, orderedAurorFoes);
+                            a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
+                        }
+                        else
+                            result.Decisions.Add("A1 has a 3* foe or a 4* Dark Wizard and A2 has a 4* Dark Wizard. Keep this order.");
                     }
-                    else
-                    {
-                        result.Decisions.Add("A1 has a 3* foe or a 4* Dark Wizard and A2 has a 4* Dark Wizard. Keep this order.");
-                    }
+
+                    
+                    //if (!hasBeenReversed && A1ForReversing && A2ForReversing)
+                    //{
+                    //    result.Decisions.Add("If A1 has a 3* or 4*DE AND A2 has a 4* DW do nothing, otherwise reverse the foes.");
+                    //    ReverseFoeOrder(result, orderedAurorFoes);
+                    //    a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
+                    //}
+                    //else
+                    //{
+                    //    result.Decisions.Add("A1 has a 3* foe or a 4* Dark Wizard and A2 has a 4* Dark Wizard. Keep this order.");
+                    //}
 
                     //* if we don't have a shield for A2 (regardless of proficiency) add weakening to A2's foe if it is a 3* or 4* (that doesn't already have a weakening)
                     var hasWeakening = a2.Hexes.Any(a => a == HexType.Weakening);
@@ -899,7 +922,7 @@ namespace HPWUHexingTrainer
             return aurorFoeValue;
         }
 
-        private static void ReverseFoeOrder(LobbyResult result, List<Foe> orderedAurorFoes)
+        private static bool ReverseFoeOrder(LobbyResult result, List<Foe> orderedAurorFoes)
         {
             orderedAurorFoes.Reverse();
 
@@ -910,6 +933,8 @@ namespace HPWUHexingTrainer
 
             result.Decisions.Add($"A1 - is now fighting {_state.FoeFullName(orderedAurorFoes[0])}.");
             result.Decisions.Add($"A2 - is now fighting {_state.FoeFullName(orderedAurorFoes[1])}.");
+
+            return true;
         }
 
         private static void DetermineFocusPassed(LobbyResult result, int magiFoeValue, int profFoeValue, int aurorFoeValue)
