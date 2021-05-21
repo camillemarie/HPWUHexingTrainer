@@ -57,6 +57,10 @@ a, .btn-link {
     border: 1px solid #ccc;
     overflow-y: auto;
 }
+/* ideally this would be a sub class but it didn't work as expected */
+.decisionsarea {
+    max-height: 300px;
+}
 
 
 .parent {
@@ -85,10 +89,7 @@ a, .btn-link {
     width: 100%;
 }
 
-#backgroundImg { 
+#backgroundImg {
     background-repeat: no-repeat;
     min-height: 600px;
 }
-
-
-
