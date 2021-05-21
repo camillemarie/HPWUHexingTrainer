@@ -193,7 +193,7 @@
         {
             if (timerStarted)
             {
-                Count += 0.5;
+                Count += 0.1;
 
                 _timeElapsed = String.Format("{0:0.0}", Count);
 
@@ -204,7 +204,7 @@
                     StateHasChanged();
                 });
             }
-        }), null, 500, 500);
+        }), null, 100, 100);
     }
 
 
