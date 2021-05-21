@@ -656,7 +656,15 @@ namespace HPWUHexingTrainer
                 .Take(2)
                 .ToList();
 
-            if (orderedAurorFoes.Count > 0)
+
+            FoeFighter magiInfo = result.FoeFighters.Where(f => f.FoughtBy == "M")
+                                        .FirstOrDefault();
+
+            // if we have no magi foes AND no auror foes, pass an extra focus to the profs
+            if (magiInfo == null && orderedAurorFoes.Count == 0)
+                aurorFoeValue++;
+
+            else if (orderedAurorFoes.Count > 0)
             {
                 //foreach (var f in orderedAurorFoes)
                 for (int i = 0; i < orderedAurorFoes.Count; i++)
