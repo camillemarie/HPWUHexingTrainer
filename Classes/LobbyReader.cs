@@ -39,6 +39,7 @@ namespace HPWUHexingTrainer
         }
 
 
+        #region standard rules
 
         #region A1
         private static void SetA1Details(List<Foe> foes, LobbyResult br)
@@ -457,28 +458,9 @@ namespace HPWUHexingTrainer
 
             }
         }
+        #endregion
 
 
-
-
-        private static void AddHex(LobbyResult br, HexType type, string foeName, bool isAuror1)
-        {
-            Hex h = new Hex();
-            h.HexType = type;
-            h.FoeName = foeName;
-
-            if (isAuror1)
-                br.A1Hexes.Add(h);
-            else
-                br.A2Hexes.Add(h);
-        }
-
-
-        public static void CompareLobbyResults(LobbyResult b1, LobbyResult result)
-        {
-            // Magi response. Fight if at least 1 magi foe, else wait
-            //bool IsMagiCorrect = CheckMagi(foes, userResult);
-        }
 
         #region advanced rules
         public static void ReadAdvanced(List<Foe> foes, LobbyResult result)
@@ -487,7 +469,7 @@ namespace HPWUHexingTrainer
             int magiFoeValue = 0, profFoeValue = 0, aurorFoeValue = 0; // A2 always passes 1, we add that in as necessary later
 
             /*
-             * After this, the mental process is complicated.But the main idea is to assign “focus value” to the foes.Only one Magi foe can have value, 
+             * After this, the mental process is complicated.But the main idea is to assign “focus value” to the foes. Only one Magi foe can have value, 
              * two for Professor and two for Auror.
              * If the total value of foes is 2 or higher, it means that we can get Proficiency up (Unless we have two Fierce Dark Forces).
              * If the total value of foes is 4 or higher, it means that we can get Proficiency up and both shields.
@@ -506,20 +488,6 @@ namespace HPWUHexingTrainer
              */
             int foeValue = magiFoeValue + profFoeValue + aurorFoeValue;
             result.Decisions.Add($"Focus that can be passed: {foeValue + 1}.");
-
-            //// Case #1 Foevalue >= 4
-            //if (foeValue >= 4) // this doesn't include the 1 focus always passed by A2 so we only need 4 here (5 focus passed in total)
-            //{
-            //    result.Proficiency = true;
-            //    //result.P1ShieldsA1 = true; // this always happens so it is implicit
-            //    result.P1ShieldsA2 = true;
-            //    result.Decisions.Add("Focus passed >= 5, We have proficiency and shields for both A1 and A2.");
-
-            //    result.P1ShieldsP2 = (foeValue == 7);
-
-            //    if (result.P1ShieldsP2)
-            //        result.Decisions.Add($"Focus passed = 8. We have a 🦄 lobby! P1 shields P2.");
-            //}
 
             //if (foeValue < 7)
             DetermineProficiencyAndOptionalHexes(result, magiFoeValue, ref profFoeValue, ref aurorFoeValue, orderedProfFoes, orderedAurorFoesFull, orderedAurorFoes, foeValue);
@@ -766,17 +734,9 @@ namespace HPWUHexingTrainer
                 result.Proficiency = true;
                 //result.P1ShieldsA1 = true; // this always happens so it is implicit
                 result.P1ShieldsA2 = true;
-                result.Decisions.Add("Focus passed >= 5, We have proficiency and shields for both A1 and A2."); 
+                result.Decisions.Add("Focus passed >= 5, We have proficiency and shields for both A1 and A2.");
                 return;
             }
-
-            //
-            //if (foeValue >= 4)
-            //{
-            //    result.Decisions.Add("We have proficiency.");
-                
-            //}
-
 
             if (foeValue < 4)
             {
@@ -792,16 +752,12 @@ namespace HPWUHexingTrainer
                     {
                         result.P2ShieldsA2 = true;
                         result.Proficiency = false;
-                        result.Decisions.Add("A2 does not have a shield and we have 2 5* dark foes. P2 shields A2."); 
+                        result.Decisions.Add("A2 does not have a shield and we have 2 5* dark foes. P2 shields A2.");
                         result.Decisions.Add("We do not have proficiency.");
                     }
-                    //else if (foeValue >= 2)
-                    //    result.Proficiency = true;
-                    //else
-                    //    result.Proficiency = false;
                 }
             }
-            aurorFoeValue = TwoAurorFoes(result, aurorFoeValue, orderedAurorFoesFull, orderedAurorFoes);
+            aurorFoeValue = TwoAurorFoes(result, aurorFoeValue, orderedAurorFoesFull, orderedAurorFoes, foeValue);
 
             // recalculate proficiency (again) after the latest round of hexing - only if proficiency was true before
             if (result.Proficiency)
@@ -856,15 +812,20 @@ namespace HPWUHexingTrainer
         }
 
 
-        private static int TwoAurorFoes(LobbyResult result, int aurorFoeValue, List<Foe> orderedAurorFoesFull, List<Foe> orderedAurorFoes)
+        private static int TwoAurorFoes(LobbyResult result, int aurorFoeValue, List<Foe> orderedAurorFoesFull, List<Foe> orderedAurorFoes, int foeValue)
         {
             bool hasBeenReversed = false; // we don't want to reverse twice...
+
 
             // if we have 2 auror foes
             if (orderedAurorFoes.Count == 2)
             {
-                //result.Decisions.Add("We have 2 dark foes.");
+                // take a copy of our ordered foes and our foe fighter list. If after doing the first 'decision tree' we fall below 3 focus, go to plan B and start again with our original data.
+                List<Foe> originalAurorFoes = orderedAurorFoes.ToList();
+                List<FoeFighter> originalFoeFighters = result.FoeFighters.ToList();
 
+
+                // START THE FIRST LIST OF DECISIONS
                 // reverse if A2 has a 4 * DE
                 if ((int)orderedAurorFoes[1].Stars == 4 && orderedAurorFoes[1].Type == FoeType.DeathEater)
                 {
@@ -876,25 +837,7 @@ namespace HPWUHexingTrainer
 
                 if (!result.P1ShieldsA2 && !result.P2ShieldsA2)
                 {
-                    // if A2 isn't shielded and has 4* DE, check if there is a 4* DW available
-                    if (orderedAurorFoes[1].Type == FoeType.DeathEater && (int)orderedAurorFoes[1].Stars == 4)
-                    {
-                        Foe f = orderedAurorFoesFull.Where(f => f.Stars == StarName.Dangerous && f.Type == FoeType.DarkWizard)
-                            .FirstOrDefault();
-
-                        if (f != null)
-                        {
-                            result.Decisions.Add("A2 - isn't shielded, is fighting a 4* Death Eater and there is a 4* Dark Wizard in the lobby.");
-                            result.Decisions.Add("A2 - replace the 4* Death Eater with the 4* Dark Wizard.");
-
-                            // replace the A2 foe with the DW and hex it
-                            orderedAurorFoes[1] = f;
-                            result.FoeFighters.Remove(a2);
-                            AddFoeFighter(result, f, null, "A2");
-                            a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
-                            result.Decisions.Add($"A2 - is now fighting {_state.FoeFullName(orderedAurorFoes[1])}.");
-                        }
-                    }
+                    a2 = CheckFor4StarDarkWizard(result, orderedAurorFoesFull, orderedAurorFoes, a2);
 
                     // does A1 have a 3* foe or a 4* DW 
                     bool A1FoeIs3starOr4starDW = (int)orderedAurorFoes[0].Stars == 3 || (int)orderedAurorFoes[0].Stars == 4 && orderedAurorFoes[0].Type == FoeType.DeathEater;
@@ -916,13 +859,77 @@ namespace HPWUHexingTrainer
                     var hasWeakening = a2.Hexes.Any(a => a == HexType.Weakening);
                     if ((int)orderedAurorFoes[1].Stars < 5 && !hasWeakening)
                     {
-                        a2.Hexes.Add(HexType.Weakening);
-                        aurorFoeValue--;
-                        result.Decisions.Add("A2 - has a 3* or 4* foe. Add a Weakening hex. Subtract 1 from focus passed.");
+                        // if our focus passed it on 3, this would drop us below three, do the alternative decision tree instead of adding the hex and dropping below 3 focus (and therefore no proficiency)
+                        if (foeValue == 2)
+                        {
+                            result.Decisions.Add("With the decisions just made we'd drop below 3 focus passed. Go back to original foe order and try a 2nd decision branch.");
+
+                            // restore our original lists
+                            orderedAurorFoes = originalAurorFoes.ToList();
+                            result.FoeFighters = originalFoeFighters.ToList();
+                            a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
+
+                            // If A2 doesn't have a shield and has a 4* DE, check if there is a 4* DW that could be swapped in. If so, change to the 4* DW
+                            a2 = CheckFor4StarDarkWizard(result, orderedAurorFoesFull, orderedAurorFoes, a2);
+
+                            // If A2 doesn't have a 4* DW, reverse foes
+                            A2FoeIs4starDW = (int)orderedAurorFoes[1].Stars == 4 && orderedAurorFoes[1].Type == FoeType.DarkWizard;
+                            if (A2FoeIs4starDW)
+                                result.Decisions.Add("2nd decision branch - A2 has a 4* Dark Wizard. Keep this order.");
+                            else
+                            {
+                                result.Decisions.Add("2nd decision branch - If A2 does NOT have a 4* DW reverse the foes.");
+                                hasBeenReversed = ReverseFoeOrder(result, orderedAurorFoes);
+                                a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
+                            }
+
+                            hasWeakening = a2.Hexes.Any(a => a == HexType.Weakening);
+                            if ((int)orderedAurorFoes[1].Stars < 5 && !hasWeakening)
+                            {
+                                aurorFoeValue = HexA2(result, aurorFoeValue, a2);
+                            }
+                        }
+                        else
+                        {
+                            aurorFoeValue = HexA2(result, aurorFoeValue, a2);
+                        }
                     }
                 }
             }
             return aurorFoeValue;
+        }
+
+        private static int HexA2(LobbyResult result, int aurorFoeValue, FoeFighter a2)
+        {
+            a2.Hexes.Add(HexType.Weakening);
+            aurorFoeValue--;
+            result.Decisions.Add("A2 - has a 3* or 4* foe. Add a Weakening hex. Subtract 1 from focus passed.");
+            return aurorFoeValue;
+        }
+
+        private static FoeFighter CheckFor4StarDarkWizard(LobbyResult result, List<Foe> orderedAurorFoesFull, List<Foe> orderedAurorFoes, FoeFighter a2)
+        {
+            // if A2 isn't shielded and has 4* DE, check if there is a 4* DW available
+            if (orderedAurorFoes[1].Type == FoeType.DeathEater && (int)orderedAurorFoes[1].Stars == 4)
+            {
+                Foe f = orderedAurorFoesFull.Where(f => f.Stars == StarName.Dangerous && f.Type == FoeType.DarkWizard)
+                    .FirstOrDefault();
+
+                if (f != null)
+                {
+                    result.Decisions.Add("A2 - isn't shielded, is fighting a 4* Death Eater and there is a 4* Dark Wizard in the lobby.");
+                    result.Decisions.Add("A2 - replace the 4* Death Eater with the 4* Dark Wizard.");
+
+                    // replace the A2 foe with the DW and hex it
+                    orderedAurorFoes[1] = f;
+                    result.FoeFighters.Remove(a2);
+                    AddFoeFighter(result, f, null, "A2");
+                    a2 = result.FoeFighters.Where(f => f.FoughtBy == "A2").First();
+                    result.Decisions.Add($"A2 - is now fighting {_state.FoeFullName(orderedAurorFoes[1])}.");
+                }
+            }
+
+            return a2;
         }
 
         private static bool ReverseFoeOrder(LobbyResult result, List<Foe> orderedAurorFoes)
@@ -1134,6 +1141,25 @@ namespace HPWUHexingTrainer
             else
                 result.A2Hexes.Add(h);
 
+        }
+
+        private static void AddHex(LobbyResult br, HexType type, string foeName, bool isAuror1)
+        {
+            Hex h = new Hex();
+            h.HexType = type;
+            h.FoeName = foeName;
+
+            if (isAuror1)
+                br.A1Hexes.Add(h);
+            else
+                br.A2Hexes.Add(h);
+        }
+
+
+        public static void CompareLobbyResults(LobbyResult b1, LobbyResult result)
+        {
+            // Magi response. Fight if at least 1 magi foe, else wait
+            //bool IsMagiCorrect = CheckMagi(foes, userResult);
         }
 
         private static string AddHexDetail(int hexNumber)
