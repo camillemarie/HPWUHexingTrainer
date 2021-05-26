@@ -74,12 +74,13 @@ namespace HPWUHexingTrainer
 
                 if (f.Type == FoeType.Pixie)
                 {
-                    int pixieStars = 3;
+                    //int pixieStars = 3;
 
-                    if (_state.ShowAdvancedRules) // don't weaken 4 star pixies with advanced rules
-                        pixieStars = 4;
+                    //if (_state.ShowAdvancedRules) // don't weaken 4 star pixies with advanced rules
+                    //    pixieStars = 4;
 
-                    if ((int)f.Stars > pixieStars)
+                    // standard rules changed by Andolov to not weaken 4* pixie
+                    if ((int)f.Stars > 4)
                         AddHex(br, HexType.Weakening, _state.FoeFullName(f), true);
                 }
                 // it is a wolf
@@ -1037,7 +1038,6 @@ namespace HPWUHexingTrainer
                 }
             }
         }
-        #endregion
 
         private static void AddFoeFighter(LobbyResult result, Foe f, List<HexType> hexes, string foughtBy)
         {
@@ -1163,6 +1163,7 @@ namespace HPWUHexingTrainer
                 result.A2Hexes.Add(h);
 
         }
+        #endregion
 
         private static void AddHex(LobbyResult br, HexType type, string foeName, bool isAuror1)
         {
