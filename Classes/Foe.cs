@@ -95,6 +95,10 @@ namespace HPWUHexingTrainer
                 f.GridArea = $" {rndRow} / {rndCol} / {rndRow + 1} / {rndCol + 1} ";
             }
         }
+        public Foe ShallowCopy()
+        {
+            return this.MemberwiseClone() as Foe;
+        }
     }
 
     public enum FoeType

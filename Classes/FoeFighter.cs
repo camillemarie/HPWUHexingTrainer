@@ -16,6 +16,8 @@ namespace HPWUHexingTrainer.Classes
         //public List<HexInfo> HexInfos { get; set; }
         //public string HexedBy { get; set; }
 
+
+
         public FoeFighter(Foe f)
         {
         }
@@ -49,6 +51,12 @@ namespace HPWUHexingTrainer.Classes
             Hexes = new List<HexType>();
         }
 
+        public FoeFighter ShallowCopy()
+        {
+            return this.MemberwiseClone() as FoeFighter;
+        }
+
+
         //public struct HexInfo
         //{
         //    public HexType HexType { get; set; }
@@ -59,6 +67,6 @@ namespace HPWUHexingTrainer.Classes
         //        HexType = hexType;
         //        By = by;
         //    }
-        }
+    }
     
 }
