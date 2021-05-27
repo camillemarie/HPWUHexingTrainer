@@ -11,15 +11,15 @@
 <h5>See how quickly you can read some lobbies</h5>
 
 <div class="row pt-2">
-    <div class="col-lg-7 col-xl-6">
-        <button class="btn  @(proficiencySelected ? "btn-primary" : "btn-outline-primary")" @onclick="SetAsProficiency" disabled="@IsSettingDisabled">Proficiency</button>
-        <button class="btn  @(proficiencySelected ? "btn-outline-primary" : "btn-primary") ml-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled">Focus</button>
+    <div class="col-lg-7 col-xl-6 ">
+        <button class="btn  @(proficiencySelected ? "btn-primary" : "btn-outline-primary")  mt-1" @onclick="SetAsProficiency" disabled="@IsSettingDisabled">Proficiency</button>
+        <button class="btn  @(proficiencySelected ? "btn-outline-primary" : "btn-primary") ml-1 mt-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled">Focus</button>
 
-        <button class="btn btn-outline-primary ml-3" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled">
+        <button class="btn btn-outline-primary ml-3 mt-1" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled">
             Using @(_state.ShowAdvancedRules ? "Advanced" : "Standard")
         </button>
 
-        <button class="btn btn-outline-primary" @onclick="ChangeShowProgress" disabled="@IsSettingDisabled">
+        <button class="btn btn-outline-primary mt-1" @onclick="ChangeShowProgress" disabled="@IsSettingDisabled">
             @(_state.ShowProgressDuringTraining ? "Showing Progress" : "Don't show progress")
         </button>
     </div>
@@ -276,7 +276,7 @@
             _foes = Foe.GetNewLobby();
 
             // read the lobby
-            lr = LobbyReader.Read(_foes, _state);
+            lr = new LobbyReader(_foes, _state).Read();
             Foe.PositionFoes(_foes);
 
             _li.Foes = _foes.ToList();
