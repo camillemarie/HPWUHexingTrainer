@@ -1,16 +1,34 @@
 ﻿@page "/"
+@using HPWUHexingTrainer.Classes
 
-<h2>Test your knowledge</h2>
-<h3>with some Wizards Unite Dark 5 lobbies!</h3>
 
-<div class="row pt-5">
+<div class="row">
     <div class="col">
-        <a href="computergenerated" class="btn btn-outline-primary mr-2 mt-2" role="button">Computer generated lobby</a>
-        <a href="usergenerated" class="btn btn-outline-primary mr-2 mt-2" role="button">Create you own</a>
-        <a href="test" class="btn btn-outline-primary mr-2 mt-2" role="button">Test lobbies</a>
-        <a href="lobbies" class="btn btn-outline-primary mr-2 mt-2" role="button">Select a test lobby</a>
+        <h2>Test your knowledge with Andolov's hexing method</h2>
     </div>
 </div>
+<div class="row pt-2">
+    <div class="col"><h6 class="mt-6">This is a place to test and train the Harry Potter Wizards Unite Hexing method developed by Andolov and Rai</h6></div>
+</div>
+<div class="row pt-2">
+    <div class="col">There are a number of options available in the menu as well as some personal settings.</div>
+
+</div>
+<div class="row pt-2">
+    <button class="btn btn-outline-primary ml-3" @onclick="ChangeAnswerRules">
+        Using @(_state.ShowAdvancedRules ? "Advanced" : "Standard") rules
+    </button>
+</div>
+
+
+@*<div class="row pt-5">
+        <div class="col">
+            <a href="computergenerated" class="btn btn-outline-primary mr-2 mt-2" role="button">Computer generated lobby</a>
+            <a href="usergenerated" class="btn btn-outline-primary mr-2 mt-2" role="button">Create you own</a>
+            <a href="test" class="btn btn-outline-primary mr-2 mt-2" role="button">Test lobbies</a>
+            <a href="lobbies" class="btn btn-outline-primary mr-2 mt-2" role="button">Select a test lobby</a>
+        </div>
+    </div>*@
 <div class="row pt-4">
     <div class="col">
         Select a item on the menu to test yourself using:
@@ -19,8 +37,21 @@
                 <li>A lobby generated for you by the computer</li>
                 <li>A lobby you create yourself</li>
                 <li>A lobby from the Discord Fortress Strategists training PDF</li>
+                <li>A timed set of lobbies on the Training page</li>
             </ul>
         </p>
         <p><span style="background-color: plum">Elite foes will appear with a purple background</span></p>
     </div>
 </div>
+
+
+@code {
+    [CascadingParameter]
+    public UserSettings _state { get; set; }
+
+
+    private void ChangeAnswerRules()
+    {
+        _state.ShowAdvancedRules = !_state.ShowAdvancedRules;
+    }
+}
