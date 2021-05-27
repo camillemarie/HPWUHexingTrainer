@@ -166,7 +166,7 @@
     /// </summary>
     private void GetAnswer()
     {
-        lr = LobbyReader.Read(Foes, _state);
+        lr = new LobbyReader(Foes, _state).Read();
 
         _hideResultElement = !_state.ShowResults;           // Hide Result -> setting show full results = false
         _hideAnswerButton = true;                           // They've clicked the Answer button, hide it until they generate a new board
@@ -186,7 +186,7 @@
     private void ChangeAnswerRules()
     {
         _state.ShowAdvancedRules = !_state.ShowAdvancedRules;
-        lr = LobbyReader.Read(Foes, _state);
+        lr = new LobbyReader(Foes, _state).Read();
 
         lrc.lobbyResult = lr;
         lrc.Refresh();
