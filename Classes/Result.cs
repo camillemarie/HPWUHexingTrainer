@@ -12,21 +12,22 @@ namespace HPWUHexingTrainer.Classes
         public LobbyResult LobbyResult { get; set; }
         public bool CorrectAnswer { get; set; }
 
-        public int FocusAnswer { get; set; }
+        public int OtherAnswer { get; set; }
         public bool ProficiencyAnswer { get; set; }
+
 
 
         public Result()
         {
         }
 
-        public Result(int lobbyNumber, List<Foe> foesList, LobbyResult lobbyResult, bool proficiencyAnswer, int focusAnswer, bool correctAnswer)
+        public Result(int lobbyNumber, List<Foe> foesList, LobbyResult lobbyResult, bool proficiencyAnswer, int otherAnswer, bool correctAnswer)
         {
             LobbyNumber = lobbyNumber;
             FoesList = foesList;
             LobbyResult = lobbyResult;
             ProficiencyAnswer = proficiencyAnswer;
-            FocusAnswer = focusAnswer;
+            OtherAnswer = otherAnswer;
             CorrectAnswer = correctAnswer;
         }
     }

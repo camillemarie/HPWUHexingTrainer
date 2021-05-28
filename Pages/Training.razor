@@ -12,8 +12,9 @@
 
 <div class="row pt-2">
     <div class="col-lg-7 col-xl-6 ">
-        <button class="btn  @(proficiencySelected ? "btn-primary" : "btn-outline-primary")  mt-1" @onclick="SetAsProficiency" disabled="@IsSettingDisabled">Proficiency</button>
-        <button class="btn  @(proficiencySelected ? "btn-outline-primary" : "btn-primary") ml-1 mt-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled">Focus</button>
+        <button class="btn  @(_selected == "proficiency" ? "btn-primary" : "btn-outline-primary")  mt-1" @onclick="SetAsProficiency" disabled="@IsSettingDisabled">Proficiency</button>
+        <button class="btn  @(_selected == "focus" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled">Focus</button>
+        <button class="btn  @(_selected == "shields" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="SetAsShields" disabled="@IsSettingDisabled">Shields</button>
 
         <button class="btn btn-outline-primary ml-3 mt-1" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled">
             Using @(_state.ShowAdvancedRules ? "Advanced" : "Standard")
@@ -35,9 +36,9 @@
             </tr>
 
             @*<tr>
-                <td colspan="2"><button class="btn btn-outline-primary" @onclick="ChangeShowProgress" disabled="@IsSettingDisabled">
-                    @(_state.ShowProgressDuringTraining ? "Showing Progress" : "Don't show progress")</button></td>
-            </tr>*@
+                    <td colspan="2"><button class="btn btn-outline-primary" @onclick="ChangeShowProgress" disabled="@IsSettingDisabled">
+                        @(_state.ShowProgressDuringTraining ? "Showing Progress" : "Don't show progress")</button></td>
+                </tr>*@
         </table>
     </div>
 </div>
@@ -57,21 +58,22 @@
     <div col-sm>
         <div class="row ml-3 pt-1">
             <div col>
-                <button class="btn btn-lg btn-outline-primary " @onclick="() => GetAnswer(true)" hidden=@(!proficiencySelected)>Yes</button>
-                <button class="btn btn-lg btn-outline-primary ml-3" @onclick="() => GetAnswer(false)" hidden=@(!proficiencySelected)>No</button>
+                <button class="btn btn-lg btn-outline-primary " @onclick="() => GetAnswer(true)" hidden=@(_selected != "proficiency")>Yes</button>
+                <button class="btn btn-lg btn-outline-primary ml-3" @onclick="() => GetAnswer(false)" hidden=@(_selected != "proficiency")>No</button>
 
-                @if (!proficiencySelected)
+                @if (_selected != "proficiency")
                 {
-                    @for (int focus = 1; focus < 5; focus++)
+                    var maxCnt = _selected == "focus" ? 5 : 4;
+                    @for (int btnNum = 1; btnNum < maxCnt; btnNum++)
                     {
-                        var local_focus = focus;
-                        <button id="focus-button-@focus" class="btn btn-lg btn-outline-primary mr-2" type="button" @onclick="() => GetAnswer(false, local_focus)">@focus</button>
+                        var local_num = btnNum;
+                        <button id="focus-button-@btnNum" class="btn btn-lg btn-outline-primary mr-2" type="button" @onclick="() => GetAnswer(false, local_num)">@btnNum</button>
                     }
                 }
 
             </div>
         </div>
-        <div class="row ml-3 pt-2" hidden="@proficiencySelected">
+        <div class="row ml-3 pt-2" hidden=@(_selected != "focus")>
             <div col>
                 @for (int focus = 5; focus < 9; focus++)
                 {
@@ -89,7 +91,7 @@
 </div>
 <h5 class="pt-3" hidden=@(!trainingFinished)>@result</h5>
 <h5 hidden=@(!trainingFinished || correct + incorrect == 0)>@resultAverage</h5>
-<h5 class=@(passFailText == "Pass" ? "text-success" : "text-danger")  hidden=@(!trainingFinished || correct + incorrect == 0)>@passFailText</h5>
+<h5 class=@(passFailText == "Pass" ? "text-success" : "text-danger") hidden=@(!trainingFinished || correct + incorrect == 0)>@passFailText</h5>
 
 <button class="btn btn-outline-primary " @onclick="ReviewAnswers" hidden=@hideReviewButton>@reviewButtonName</button>
 
@@ -109,8 +111,8 @@
                 <td>@correctAnswer</td>
             </tr>
             @*<tr>
-                <td class=@(passFailText == "Pass" ? "text-success" : "text-warning") colspan="2">@passFailText</td>
-            </tr>*@
+                    <td class=@(passFailText == "Pass" ? "text-success" : "text-warning") colspan="2">@passFailText</td>
+                </tr>*@
         </table>
     </div>
     <div>
@@ -127,7 +129,8 @@
 
     int lobbiesToRun = 20;
     int penaltySeconds = 12;
-    bool proficiencySelected = true;
+    //bool proficiencySelected = true;
+    string _selected = "Proficiency";
     protected bool IsSettingDisabled { get; set; }
 
     List<Result> _results = new List<Result>();
@@ -169,13 +172,19 @@
     #region Training settings
     void SetAsProficiency()
     {
-        proficiencySelected = true;
+        _selected = "proficiency";
         penaltySeconds = 12; // 8;
     }
 
     void SetAsFocus()
     {
-        proficiencySelected = false;
+        _selected = "focus";
+        penaltySeconds = 12; // 10;
+    }
+
+    void SetAsShields()
+    {
+        _selected = "shields";
         penaltySeconds = 12; // 10;
     }
 
@@ -197,12 +206,12 @@
 
                 _timeElapsed = String.Format("{0:0.0}", Count);
 
-                // Note that the following line is necessary because otherwise
-                // Blazor would not recognize the state change and not refresh the UI
-                InvokeAsync(() =>
-                {
-                    StateHasChanged();
-                });
+        // Note that the following line is necessary because otherwise
+        // Blazor would not recognize the state change and not refresh the UI
+        InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
             }
         }), null, 100, 100);
     }
@@ -252,10 +261,10 @@
 
         resultAverage = $"Average Time: { String.Format("{0:0.0}", avg) } seconds";
 
-        //resultAverage = $"Average Time: { String.Format("{0:0.0}", Count / totalAnswered) } seconds";
-
         bool percentPass = totalAnswered > 0 && percent * 100 >= 80;
-        bool timePass = (proficiencySelected && avg <= 8) || (!proficiencySelected && avg <= 12);
+
+        // set proficiency and shield average to 8
+        bool timePass = (_selected != "focus" && avg <= 8) || (_selected == "focus" && avg <= 12);
 
         passFailText = percentPass && timePass ? "Pass" : "Try Again";
 
@@ -290,12 +299,21 @@
         }
     }
 
-    private void GetAnswer(bool proficiency, int focus = 0)
+    private void GetAnswer(bool proficiency, int value = 0)
     {
         bool isCorrect = true;
 
-        if (proficiencySelected && lr.Proficiency == proficiency ||
-                !proficiency && lr.A1FocusPassed + lr.A2FocusPassed == focus)
+
+        var shieldsSelected = 1 +
+                (lr.P1ShieldsA2 ? 1 : 0) +
+                (lr.P2ShieldsA2 ? 1 : 0) +
+                (lr.P1ShieldsP2 ? 1 : 0);
+
+        if ((_selected == "proficiency" && lr.Proficiency == proficiency) ||
+                (_selected == "focus" && lr.A1FocusPassed + lr.A2FocusPassed == value) ||
+                (_selected == "shields" && shieldsSelected == value)
+    )
+
             correct++;
         else
         {
@@ -308,7 +326,7 @@
         }
 
         // add this foe list and result to a list for review later
-        _results.Add(new Result(lobbiesRead, _foes, lr, proficiency, focus, isCorrect));
+        _results.Add(new Result(lobbiesRead, _foes, lr, proficiency, value, isCorrect));
 
         GetNextLobby();
     }
@@ -328,15 +346,22 @@
         {
             reviewItem = incorrectResult.LobbyNumber;
 
-            if (proficiencySelected)
+            if (_selected == "proficiency")
             {
                 yourAnswer = incorrectResult.ProficiencyAnswer ? "Yes" : "No";
                 correctAnswer = incorrectResult.LobbyResult.Proficiency ? "Yes" : "No";
             }
             else
             {
-                yourAnswer = incorrectResult.FocusAnswer.ToString();
-                correctAnswer = (incorrectResult.LobbyResult.A1FocusPassed + incorrectResult.LobbyResult.A2FocusPassed).ToString();
+                yourAnswer = incorrectResult.OtherAnswer.ToString();
+
+                if (_selected == "shields")
+                    correctAnswer = (1 + (incorrectResult.LobbyResult.P1ShieldsA2 ? 1 : 0) +
+                        (incorrectResult.LobbyResult.P2ShieldsA2 ? 1 : 0) +
+                        (incorrectResult.LobbyResult.P1ShieldsP2 ? 1 : 0))
+                        .ToString();
+                else
+                    correctAnswer = (incorrectResult.LobbyResult.A1FocusPassed + incorrectResult.LobbyResult.A2FocusPassed).ToString();
             }
 
             _liReview.Foes = incorrectResult.FoesList;
