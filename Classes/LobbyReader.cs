@@ -713,6 +713,8 @@ namespace HPWUHexingTrainer
 
         private void DetermineProficiencyAndOptionalHexes()
         {
+            foeValue = magiFoeValue + profFoeValue + aurorFoeValue;
+
             if (foeValue == 7)
             {
                 result.P1ShieldsP2 = true;
