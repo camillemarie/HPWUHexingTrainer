@@ -802,15 +802,20 @@ namespace HPWUHexingTrainer
 
             if (!result.Proficiency)
             {
-                var profFoes = orderedProfFoes.Where(p => p.Type == FoeType.Werewolf && (int)p.Stars == 4).ToList();
+                //var profFoes = orderedProfFoes.Where(p => p.Type == FoeType.Werewolf && (int)p.Stars == 4).ToList();
 
-                for (int i = 0; i < profFoes.Count; i++)
+                //for (int i = 0; i < profFoes.Count; i++)
+                for (int i = 0; i < orderedProfFoes.Count; i++)
                 {
                     string foughtBy = i == 0 ? "P1" : "P2";
                     FoeFighter profFoe = result.FoeFighters.Where(f => f.FoughtBy == foughtBy).First();
-                    profFoe.Hexes.Add(HexType.Confusion);
-                    profFoeValue--;
-                    AddDecision($"{foughtBy} - no proficiency and is fighting a {_state.FoeFullName(profFoe.Foe)}, add a Confusion hex. Subtract 1 from focus passed.");
+
+                    if (profFoe.Foe.Type == FoeType.Werewolf && profFoe.Foe.Stars == StarName.Dangerous)
+                    {
+                        profFoe.Hexes.Add(HexType.Confusion);
+                        profFoeValue--;
+                        AddDecision($"{foughtBy} - no proficiency and is fighting a {_state.FoeFullName(profFoe.Foe)}, add a Confusion hex. Subtract 1 from focus passed.");
+                    }
                 }
 
                 // if A2 is fighting a 4* DE and we don't have proficiency, P2 should shield A2 as long as A2 doesn't already have a shield
