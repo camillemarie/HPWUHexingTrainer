@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HPWUHexingTrainer
 {
@@ -1001,32 +999,57 @@ namespace HPWUHexingTrainer
 
             result.A2FocusKept = 4 - A2HexesCount - result.A2FocusPassed;
 
-            // work out the which auror passes what focus to each prof
-            if (result.A2FocusPassed == 4)
+            // work out the which auror passes what focus to each prof. Only do this if proficiency is up, if not, all to P2
+            if (result.Proficiency)
             {
-                result.A2FocusPassedToP2 = 3;
-                result.A2FocusPassedToP1 = 1;
-                AddDecision($"A2 - has 4 focus to pass, pass 3 to P2 and 1 to P1.");
+                if (result.A2FocusPassed == 4)
+                {
+                    result.A2FocusPassedToP2 = 3;
+                    result.A2FocusPassedToP1 = 1;
+                    AddDecision($"A2 - has 4 focus to pass, pass 3 to P2 and 1 to P1.");
+                }
+                else
+                {
+                    result.A2FocusPassedToP2 = result.A2FocusPassed; // P2 gets it all
+                    AddDecision($"A2 - has < 4 focus to pass, pass all to P2.");
+                }
+
+
+                // if A2 passed < 3 to P2, A1 should pass focus up to a max of 3 total (for both A1 & 2) or what they have. Only do this if proficiency is up
+                // any remaining focus from A1 goes to P1
+
+                if (result.A2FocusPassedToP2 < 3)
+                {
+                    result.A1FocusPassedToP2 = 3 - result.A2FocusPassedToP2 > result.A1FocusPassed ? result.A1FocusPassed : 3 - result.A2FocusPassedToP2;
+                    AddDecision("A1 - A2 passed < 3 focus to P2, A1 passes what they can to P2 so P2 gets max 3. Rest to P1.");
+                }
+                else
+                    AddDecision("A1 - A2 passed >= 3 focus to P2, A1 passes all focus to P1.");
+
+                result.A1FocusPassedToP1 = result.A1FocusPassed - result.A1FocusPassedToP2;
             }
             else
             {
-                result.A2FocusPassedToP2 = result.A2FocusPassed; // P2 gets it all
-                AddDecision($"A2 - has < 4 focus to pass, pass all to P2.");
+                // P2 gets it all
+                result.A2FocusPassedToP2 = result.A2FocusPassed; 
+                result.A1FocusPassedToP2 = result.A1FocusPassed;
+                AddDecision("A1 & A2 - we do not have proficiency, both pass all to P2.");
             }
 
+            
 
-            // if A2 passed < 3 to P2, A1 should pass focus up to a max of 3 total (for both A1 & 2) or what they have
-            // any remaining focus from A1 goes to P1
+            //// if A2 passed < 3 to P2, A1 should pass focus up to a max of 3 total (for both A1 & 2) or what they have. Only do this if proficiency is up
+            //// any remaining focus from A1 goes to P1
 
-            if (result.A2FocusPassedToP2 < 3)
-            {
-                result.A1FocusPassedToP2 = 3 - result.A2FocusPassedToP2 > result.A1FocusPassed ? result.A1FocusPassed : 3 - result.A2FocusPassedToP2;
-                AddDecision("A1 - A2 passed < 3 focus to P2, A1 passes what they can to P2 so P2 gets max 3. Rest to P1.");
-            }
-            else
-                AddDecision("A1 - A2 passed >= 3 focus to P2, A1 passes all focus to P1.");
+            //if (result.A2FocusPassedToP2 < 3)
+            //{
+            //    result.A1FocusPassedToP2 = 3 - result.A2FocusPassedToP2 > result.A1FocusPassed ? result.A1FocusPassed : 3 - result.A2FocusPassedToP2;
+            //    AddDecision("A1 - A2 passed < 3 focus to P2, A1 passes what they can to P2 so P2 gets max 3. Rest to P1.");
+            //}
+            //else
+            //    AddDecision("A1 - A2 passed >= 3 focus to P2, A1 passes all focus to P1.");
 
-            result.A1FocusPassedToP1 = result.A1FocusPassed - result.A1FocusPassedToP2;
+            //result.A1FocusPassedToP1 = result.A1FocusPassed - result.A1FocusPassedToP2;
 
             // check if P1 got enough focus to shield A2 if it doesn't already have one
             if (result.A1FocusPassedToP1 + result.A2FocusPassedToP1 >= 2 && !result.P1ShieldsA2 && !result.P2ShieldsA2)

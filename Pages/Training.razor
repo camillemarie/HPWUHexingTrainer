@@ -47,7 +47,7 @@
     <div class="col">
         <button class="btn btn-outline-success @(IsSettingDisabled ? "active" : "")" @onclick="StartTimer" disabled=@trainingInProgress>Start</button>
         <button class="btn btn-outline-primary " @onclick="StopTimer">Finish</button>
-        <label class="font-weight-bold ml-3">Time: @_timeElapsed seconds</label>
+        <label class="font-weight-bold ml-3" hidden="@_hideTimerElement">Time: @_timeElapsed seconds</label>
     </div>
 </div>
 
@@ -147,6 +147,7 @@
     //bool _hideResultElement = true;  // show only once they've clicked review
     bool hideReviewButton = true;
     string reviewButtonName = "Review Incorrect";
+    bool _hideTimerElement = true;
 
     private string _timeElapsed = "0.0";
     Stopwatch myWatch = new Stopwatch();
@@ -234,6 +235,8 @@
         hideReviewButton = true;
         _results.Clear();
 
+        _hideTimerElement = !_state.ShowTimer;
+
         StartClock();
         GetNextLobby();
     }
@@ -270,6 +273,9 @@
 
         if (incorrect > 0)
             hideReviewButton = false;
+
+            
+        _hideTimerElement = false;              // Show now even if they chose to hide in settings
     }
     #endregion
 
