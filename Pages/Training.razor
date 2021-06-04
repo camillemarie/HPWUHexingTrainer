@@ -62,7 +62,7 @@
                 <button class="btn btn-lg btn-outline-primary " @onclick="() => GetAnswer(true)" hidden=@(_selected != "proficiency")>Yes</button>
                 <button class="btn btn-lg btn-outline-primary ml-3" @onclick="() => GetAnswer(false)" hidden=@(_selected != "proficiency")>No</button>
 
-                @if (_selected != "proficiency")
+                @if (!_hideNumbers)
                 {
                     var maxCnt = _selected == "focus" ? 5 : 4;
                     @for (int btnNum = 1; btnNum < maxCnt; btnNum++)
@@ -125,7 +125,7 @@
 </div>
 
 @code {
-    [CascadingParameter]
+        [CascadingParameter]
     public UserSettings _state { get; set; }
 
     int lobbiesToRun = 20;
@@ -149,6 +149,7 @@
     bool hideReviewButton = true;
     string reviewButtonName = "Review Incorrect";
     bool _hideTimerElement = true;
+    bool _hideNumbers = true;
 
     private string _timeElapsed = "0.0";
     Stopwatch myWatch = new Stopwatch();
@@ -176,25 +177,12 @@
     {
         _selected = type;
         penaltySeconds = 12;
-    }
 
-@*    void SetAsProficiency()
-    {
-        _selected = "proficiency";
-        penaltySeconds = 12; // 8;
+        if (_selected == "focus" || _selected == "shields")
+            _hideNumbers = false;
+        else
+            _hideNumbers = true;
     }
-
-    void SetAsFocus()
-    {
-        _selected = "focus";
-        penaltySeconds = 12; // 10;
-    }
-
-    void SetAsShields()
-    {
-        _selected = "shields";
-        penaltySeconds = 12; // 10;
-    }*@
 
     private void ChangeAnswerRules()
     {
