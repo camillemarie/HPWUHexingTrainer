@@ -12,9 +12,10 @@
 
 <div class="row pt-2">
     <div class="col-lg-7 col-xl-6 ">
-        <button class="btn  @(_selected == "proficiency" ? "btn-primary" : "btn-outline-primary")  mt-1" @onclick="SetAsProficiency" disabled="@IsSettingDisabled">Proficiency</button>
-        <button class="btn  @(_selected == "focus" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled">Focus</button>
-        <button class="btn  @(_selected == "shields" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="SetAsShields" disabled="@IsSettingDisabled">Shields</button>
+
+       <button class="btn  @(_selected == "proficiency" ? "btn-primary" : "btn-outline-primary")  mt-1" @onclick="@(e => SetTrainingType("proficiency"))" disabled="@IsSettingDisabled">Proficiency</button>
+        <button class="btn  @(_selected == "focus" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="@(e => SetTrainingType("focus"))" disabled="@IsSettingDisabled">Focus</button>
+        <button class="btn  @(_selected == "shields" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="@(e => SetTrainingType("shields"))" disabled="@IsSettingDisabled">Shields</button>
 
         <button class="btn btn-outline-primary ml-3 mt-1" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled">
             Using @(_state.ShowAdvancedRules ? "Advanced" : "Standard")
@@ -171,7 +172,13 @@
     string passFailText;
 
     #region Training settings
-    void SetAsProficiency()
+    void SetTrainingType(string type)
+    {
+        _selected = type;
+        penaltySeconds = 12;
+    }
+
+@*    void SetAsProficiency()
     {
         _selected = "proficiency";
         penaltySeconds = 12; // 8;
@@ -187,7 +194,7 @@
     {
         _selected = "shields";
         penaltySeconds = 12; // 10;
-    }
+    }*@
 
     private void ChangeAnswerRules()
     {
