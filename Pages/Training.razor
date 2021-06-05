@@ -257,7 +257,7 @@
         var avg = totalAnswered == 0 ? 0 : Count * 1.0 / totalAnswered;
 
 
-        resultAverage = $"Average Time: { String.Format("{0:0.0}", avg) } seconds";
+        resultAverage = $"Average Time: { String.Format("{0:0.00}", avg) } seconds";
 
         bool percentPass = totalAnswered > 0 && percent * 100 >= 80;
 
