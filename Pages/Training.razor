@@ -12,9 +12,10 @@
 
 <div class="row pt-2">
     <div class="col-lg-7 col-xl-6 ">
-        <button class="btn  @(_selected == "proficiency" ? "btn-primary" : "btn-outline-primary")  mt-1" @onclick="SetAsProficiency" disabled="@IsSettingDisabled">Proficiency</button>
-        <button class="btn  @(_selected == "focus" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="SetAsFocus" disabled="@IsSettingDisabled">Focus</button>
-        <button class="btn  @(_selected == "shields" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="SetAsShields" disabled="@IsSettingDisabled">Shields</button>
+
+       <button class="btn  @(_selected == "proficiency" ? "btn-primary" : "btn-outline-primary")  mt-1" @onclick="@(e => SetTrainingType("proficiency"))" disabled="@IsSettingDisabled">Proficiency</button>
+        <button class="btn  @(_selected == "focus" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="@(e => SetTrainingType("focus"))" disabled="@IsSettingDisabled">Focus</button>
+        <button class="btn  @(_selected == "shields" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="@(e => SetTrainingType("shields"))" disabled="@IsSettingDisabled">Shields</button>
 
         <button class="btn btn-outline-primary ml-3 mt-1" @onclick="ChangeAnswerRules" disabled="@IsSettingDisabled">
             Using @(_state.ShowAdvancedRules ? "Advanced" : "Standard")
@@ -61,7 +62,7 @@
                 <button class="btn btn-lg btn-outline-primary " @onclick="() => GetAnswer(true)" hidden=@(_selected != "proficiency")>Yes</button>
                 <button class="btn btn-lg btn-outline-primary ml-3" @onclick="() => GetAnswer(false)" hidden=@(_selected != "proficiency")>No</button>
 
-                @if (_selected != "proficiency")
+                @if (!_hideNumbers)
                 {
                     var maxCnt = _selected == "focus" ? 5 : 4;
                     @for (int btnNum = 1; btnNum < maxCnt; btnNum++)
@@ -124,7 +125,7 @@
 </div>
 
 @code {
-    [CascadingParameter]
+        [CascadingParameter]
     public UserSettings _state { get; set; }
 
     int lobbiesToRun = 20;
@@ -148,6 +149,7 @@
     bool hideReviewButton = true;
     string reviewButtonName = "Review Incorrect";
     bool _hideTimerElement = true;
+    bool _hideNumbers = true;
 
     private string _timeElapsed = "0.0";
     Stopwatch myWatch = new Stopwatch();
@@ -171,22 +173,15 @@
     string passFailText;
 
     #region Training settings
-    void SetAsProficiency()
+    void SetTrainingType(string type)
     {
-        _selected = "proficiency";
-        penaltySeconds = 12; // 8;
-    }
+        _selected = type;
+        penaltySeconds = 12;
 
-    void SetAsFocus()
-    {
-        _selected = "focus";
-        penaltySeconds = 12; // 10;
-    }
-
-    void SetAsShields()
-    {
-        _selected = "shields";
-        penaltySeconds = 12; // 10;
+        if (_selected == "focus" || _selected == "shields")
+            _hideNumbers = false;
+        else
+            _hideNumbers = true;
     }
 
     private void ChangeAnswerRules()
@@ -262,7 +257,7 @@
         var avg = totalAnswered == 0 ? 0 : Count * 1.0 / totalAnswered;
 
 
-        resultAverage = $"Average Time: { String.Format("{0:0.0}", avg) } seconds";
+        resultAverage = $"Average Time: { String.Format("{0:0.00}", avg) } seconds";
 
         bool percentPass = totalAnswered > 0 && percent * 100 >= 80;
 
