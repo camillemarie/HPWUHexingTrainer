@@ -1,6 +1,7 @@
 ﻿@page "/training"
 @using HPWUHexingTrainer.Classes
 @using System.Threading;
+@using Humanizer; 
 
 @implements IDisposable
 @using Toolbelt.Blazor.HotKeys
@@ -93,7 +94,10 @@
         </div>
     </div>
 </div>
-<h5 class="pt-3" hidden=@(!trainingFinished)>@result</h5>
+<div class="pt-3" hidden=@(!trainingFinished)>Test: @_selectedUsed Penalty: @_secondsDelayUsed</div>
+
+
+<h5 class="pt-1" hidden=@(!trainingFinished)>@result</h5>
 <h5 hidden=@(!trainingFinished || correct + incorrect == 0)>@resultAverage</h5>
 <h5 class=@(passFailText == "Pass" ? "text-success" : "text-danger") hidden=@(!trainingFinished || correct + incorrect == 0)>@passFailText</h5>
 
@@ -153,6 +157,9 @@
     string reviewButtonName = "Review Incorrect";
     bool _hideTimerElement = true;
     bool _hideNumbers = true;
+
+    int _secondsDelayUsed;
+    string _selectedUsed;
 
     private string _timeElapsed = "0.0";
     Stopwatch myWatch = new Stopwatch();
@@ -231,10 +238,12 @@
         if (_selected == "proficiency")
             AddHotkeysYN();
         else if (_selected == "focus")
-            AddHotkeysFocus(); 
+            AddHotkeysFocus();
         else if (_selected == "shields")
             AddHotkeysShields();
 
+        _secondsDelayUsed = penaltySeconds; // set this at start to display after training.
+        _selectedUsed = _selected.Humanize(LetterCasing.Title);
 
         Count = 0.0;
         _timeElapsed = String.Format("{0:0.0}", Count);
