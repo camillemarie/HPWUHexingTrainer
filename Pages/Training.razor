@@ -2,6 +2,9 @@
 @using HPWUHexingTrainer.Classes
 @using System.Threading;
 
+@implements IDisposable
+@using Toolbelt.Blazor.HotKeys
+@inject HotKeys HotKeys
 @*<div class="d-none d-xl-block" style="background: #007bff; color: #fff; padding: 5px; text-align: center;">XL</div>
     <div class="d-none d-lg-block d-xl-none" style="background: #27a745; color: #fff; padding: 5px; text-align: center;">LG</div>
     <div class="d-none d-md-block d-lg-none" style="background: #ffc108; color: #fff; padding: 5px; text-align: center;">MD</div>
@@ -13,7 +16,7 @@
 <div class="row pt-2">
     <div class="col-lg-7 col-xl-6 ">
 
-       <button class="btn  @(_selected == "proficiency" ? "btn-primary" : "btn-outline-primary")  mt-1" @onclick="@(e => SetTrainingType("proficiency"))" disabled="@IsSettingDisabled">Proficiency</button>
+        <button class="btn  @(_selected == "proficiency" ? "btn-primary" : "btn-outline-primary")  mt-1" @onclick="@(e => SetTrainingType("proficiency"))" disabled="@IsSettingDisabled">Proficiency</button>
         <button class="btn  @(_selected == "focus" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="@(e => SetTrainingType("focus"))" disabled="@IsSettingDisabled">Focus</button>
         <button class="btn  @(_selected == "shields" ? "btn-primary" : "btn-outline-primary") ml-1 mt-1" @onclick="@(e => SetTrainingType("shields"))" disabled="@IsSettingDisabled">Shields</button>
 
@@ -125,13 +128,13 @@
 </div>
 
 @code {
-        [CascadingParameter]
+    [CascadingParameter]
     public UserSettings _state { get; set; }
 
     int lobbiesToRun = 20;
     int penaltySeconds = 12;
     //bool proficiencySelected = true;
-    string _selected = "Proficiency";
+    string _selected = "proficiency";
     protected bool IsSettingDisabled { get; set; }
 
     List<Result> _results = new List<Result>();
@@ -172,6 +175,26 @@
     string correctAnswer;
     string passFailText;
 
+
+    HotKeysContext HotKeysContext;
+
+    protected override void OnInitialized()
+    {
+        this.HotKeysContext = this.HotKeys.CreateContext()
+            .Add(ModKeys.None, Keys.Y, () => GetAnswer(true))
+            .Add(ModKeys.None, Keys.N, () => GetAnswer(false))
+            .Add(ModKeys.None, Keys.Num1, () => GetAnswer(false, 1))
+            .Add(ModKeys.None, Keys.Num2, () => GetAnswer(false, 2))
+            .Add(ModKeys.None, Keys.Num3, () => GetAnswer(false, 3))
+            .Add(ModKeys.None, Keys.Num4, () => GetAnswer(false, 4))
+            .Add(ModKeys.None, Keys.Num5, () => GetAnswer(false, 5))
+            .Add(ModKeys.None, Keys.Num6, () => GetAnswer(false, 6))
+            .Add(ModKeys.None, Keys.Num7, () => GetAnswer(false, 7))
+            .Add(ModKeys.None, Keys.Num8, () => GetAnswer(false, 8));
+    }
+
+
+
     #region Training settings
     void SetTrainingType(string type)
     {
@@ -202,12 +225,12 @@
 
                 _timeElapsed = String.Format("{0:0.0}", Count);
 
-        // Note that the following line is necessary because otherwise
-        // Blazor would not recognize the state change and not refresh the UI
-        InvokeAsync(() =>
-            {
-                StateHasChanged();
-            });
+                // Note that the following line is necessary because otherwise
+                // Blazor would not recognize the state change and not refresh the UI
+                InvokeAsync(() =>
+                {
+                    StateHasChanged();
+                });
             }
         }), null, 100, 100);
     }
@@ -269,8 +292,10 @@
         if (incorrect > 0)
             hideReviewButton = false;
 
-            
+
         _hideTimerElement = false;              // Show now even if they chose to hide in settings
+
+        Refresh();
     }
     #endregion
 
@@ -390,6 +415,11 @@
     public void Refresh()
     {
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        this.HotKeysContext.Dispose();
     }
 
 }
