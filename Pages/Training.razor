@@ -178,20 +178,10 @@
 
     HotKeysContext HotKeysContext;
 
-    protected override void OnInitialized()
-    {
-        this.HotKeysContext = this.HotKeys.CreateContext()
-            .Add(ModKeys.None, Keys.Y, () => GetAnswer(true))
-            .Add(ModKeys.None, Keys.N, () => GetAnswer(false))
-            .Add(ModKeys.None, Keys.Num1, () => GetAnswer(false, 1))
-            .Add(ModKeys.None, Keys.Num2, () => GetAnswer(false, 2))
-            .Add(ModKeys.None, Keys.Num3, () => GetAnswer(false, 3))
-            .Add(ModKeys.None, Keys.Num4, () => GetAnswer(false, 4))
-            .Add(ModKeys.None, Keys.Num5, () => GetAnswer(false, 5))
-            .Add(ModKeys.None, Keys.Num6, () => GetAnswer(false, 6))
-            .Add(ModKeys.None, Keys.Num7, () => GetAnswer(false, 7))
-            .Add(ModKeys.None, Keys.Num8, () => GetAnswer(false, 8));
-    }
+    //protected override void OnInitialized()
+    //{
+
+    //}
 
 
 
@@ -238,6 +228,14 @@
 
     void StartTimer()
     {
+        if (_selected == "proficiency")
+            AddHotkeysYN();
+        else if (_selected == "focus")
+            AddHotkeysFocus(); 
+        else if (_selected == "shields")
+            AddHotkeysShields();
+
+
         Count = 0.0;
         _timeElapsed = String.Format("{0:0.0}", Count);
         timerStarted = true;
@@ -295,6 +293,8 @@
 
         _hideTimerElement = false;              // Show now even if they chose to hide in settings
 
+        this.HotKeysContext.Dispose();
+
         Refresh();
     }
     #endregion
@@ -327,34 +327,39 @@
 
     private void GetAnswer(bool proficiency, int value = 0)
     {
-        bool isCorrect = true;
-
-
-        var shieldsSelected = 1 +
-                (lr.P1ShieldsA2 ? 1 : 0) +
-                (lr.P2ShieldsA2 ? 1 : 0) +
-                (lr.P1ShieldsP2 ? 1 : 0);
-
-        if ((_selected == "proficiency" && lr.Proficiency == proficiency) ||
-                (_selected == "focus" && lr.A1FocusPassed + lr.A2FocusPassed == value) ||
-                (_selected == "shields" && shieldsSelected == value)
-    )
-
-            correct++;
+        if (lobbiesRead > lobbiesToRun)
+            StopTimer();
         else
         {
-            isCorrect = false;
-            incorrect++;
+            bool isCorrect = true;
 
-            // if they got it wrong, add the penalty time to the timer if they are showing the correct/incorrect values
-            if (_state.ShowProgressDuringTraining)
-                Count += penaltySeconds;
+
+            var shieldsSelected = 1 +
+                    (lr.P1ShieldsA2 ? 1 : 0) +
+                    (lr.P2ShieldsA2 ? 1 : 0) +
+                    (lr.P1ShieldsP2 ? 1 : 0);
+
+            if ((_selected == "proficiency" && lr.Proficiency == proficiency) ||
+                    (_selected == "focus" && lr.A1FocusPassed + lr.A2FocusPassed == value) ||
+                    (_selected == "shields" && shieldsSelected == value)
+        )
+
+                correct++;
+            else
+            {
+                isCorrect = false;
+                incorrect++;
+
+                // if they got it wrong, add the penalty time to the timer if they are showing the correct/incorrect values
+                if (_state.ShowProgressDuringTraining)
+                    Count += penaltySeconds;
+            }
+
+            // add this foe list and result to a list for review later
+            _results.Add(new Result(lobbiesRead, _foes, lr, proficiency, value, isCorrect));
+
+            GetNextLobby();
         }
-
-        // add this foe list and result to a list for review later
-        _results.Add(new Result(lobbiesRead, _foes, lr, proficiency, value, isCorrect));
-
-        GetNextLobby();
     }
 
     private void ReviewAnswers()
@@ -416,6 +421,47 @@
     {
         StateHasChanged();
     }
+
+    public void AddHotkeysYN()
+    {
+        this.HotKeysContext = this.HotKeys.CreateContext()
+.Add(ModKeys.None, Keys.Y, () => GetAnswer(true))
+.Add(ModKeys.None, Keys.N, () => GetAnswer(false));
+    }
+    public void AddHotkeysFocus()
+    {
+        this.HotKeysContext = this.HotKeys.CreateContext()
+.Add(ModKeys.None, Keys.Num1, () => GetAnswer(false, 1))
+.Add(ModKeys.None, Keys.Num2, () => GetAnswer(false, 2))
+.Add(ModKeys.None, Keys.Num3, () => GetAnswer(false, 3))
+.Add(ModKeys.None, Keys.Num4, () => GetAnswer(false, 4))
+.Add(ModKeys.None, Keys.Num5, () => GetAnswer(false, 5))
+.Add(ModKeys.None, Keys.Num6, () => GetAnswer(false, 6))
+.Add(ModKeys.None, Keys.Num7, () => GetAnswer(false, 7))
+.Add(ModKeys.None, Keys.Num8, () => GetAnswer(false, 8));
+    }
+    public void AddHotkeysShields()
+    {
+        this.HotKeysContext = this.HotKeys.CreateContext()
+.Add(ModKeys.None, Keys.Num1, () => GetAnswer(false, 1))
+.Add(ModKeys.None, Keys.Num2, () => GetAnswer(false, 2))
+.Add(ModKeys.None, Keys.Num3, () => GetAnswer(false, 3));
+    }
+
+    //    public void AddHotkeys()
+    //    {
+    //        this.HotKeysContext = this.HotKeys.CreateContext()
+    //.Add(ModKeys.None, Keys.Y, () => GetAnswer(true))
+    //.Add(ModKeys.None, Keys.N, () => GetAnswer(false))
+    //.Add(ModKeys.None, Keys.Num1, () => GetAnswer(false, 1))
+    //.Add(ModKeys.None, Keys.Num2, () => GetAnswer(false, 2))
+    //.Add(ModKeys.None, Keys.Num3, () => GetAnswer(false, 3))
+    //.Add(ModKeys.None, Keys.Num4, () => GetAnswer(false, 4))
+    //.Add(ModKeys.None, Keys.Num5, () => GetAnswer(false, 5))
+    //.Add(ModKeys.None, Keys.Num6, () => GetAnswer(false, 6))
+    //.Add(ModKeys.None, Keys.Num7, () => GetAnswer(false, 7))
+    //.Add(ModKeys.None, Keys.Num8, () => GetAnswer(false, 8));
+    //    }
 
     public void Dispose()
     {
