@@ -1,7 +1,7 @@
 ﻿@page "/training"
 @using HPWUHexingTrainer.Classes
 @using System.Threading;
-@using Humanizer; 
+@using Humanizer;
 
 @implements IDisposable
 @using Toolbelt.Blazor.HotKeys
@@ -222,9 +222,9 @@
 
                 _timeElapsed = String.Format("{0:0.0}", Count);
 
-                // Note that the following line is necessary because otherwise
-                // Blazor would not recognize the state change and not refresh the UI
-                InvokeAsync(() =>
+            // Note that the following line is necessary because otherwise
+            // Blazor would not recognize the state change and not refresh the UI
+            InvokeAsync(() =>
                 {
                     StateHasChanged();
                 });
@@ -474,7 +474,8 @@
 
     public void Dispose()
     {
-        this.HotKeysContext.Dispose();
+        if (HotKeysContext != null)
+            this.HotKeysContext.Dispose();
     }
 
 }
