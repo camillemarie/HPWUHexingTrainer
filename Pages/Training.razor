@@ -94,7 +94,7 @@
         </div>
     </div>
 </div>
-<div class="pt-3" hidden=@(!trainingFinished)>Test: @_selectedUsed Penalty: @_secondsDelayUsed</div>
+<div class="pt-3" hidden=@(!trainingFinished)>Test: @_methodUsed @_selectedUsed Penalty: @_secondsDelayUsed</div>
 
 
 <h5 class="pt-1" hidden=@(!trainingFinished)>@result</h5>
@@ -160,6 +160,7 @@
 
     int _secondsDelayUsed;
     string _selectedUsed;
+    string _methodUsed;
 
     private string _timeElapsed = "0.0";
     Stopwatch myWatch = new Stopwatch();
@@ -185,10 +186,6 @@
 
     HotKeysContext HotKeysContext;
 
-    //protected override void OnInitialized()
-    //{
-
-    //}
 
 
 
@@ -222,9 +219,9 @@
 
                 _timeElapsed = String.Format("{0:0.0}", Count);
 
-            // Note that the following line is necessary because otherwise
-            // Blazor would not recognize the state change and not refresh the UI
-            InvokeAsync(() =>
+                // Note that the following line is necessary because otherwise
+                // Blazor would not recognize the state change and not refresh the UI
+                InvokeAsync(() =>
                 {
                     StateHasChanged();
                 });
@@ -244,6 +241,7 @@
 
         _secondsDelayUsed = penaltySeconds; // set this at start to display after training.
         _selectedUsed = _selected.Humanize(LetterCasing.Title);
+        _methodUsed = _state.ShowAdvancedRules ? "Advanced" : "Standard";
 
         Count = 0.0;
         _timeElapsed = String.Format("{0:0.0}", Count);
