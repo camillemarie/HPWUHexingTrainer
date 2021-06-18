@@ -38,7 +38,8 @@
       "System.Security.Cryptography.Pkcs.dll": "sha256-i4\/BXR9cGC3lsBm+\/OAfOy\/8BS7yqAlNOG\/6lRRbT5U=",
       "System.Security.Cryptography.Xml.dll": "sha256-stfEepmGxj77NWkuqclm0Cvk5x5g0MpNVCLXt5yUbDo=",
       "System.Security.Permissions.dll": "sha256-TbmvkKV1XqKAjZVVi1OCUdUE2xJPyyWuJ5JMw5eAB1s=",
-      "HPWUHexingTrainer.dll": "sha256-J5YgGFyvIhLSWVY024GJ5qqn8rcx+U6T5MAGW0E9JY8=",
+      "Toolbelt.Blazor.HotKeys.dll": "sha256-cbMtETvtRPAH\/6FYdy7BL6bB7PKM97KeLgTrPG\/\/XKA=",
+      "HPWUHexingTrainer.dll": "sha256-ECmKcbMTBwwtykIlshOW1vPKFRppaKoebcaUowZNGZE=",
       "Microsoft.CSharp.dll": "sha256-LBH5l\/4ng1mxvaiOWSRyhOqo\/g20gDci4tsZesc8zZ4=",
       "System.Collections.Concurrent.dll": "sha256-YSinc6qv3ZV2n2YrRI2DOLMK981KV7dx\/n7JKJjIZnw=",
       "System.Collections.Immutable.dll": "sha256-\/qTRUgUZ9KR6CwVCPT+bVs4Lk6xn5F4QJYHLYbOrZ+s=",
@@ -85,7 +86,7 @@
       "System.Text.Json.dll": "sha256-Cn633V9nJnQGxJcTlORIc4IDnnE0XLcmlKMdJFJqC0Q=",
       "System.Text.RegularExpressions.dll": "sha256-58Z6rESiQb1slhHmKMNJToY+uxuOYrlEmCzP9NZp6RI=",
       "System.Threading.Tasks.Parallel.dll": "sha256-NelhXKUSLBR2ChxANlhl4uoI6IgQQpYPfNG5FPAmWsY=",
-      "System.Private.CoreLib.dll": "sha256-Kr9NIAstIjbLWQurnbJIWFnrIy0ach3ONeRpXK7js4A="
+      "System.Private.CoreLib.dll": "sha256-FzlEC6xG8KfYaHtm0x\/t114HYsgKte+yP8OXzZdDYO8="
     },
     "lazyAssembly": null,
     "pdb": null,
